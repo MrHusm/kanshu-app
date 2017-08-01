@@ -56,13 +56,11 @@ public class UserController extends BaseController {
             User user = userService.findUniqueByParams("key",key);
             if(user == null){
                 user = new User();
-                user.setKey(key);
                 user.setCreateDate(new Date());
                 user.setName(UUID.randomUUID().toString().substring(0,8));
                 user.setNickName(user.getName());
                 user.setPassword("111111");
                 user.setUpdateDate(new Date());
-                user.setType(Integer.parseInt(type));
                 this.userService.save(user);
             }
             sender.put("user",user);

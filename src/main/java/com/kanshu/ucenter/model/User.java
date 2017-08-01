@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by hushengmeng on 2017/7/4.
  */
 public class User {
-    private Long id;
+    private Long userId;
     /**
      * 姓名
      */
@@ -23,9 +23,15 @@ public class User {
     private String password;
 
     /**
-     * 性别 1：男 2：女
+     * 性别 1：男 0：女
      */
     private Integer sex;
+
+
+    /**
+     * 头像
+     */
+    private String logo;
 
     /**
      * 电话
@@ -33,14 +39,24 @@ public class User {
     private String tel;
 
     /**
-     * 0：安卓 1：IOS
+     * 渠道号
      */
-    private Integer type;
+    private Integer channel;
 
     /**
-     * 客户端生成唯一标识
+     * 邮箱
      */
-    private String key;
+    private String email;
+
+    /**
+     * 手机imsi号
+     */
+    private String imei;
+
+    /**
+     * 手机imei号
+     */
+    private String imsi;
 
     /**
      * 创建时间
@@ -52,12 +68,12 @@ public class User {
      */
     private Date updateDate;
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -92,6 +108,14 @@ public class User {
         this.sex = sex;
     }
 
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
     public String getTel() {
         return tel;
     }
@@ -100,20 +124,36 @@ public class User {
         this.tel = tel;
     }
 
-    public Integer getType() {
-        return type;
+    public Integer getChannel() {
+        return channel;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setChannel(Integer channel) {
+        this.channel = channel;
     }
 
-    public String getKey() {
-        return key;
+    public String getEmail() {
+        return email;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getImei() {
+        return imei;
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
+    }
+
+    public String getImsi() {
+        return imsi;
+    }
+
+    public void setImsi(String imsi) {
+        this.imsi = imsi;
     }
 
     public Date getCreateDate() {
