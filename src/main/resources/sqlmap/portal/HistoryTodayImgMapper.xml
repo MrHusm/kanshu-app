@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="HistoryTodayImgMapper">
+    <resultMap id="BaseResultMap" type="com.kanshu.portal.model.HistoryTodayImg">
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+        <result column="index" property="index" jdbcType="INTEGER" />
+        <result column="history_id" property="historyId" jdbcType="BIGINT" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="id != null"> and id= #{id}</if>
+        <if test="title != null and title !=''"> and title= #{title}</if>
+        <if test="fileName != null and fileName !=''"> and file_name= #{fileName}</if>
+        <if test="index != null"> and index= #{index}</if>
+        <if test="historyId != null"> and history_id= #{historyId}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        id ,title,file_name,`index`,history_id,create_date,update_date
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List" />
+        from history_today_img
+        where
+        ID = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from history_today_img
+        where
+        ID = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" parameterType="com.kanshu.portal.model.HistoryTodayImg">
+        insert into history_today_img
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="title != null and title !=''">title,</if>
+            <if test="fileName != null and fileName !=''">file_name,</if>
+            <if test="index != null">`index`,</if>
+            <if test="historyId != null">history_id,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="title != null and title !=''">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null and fileName != ''">
+                #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="index != null">
+                #{index,jdbcType=INTEGER},
+            </if>
+            <if test="historyId != null">
+                #{historyId,jdbcType=BIGINT},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.portal.model.HistoryTodayImg">
+        update history_today_img
+        <set>
+            <if test="title != null and title !=''">
+                title= #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null and fileName !=''">
+                file_name= #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="index != null">
+                day= #{index,jdbcType=INTEGER},
+            </if>
+            <if test="historyId != null">
+                history_id= #{historyId,jdbcType=BIGINT},
+            </if>
+            <if test="createDate != null">
+                create_date= #{create_date,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                update_date= #{update_date,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where
+        ID = #{id,jdbcType=BIGINT}
+    </update>
+
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from history_today_img where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from history_today_img where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from history_today_img where 1=1
+        <include refid="Base_Where" />
+        order by create_date desc
+    </select>
+
+</mapper>

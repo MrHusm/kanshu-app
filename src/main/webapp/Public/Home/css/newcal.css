@@ -1,0 +1,238 @@
+body
+{
+    margin: 0px;
+    padding: 0px;
+    font-family:Arial;
+}
+table, td
+{
+    border-collapse:collapse;
+    border-spacing:0;
+    border:1px solid #cccccc;
+    padding: 0px;
+}
+table{border-width:0;}
+#mainCal
+{
+    padding:0 2px;width:608px;height:366px;overflow:hidden;
+}
+table
+{
+    float:left;width: 608px;height:366px;
+}
+.block
+{
+    width: 87px;
+    text-align: left;
+    vertical-align: top;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    background-repeat: no-repeat on-repeat;
+    cursor: pointer;
+    background-color: white;
+    font-famlily:Microsoft YaHei;
+}
+.tablehead
+{
+    font-size: 13px;
+    color: #58421d;
+}
+.block4
+{
+
+}
+.block5
+{
+
+}
+.block6
+{
+
+}
+.block4:hover
+{
+    background-color:#fff1b3;
+}
+.block5:hover
+{
+    background-color:#fff1b3;
+}
+.block6:hover
+{
+    background-color:#fff1b3;
+}
+.thead4
+{
+    height: 28px;
+    text-align: center;
+    border-right: 0px;
+    background: #dedede;
+}
+.thead5
+{
+    font-size:13px;height:31px;text-align:center;border:0 none;
+}
+.thead5spe{color:#c00;}
+.thead6
+{
+    font-size:13px;height:31px;text-align: center;border:0 none;
+}
+.before, .after
+{
+    color: #ccc;
+    background-color:#f4f4f4;
+}
+.before .before, .after .after,.workBlock .before,.workBlock .after,.today .before,.today .after,.restBlock .before,.restBlock .after{
+    background-color:transparent;}
+.today
+{
+    width: 55px;
+    text-align: left;
+    vertical-align: top;
+    overflow: hidden;
+    background-repeat: no-repeat on-repeat;
+    color: #000;
+}
+.today4
+{
+    background-image:url(../img/today.png);
+    background-repeat: no-repeat;
+    _background:none;
+    _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/today.png',sizingMethod='crop');
+}
+.today5
+{
+    background-image:url(../img/today.png);
+    background-repeat: no-repeat;
+    _background:none;
+    _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/today.png',sizingMethod='crop');
+}
+.today6
+{
+
+    background-image:url(../img/today.png);
+    background-repeat: no-repeat;
+    _background:none;
+    _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/today.png',sizingMethod='crop');
+}
+.today4:hover
+{
+    background-color:#fff1b3;
+}
+.today5:hover
+{
+    background-color:#fff1b3;
+}
+.today6:hover
+{
+    background-color:#fff1b3;
+}
+.block_content
+{
+    width: 84px;
+}
+.block_content4
+{
+    height: 70px;
+}
+.block_content5
+{
+    height: 66px;
+}
+.block_content6{height: 55px;}
+.workrest
+{
+    position: absolute;height: 34px;width: 34px;font-size: 9px;color: white;}
+.number
+{
+    position: absolute;font-size: 18px;font-family:Arial;width: 84px;text-align: center;overflow: hidden;height: 23px;
+
+}
+.weekendNum
+{
+    position: absolute;font-size: 18px;width: 86px;text-align: center;overflow: hidden;height: 23px;color: #f00;
+}
+.number6
+{
+    margin-top: 8px;
+}
+.number5
+{
+    margin-top: 10px;
+}
+.number4
+{
+    margin-top: 25px;
+}
+.chinaday
+{
+    position: absolute;font-size: 13px;text-align: center;width: 86px;height: 20px;overflow: hidden;color: #999;
+}
+.before .chinaday,.after .chinaday{color:#ccc;}
+.chinaday6
+{
+    margin-top: 28px;
+}
+.chinaday5
+{
+    margin-top: 33px;
+}
+.chinaday4
+{
+    margin-top: 46px;
+}
+
+.workDot
+{
+    position: absolute;
+    margin-left: 45px;
+    height: 6px;
+    width: 6px;
+    overflow: hidden;
+}
+.workDot6
+{
+    margin-top: 35px;
+}
+.workDot5
+{
+    margin-top: 45px;
+}
+.workDot4
+{
+    margin-top: 60px;
+}
+.work
+{
+    background:url(../img/work.png) no-repeat 0 0;
+    _background:none;
+    _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/work.png',sizingMethod='crop');
+}
+.rest
+{
+    background:url(../img/rest.png) no-repeat 0 0;
+    _background:none;
+    _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/rest.png',sizingMethod='crop');
+}
+.workBlock
+{
+    background-color: #e5e5e5;
+}
+.restBlock
+{
+    background-color: #f7e7ea;
+}
+.clickBlock4
+{
+    color:#fff;background-color:#d02f12;
+}
+.clickBlock5,.clickBlock5:hover
+{
+    color:#fff;background-color:#d02f12;
+}
+.clickBlock6,.clickBlock6:hover
+
+{
+    color:#fff;background-color:#d02f12;
+}
+.clickBlock5 .chinaday,.clickBlock6 .chinaday,.clickBlock5 .number,.clickBlock6 .number,.clickBlock5 .weekendNum,.clickBlock6 .weekendNum{color:#fff;}

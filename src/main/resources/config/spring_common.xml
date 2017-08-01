@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+	   default-lazy-init="true">
+	<!-- 开启自动切面代理 -->
+	<aop:aspectj-autoproxy />
+	<mvc:annotation-driven/>
+	<!-- 开启注解 -->
+	<!--<context:annotation-config />-->
+	<!--<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"></bean>-->
+	<!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">-->
+		<!--<property name="messageConverters">-->
+			<!--<list>-->
+				<!--<ref bean="jacksonMessageConverter"/>-->
+			<!--</list>-->
+		<!--</property>-->
+	<!--</bean>-->
+
+	<!-- 使用annotation 自动注册bean -->
+	<context:component-scan base-package="com.kanshu.ucenter,com.kanshu.portal" annotation-config="true">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<!-- 支持异步方法执行 -->
+	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>  
+    <task:executor id="taskExecutor" pool-size="5"/>  
+    <task:scheduler id="taskScheduler" pool-size="10" />
+
+	<bean class="com.kanshu.base.system.SpringContextHolder" lazy-init="false" />
+
+	<!-- 加载配置文件 -->
+	<bean id="propertyMananger" class="com.kanshu.base.system.DecryptPropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>config.properties</value>
+				<value>api-config.properties</value>
+			</list>
+		</property>
+		<property name="fileEncoding" value="utf-8" />
+	</bean>
+	
+	<!-- (父)数据源定义,使用Apache DBCP 连接池 -->
+	<bean id="parentDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
+		<property name="minPoolSize" value="10" />
+		<property name="maxPoolSize" value="200" />
+		<property name="maxIdleTime" value="30" />
+		<property name="acquireIncrement" value="5" />
+		<property name="idleConnectionTestPeriod" value="60" />
+		<property name="acquireRetryAttempts" value="30" />	
+		<property name="breakAfterAcquireFailure" value="false" />
+		<property name="numHelperThreads" value="5" />	
+		<property name="acquireRetryDelay" value="500" />	
+		<property name="autoCommitOnClose" value="true" />
+		<property name="propertyCycle" value="300" />	
+		<property name="checkoutTimeout" value="5000" />
+		<property name="preferredTestQuery" value="SELECT 1" />
+	</bean>
+
+
+
+	
+	<!-- 配置主库数据源 -->
+	<bean id="business_dataSource" parent="parentDataSource">
+		<property name="jdbcUrl">
+			<value>${business.jdbc.url}</value>
+		</property>
+		<property name="user">
+			<value>${business.jdbc.username}</value>
+		</property>
+		<property name="password">
+			<value>${business.jdbc.password}</value>
+		</property>
+	</bean>
+
+
+
+
+ 	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="business_dataSource" />
+	</bean>  
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+
+	<!-- 配置事物数据库 -->
+	<bean id="business_sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="business_dataSource" />
+		<property name="configLocation" value="classpath:config/sql-map-config.xml" />
+		<property name="mapperLocations" value="classpath*:sqlmap/*/*.xml" />
+	</bean>
+
+	<bean id="master_sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="business_sqlSessionFactory" />
+	</bean>
+
+
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="business_dataSource"/>
+    </bean>
+    
+
+	<!-- 文件上传配置 -->
+	<bean id="filterMultipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+
+    
+    <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
+		<property name="targetMethod" value="initLogging" />
+		<property name="arguments">
+			<list>
+				<value>classpath:/config/log4j.xml</value>
+			</list>
+		</property>
+	</bean>
+</beans>
