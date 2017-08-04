@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:redis="http://www.springframework.org/schema/redis"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+			http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.2.xsd
+			http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+			http://www.springframework.org/schema/redis http://www.springframework.org/schema/redis/spring-redis-1.0.xsd">
+	
+	<!-- redis主库配置开始 -->
+	<bean id="masterJedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+	    <property name="maxActive" value="${master.redis.pool.maxActive}" />
+	    <property name="maxIdle" value="${master.redis.pool.maxIdle}" />
+	    <property name="minIdle" value="${master.redis.pool.minIdle}" />
+	    <property name="maxWait" value="${master.redis.pool.maxWait}" />
+	    <property name="testOnBorrow" value="${master.redis.pool.testOnBorrow}" />
+	</bean>
+	
+	<bean id="masterJedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" destroy-method="destroy"> 
+    	<property name="hostName" value="${master.redis.host}" />
+    	<property name="port" value="${master.redis.port}" />
+    	<property name="poolConfig" ref="masterJedisPoolConfig" />
+    	<property name="database" value="${master.redis.database}" />
+    	<property name="timeout" value="10000" />
+    	<property name="usePool" value="true" />
+    </bean>
+    
+    <bean id="masterRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="masterJedisConnectionFactory">
+        <property name="keySerializer" ref="stringRedisSerializer"/>
+        <property name="hashKeySerializer" ref="stringRedisSerializer"/>
+    </bean>
+    <!-- redis主库配置结束 -->
+
+	<!-- redis从库配置开始 -->
+	<bean id="slaveRedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxActive" value="${slave.redis.pool.maxActive}" />
+		<property name="maxIdle" value="${slave.redis.pool.maxIdle}" />
+		<property name="minIdle" value="${slave.redis.pool.minIdle}" />
+		<property name="maxWait" value="${slave.redis.pool.maxWait}" />
+		<property name="testOnBorrow" value="${slave.redis.pool.testOnBorrow}" />
+	</bean>
+
+	<bean id="slaveJedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" destroy-method="destroy">
+		<property name="hostName" value="${slave.redis.host}" />
+		<property name="port" value="${slave.redis.port}" />
+		<property name="poolConfig" ref="slaveRedisPoolConfig" />
+		<property name="database" value="${slave.redis.database}" />
+		<property name="timeout" value="10000" />
+		<property name="usePool" value="true" />
+	</bean>
+
+	<bean id="slaveRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="slaveJedisConnectionFactory">
+		<property name="keySerializer" ref="stringRedisSerializer"/>
+		<property name="hashKeySerializer" ref="stringRedisSerializer"/>
+	</bean>
+	<!-- redis从库配置结束 -->
+    
+    <!-- redis注解配置 -->
+	<bean id="masterCacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+		<constructor-arg index="0" ref="masterRedisTemplate" />
+	</bean>
+	<cache:annotation-driven mode="proxy" cache-manager="masterCacheManager" />
+	<!-- redis注解配置结束 -->
+    
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+</beans>

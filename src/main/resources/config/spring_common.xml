@@ -65,9 +65,6 @@
 		<property name="checkoutTimeout" value="5000" />
 		<property name="preferredTestQuery" value="SELECT 1" />
 	</bean>
-
-
-
 	
 	<!-- 配置主库数据源 -->
 	<bean id="business_dataSource" parent="parentDataSource">
@@ -82,16 +79,12 @@
 		</property>
 	</bean>
 
-
-
-
  	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="business_dataSource" />
 	</bean>  
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	
 
 	<!-- 配置事物数据库 -->
 	<bean id="business_sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -104,12 +97,9 @@
 		<constructor-arg index="0" ref="business_sqlSessionFactory" />
 	</bean>
 
-
-	
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <property name="dataSource" ref="business_dataSource"/>
     </bean>
-    
 
 	<!-- 文件上传配置 -->
 	<bean id="filterMultipartResolver"
@@ -117,8 +107,6 @@
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
 
-
-    
     <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
 		<property name="targetMethod" value="initLogging" />
@@ -128,4 +116,8 @@
 			</list>
 		</property>
 	</bean>
+
+
+	<!-- redis配置 -->
+	<import resource="classpath*:/config/redis_config.xml" />
 </beans>

@@ -1,1 +1,1 @@
-<meta http-equiv='refresh'   content='0;url=/user/index.go'>
+<h1>Welcome</h1>

@@ -1,6 +1,7 @@
 package com.kanshu.ucenter.controller;
 
 import com.kanshu.base.contants.ErrorCodeEnum;
+import com.kanshu.base.contants.RedisKeyConstants;
 import com.kanshu.base.controller.BaseController;
 import com.kanshu.base.utils.JsonResultSender;
 import com.kanshu.base.utils.PageFinder;
@@ -18,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author hushengmeng
@@ -53,9 +53,12 @@ public class UserController extends BaseController {
     @Resource(name="userUuidService")
     IUserUuidService userUuidService;
 
+    @Resource(name = "masterRedisTemplate")
+    private RedisTemplate masterRedisTemplate;
+
     @RequestMapping("index")
     public String loginSubmit(Model model, User user, String captcha) {
-        User u = userService.findMasterById(1L);
+        User u = userService.getUserByUserId(1L);
         return "main";
     }
 
@@ -139,7 +142,7 @@ public class UserController extends BaseController {
         try{
             User user = null;
             if(StringUtils.isNotBlank(userId)){
-                user = userService.findUniqueByParams("userId",userId);
+                user = userService.getUserByUserId(Long.parseLong(userId));
             }
             if(StringUtils.isNotBlank(nickName) && user == null){
                 user = userService.findUniqueByParams("nickName",nickName);
@@ -180,7 +183,9 @@ public class UserController extends BaseController {
             User user = userService.findUniqueByParams("userId",userId);
             user.setNickName(nickName);
             userService.update(user);
-            sender.put("user",user);
+            //清除用户缓存
+            masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
+            sender.put("user", user);
             sender.send(response);
         }catch (Exception e){
             e.printStackTrace();
@@ -237,6 +242,14 @@ public class UserController extends BaseController {
             logger.error("系统错误："+ request.getRequestURL());
             return "error";
         }
-        return "/ucenter/recharge_log";
+        //1：查询收入  2：查询书籍消费  3：查询其他消费（例如:购买VIP） 4:查询所有消费
+        if("1".equals(type)){
+            return "/ucenter/account_recharge_log";
+        }else if("2".equals(type)){
+            return "/ucenter/account_book_log";
+        }else if("3".equals(type)){
+            return "/ucenter/account_other_log";
+        }
+        return "error";
     }
 }
