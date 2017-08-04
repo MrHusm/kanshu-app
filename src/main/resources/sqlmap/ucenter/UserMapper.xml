@@ -13,6 +13,7 @@
         <result column="tel" property="tel" jdbcType="VARCHAR" />
         <result column="imsi" property="imsi" jdbcType="VARCHAR" />
         <result column="imei" property="imei" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -27,9 +28,10 @@
         <if test="tel != null and tel !=''"> and tel= #{tel}</if>
         <if test="imsi != null and imsi !=''"> and `imsi`= #{imsi}</if>
         <if test="imei != null and imei !=''"> and `imei`= #{imei}</if>
+        <if test="type != null"> and `type`= #{type}</if>
     </sql>
     <sql id="Base_Column_List">
-        user_id ,`name`,nick_name,password,logo,sex,channel,email,tel,imsi,imei,create_date,update_date
+        user_id ,`name`,nick_name,password,logo,sex,channel,email,tel,imsi,imei,type,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -56,6 +58,7 @@
             <if test="tel != null and tel !=''">tel,</if>
             <if test="imsi != null and imsi !=''">imsi,</if>
             <if test="imei != null and imei !=''">imei,</if>
+            <if test="type != null">`type`,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
@@ -92,6 +95,9 @@
             </if>
             <if test="imei != null and imei !=''">
                 #{imei,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
@@ -134,6 +140,9 @@
             </if>
             <if test="imei != null and imei !=''">
                 imei= #{imei,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type= #{type,jdbcType=INTEGER},
             </if>
             <if test="createDate != null">
                 create_date= #{createDate,jdbcType=TIMESTAMP},

@@ -22,6 +22,18 @@
         <if test="orderId != null"> and order_id= #{orderId}</if>
         <if test="type != null"> and `type`= #{type}</if>
         <if test="channel != null"> and channel= #{channel}</if>
+        <if test="findType != null">
+          <if test="findType == 1">
+              <![CDATA[ and type > 0 ]]>
+          </if>
+          <if test="findType == 2"> and type in(-1,-2,-3)</if>
+          <if test="findType == 3">
+              <![CDATA[ and type < 0  and type not in(-1,-2,-3)]]>
+          </if>
+          <if test="findType == 4">
+              <![CDATA[ and type < 0 ]]>
+          </if>
+        </if>
     </sql>
     <sql id="Base_Column_List">
         account_log_id,user_id ,order_id,before_money,cur_money,unit_money,

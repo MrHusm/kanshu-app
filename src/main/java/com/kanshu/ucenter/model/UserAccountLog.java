@@ -39,7 +39,7 @@ public class UserAccountLog {
     private Integer unitVirtual;
 
     /**
-     * 消费类型
+     * 消费类型 type>0 收入  type<0 消费
      */
     private Integer type;
 
@@ -51,6 +51,11 @@ public class UserAccountLog {
     private Integer channel;
 
     private Date createDate;
+
+    /**
+     * //1：查询收入  2：查询书籍消费  3：查询其他消费（例如:购买VIP） 4:查询所有消费
+     */
+    private Integer findType;
 
     public Long getAccountLogId() {
         return accountLogId;
@@ -154,5 +159,13 @@ public class UserAccountLog {
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+
+    public Integer getFindType() {
+        return findType;
+    }
+
+    public void setFindType(Integer findType) {
+        this.findType = findType;
     }
 }

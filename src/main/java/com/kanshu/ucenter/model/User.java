@@ -59,6 +59,11 @@ public class User {
     private String imsi;
 
     /**
+     * 来源 0:安卓 1：ios 2:h5
+     */
+    private Integer type;
+
+    /**
      * 创建时间
      */
     private Date createDate;
@@ -154,6 +159,14 @@ public class User {
 
     public void setImsi(String imsi) {
         this.imsi = imsi;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Date getCreateDate() {
