@@ -36,12 +36,12 @@
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select <include refid="Base_Column_List" />
-        from user where user_id = #{userId,jdbcType=BIGINT}
+        from user where user_id = #{id,jdbcType=BIGINT}
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from user where
-        user_id = #{userId,jdbcType=BIGINT}
+        user_id = #{id,jdbcType=BIGINT}
     </delete>
 
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.ucenter.model.User">

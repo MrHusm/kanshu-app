@@ -1,3 +1,4 @@
+<#if syn=='0'>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -23,7 +24,8 @@
                         历史的今天
                     </h2>
                 </div>
-                <ul class="am-list">
+                <ul class="am-list pageLoad">
+</#if>
                     <!--缩略图在标题左边-->
                     <#if pageFinder.data??>
                         <#list pageFinder.data as historyToday>
@@ -54,15 +56,19 @@
                                 </li>
                             </#if>
                         </#list>
+                        <#if syn=='0'>
+                            <p class="v3_btmload" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/portalIndex.go?&page=${pageFinder.pageNo+1}&syn=1" style="display:none;"></p>
+                        </#if>
                     </#if>
+<#if syn=='0'>
                 </ul>
             </div>
         </div>
     </div>
-
 </div>
 
-
+<script type="text/javascript" src="/js/base.js"></script>
+<script type="text/javascript" src="/js/autopage.js"></script>
 <script>
     $(function(){
         $('.am_news_tab').css('min-height',$(window).height() - 52 - 220);
@@ -81,3 +87,4 @@
 </script>
 </body>
 </html>
+</#if>

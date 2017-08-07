@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="VipMapper">
+    <resultMap id="BaseResultMap" type="com.kanshu.product.model.Vip">
+        <id column="vip_id" property="vipId" jdbcType="BIGINT" />
+        <result column="days" property="days" jdbcType="INTEGER" />
+        <result column="price" property="price" jdbcType="INTEGER" />
+        <result column="discount_price" property="discountPrice" jdbcType="INTEGER" />
+        <result column="virtual_money" property="virtualMoney" jdbcType="INTEGER" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="vipId != null"> and vip_id= #{vipId}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        vip_id,days,price,discount_price,virtual_money,create_date,update_date
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" /> from vip where vip_id = #{vipId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from vip where vip_id = #{vipId,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.pay.model.PayBefore">
+        insert into vip
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vipId != null">vip_id,</if>
+            <if test="days != null">days,</if>
+            <if test="price != null">price,</if>
+            <if test="discountPrice != null">discount_price,</if>
+            <if test="virtualMoney != null">virtual_money,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vipId != null">
+                #{vipId,jdbcType=BIGINT},
+            </if>
+            <if test="days != null">
+                #{days,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=INTEGER},
+            </if>
+            <if test="discountPrice != null">
+                #{discountPrice,jdbcType=INTEGER},
+            </if>
+            <if test="virtualMoney != null">
+                #{virtualMoney,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from vip where 1=1
+        <include refid="Base_Where" />
+        order by days desc
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from vip where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from vip where 1=1
+        <include refid="Base_Where" />
+        order by create_date desc
+    </select>
+</mapper>

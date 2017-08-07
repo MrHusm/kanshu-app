@@ -23,7 +23,7 @@ public class UserAccount {
     /**
      * 虚拟币金额
      */
-    private Long virtualAccount;
+    private Long virtualMoney;
 
     /**
      * 创建时间
@@ -59,12 +59,12 @@ public class UserAccount {
         this.money = money;
     }
 
-    public Long getVirtualAccount() {
-        return virtualAccount;
+    public Long getVirtualMoney() {
+        return virtualMoney;
     }
 
-    public void setVirtualAccount(Long virtualAccount) {
-        this.virtualAccount = virtualAccount;
+    public void setVirtualMoney(Long virtualMoney) {
+        this.virtualMoney = virtualMoney;
     }
 
     public Date getCreateDate() {

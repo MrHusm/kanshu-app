@@ -8,6 +8,7 @@ import com.kanshu.portal.model.HistoryTodayImg;
 import com.kanshu.portal.service.IHistoryTodayImgService;
 import com.kanshu.portal.service.IHistoryTodayService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -16,6 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -33,11 +36,25 @@ public class PortalController extends BaseController{
     @Resource(name="historyTodayImgService")
     IHistoryTodayImgService historyTodayImgService;
 
+    /**
+     * 精选页
+     * @param model
+     * @param response
+     * @param request
+     * @return
+     */
     @RequestMapping("portalIndex")
-    public String loginSubmit(Model model) {
+    public String portalIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
+        String page = request.getParameter("page");
+        String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+        model.addAttribute("syn",syn);
         Query query = new Query();
-        query.setPage(1);
-        query.setPageSize(100);
+        if(StringUtils.isNotBlank(page)){
+            query.setPage(Integer.parseInt(page));
+        }else{
+            query.setPage(1);
+        }
+        query.setPageSize(5);
         HistoryToday historyToday = new HistoryToday();
         SimpleDateFormat df = new SimpleDateFormat("MMdd");//设置日期格式
         String day = df.format(new Date());
@@ -54,7 +71,4 @@ public class PortalController extends BaseController{
         return "portal/portal_index";
     }
 
-    public static void main(String[] args) {
-
-    }
 }
