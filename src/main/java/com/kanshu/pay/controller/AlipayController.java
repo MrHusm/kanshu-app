@@ -1,5 +1,6 @@
 package com.kanshu.pay.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeWapPayModel;
@@ -190,6 +191,7 @@ public class AlipayController extends BaseController {
 				//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "gbk");
 				params.put(name, valueStr);
 			}
+			logger.info("notifyUrl_params:"+JSON.toJSONString(params));
 			//获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以下仅供参考)//
 			//商户订单号
 			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"),"UTF-8");
@@ -326,7 +328,7 @@ public class AlipayController extends BaseController {
 				valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
 				params.put(name, valueStr);
 			}
-
+			logger.info("notifyUrl_params:"+JSON.toJSONString(params));
 			//获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以下仅供参考)//
 			//商户订单号
 			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"),"UTF-8");
