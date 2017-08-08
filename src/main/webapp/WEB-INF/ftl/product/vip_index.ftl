@@ -10,16 +10,19 @@
 </head>
 <body>
 <input type="button" name="weixin" id="weixin" value="微信充值"/>&nbsp;&nbsp;&nbsp;
-<input type="button" name="alipay" id="alipay" value="支付宝充值"/>
+<input type="button" name="alipay" onclick="alipay()" id="alipay" value="支付宝充值"/>
 <#if vips??>
     <ul>
         <#list vips as vip>
-            <li><input type="radio" value="vip.vipId"/>${vip.days}-${vip.price}-${vip.discountPrice}-${vip.virtualMoney}</li>
+            <li><input type="radio" name="vipItem" value="vip.vipId"/>${vip.days}-${vip.price}-${vip.discountPrice}-${vip.virtualMoney}</li>
         </#list>
     </ul>
 </#if>
 <script>
+    function alipay(){
+        var vipId = $("input[name='vipItem']:checked").val();
 
+    }
 </script>
 </body>
 </html>
