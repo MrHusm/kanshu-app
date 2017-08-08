@@ -36,7 +36,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 //            }
 //        }
 //
-//        UsercmsSessionInfo usercmsSessionInfo = (UsercmsSessionInfo) request.getSession().getAttribute(DigitalCmsConstants.CMS_USER_INFO_STORED_IN_SESSION);
+//        UsercmsSessionInfo usercmsSessionInfo = (UsercmsSessionInfo) request.getSession().getAttribute(Constants.CMS_USER_INFO_STORED_IN_SESSION);
 //
 //        if (usercmsSessionInfo == null || usercmsSessionInfo.getUserInfo() == null||
 //        		usercmsSessionInfo.getUserInfo().getUsercmsId() ==null ||
@@ -48,8 +48,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 //            return true;
 //        } else{
 //
-//        	List<Functionality> userAllFuncs = (List<Functionality>)request.getSession().getAttribute(DigitalCmsConstants.ALL_FUNCTIONALITIES_USER);
-//        	List<Functionality> allSystemFuncs = (List<Functionality>)request.getSession().getAttribute(DigitalCmsConstants.ALL_FUNCTIONALITIES_SYSTEM);
+//        	List<Functionality> userAllFuncs = (List<Functionality>)request.getSession().getAttribute(Constants.ALL_FUNCTIONALITIES_USER);
+//        	List<Functionality> allSystemFuncs = (List<Functionality>)request.getSession().getAttribute(Constants.ALL_FUNCTIONALITIES_SYSTEM);
 //        	//判断在用户权限里是否能找到一条匹配的
 //        	URLPathMatcher matcher = new URLPathMatcher();
 //        	if(getMostMatchedRule(matcher, userAllFuncs,requestUri) == null && getMostMatchedRule(matcher, allSystemFuncs,requestUri)!=null ){
@@ -81,7 +81,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 //			//父节点不参与url匹配
 //			if(tmpFunc.getLeaf() && StringUtils.isNotEmpty(tmpFunc.getUrlPattern())){
 //
-//				String[] urlPatterns = DigitalCmsConstants.semiColonSpliter.split(tmpFunc.getUrlPattern());
+//				String[] urlPatterns = Constants.semiColonSpliter.split(tmpFunc.getUrlPattern());
 //				for(String urlPattern:urlPatterns){
 //					int score = matcher.getMatchPoint(urlPattern.trim(), requestUri);
 //					if(score>finalScore){

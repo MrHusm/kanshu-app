@@ -4,12 +4,8 @@
     <resultMap id="BaseResultMap" type="com.kanshu.ucenter.model.UserAccountLog">
         <id column="account_log_id" property="accountLogId" jdbcType="BIGINT" />
         <result column="user_id" property="userId" jdbcType="BIGINT" />
-        <result column="order_id" property="orderId" jdbcType="BIGINT" />
-        <result column="before_money" property="beforeMoney" jdbcType="INTEGER" />
-        <result column="cur_money" property="curMoney" jdbcType="INTEGER" />
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
         <result column="unit_money" property="unitMoney" jdbcType="INTEGER" />
-        <result column="before_virtual" property="beforeVirtual" jdbcType="INTEGER" />
-        <result column="cur_virtual" property="curVirtual" jdbcType="INTEGER" />
         <result column="unit_virtual" property="unitVirtual" jdbcType="INTEGER" />
         <result column="type" property="type" jdbcType="INTEGER" />
         <result column="comment" property="comment" jdbcType="VARCHAR" />
@@ -19,7 +15,7 @@
     <sql id="Base_Where">
         <if test="accountLogId != null"> and account_log_id= #{accountLogId}</if>
         <if test="userId != null"> and user_id= #{userId}</if>
-        <if test="orderId != null"> and order_id= #{orderId}</if>
+        <if test="orderNo != null and orderNo != ''"> and order_no= #{orderNo}</if>
         <if test="type != null"> and `type`= #{type}</if>
         <if test="channel != null"> and channel= #{channel}</if>
         <if test="findType != null">
@@ -36,17 +32,16 @@
         </if>
     </sql>
     <sql id="Base_Column_List">
-        account_log_id,user_id ,order_id,before_money,cur_money,unit_money,
-        before_virtual,cur_virtual,unit_virtual,`type`,comment,channel,create_date
+        account_log_id,user_id ,order_no,unit_money,unit_virtual,`type`,comment,channel,create_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select <include refid="Base_Column_List" />
-        from user_account_log where account_log_id = #{accountLogId,jdbcType=BIGINT}
+        from user_account_log where account_log_id = #{id,jdbcType=BIGINT}
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-        delete from user_account_log where account_log_id = #{accountLogId,jdbcType=BIGINT}
+        delete from user_account_log where account_log_id = #{id,jdbcType=BIGINT}
     </delete>
 
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.ucenter.model.UserAccountLog">
@@ -54,12 +49,8 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="accountLogId != null">account_log_id,</if>
             <if test="userId != null">user_id,</if>
-            <if test="orderId != null">order_id,</if>
-            <if test="beforeMoney != null">before_money,</if>
-            <if test="curMoney != null">cur_money,</if>
+            <if test="orderNo != null and orderNo != ''">order_id,</if>
             <if test="unitMoney != null">unit_money,</if>
-            <if test="beforeVirtual != null">before_virtual,</if>
-            <if test="curVirtual != null">cur_virtual,</if>
             <if test="unitVirtual != null">unit_virtual,</if>
             <if test="type != null">type,</if>
             <if test="comment != null and comment !=''">comment,</if>
@@ -73,23 +64,11 @@
             <if test="userId != null">
                 #{userId,jdbcType=BIGINT},
             </if>
-            <if test="orderId != null">
-                #{orderId,jdbcType=BIGINT},
-            </if>
-            <if test="beforeMoney != null">
-                #{beforeMoney,jdbcType=INTEGER},
-            </if>
-            <if test="curMoney != null">
-                #{curMoney,jdbcType=INTEGER},
+            <if test="orderId != null and orderId != ''">
+                #{orderNo,jdbcType=BIGINT},
             </if>
             <if test="unitMoney != null">
                 #{unitMoney,jdbcType=INTEGER},
-            </if>
-            <if test="beforeVirtual != null">
-                #{beforeVirtual,jdbcType=INTEGER},
-            </if>
-            <if test="curVirtual != null">
-                #{curVirtual,jdbcType=INTEGER},
             </if>
             <if test="unitVirtual != null">
                 #{unitVirtual,jdbcType=INTEGER},

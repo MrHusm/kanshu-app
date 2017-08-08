@@ -7,9 +7,14 @@ import java.util.Date;
  * Created by lenovo on 2017/8/6.
  */
 public class AlipayOrder {
-    private Long alipayId;
+    private Long alipayOrderId;
 
     private Long userId;
+
+    /**
+     * 购买的产品ID
+     */
+    private Long productId;
 
     /**
      * 订单号
@@ -36,16 +41,21 @@ public class AlipayOrder {
      */
     private Integer channel;
 
+    /**
+     * 类型 1：支付宝充值 -4：VIP购买
+     */
+    private Integer type;
+
     private Date createDate;
 
     private Date updateDate;
 
-    public Long getAlipayId() {
-        return alipayId;
+    public Long getAlipayOrderId() {
+        return alipayOrderId;
     }
 
-    public void setAlipayId(Long alipayId) {
-        this.alipayId = alipayId;
+    public void setAlipayOrderId(Long alipayOrderId) {
+        this.alipayOrderId = alipayOrderId;
     }
 
     public Long getUserId() {
@@ -110,5 +120,21 @@ public class AlipayOrder {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 }

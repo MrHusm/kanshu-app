@@ -14,14 +14,14 @@
 <#if vips??>
     <ul>
         <#list vips as vip>
-            <li><input type="radio" name="vipItem" value="vip.vipId"/>${vip.days}-${vip.price}-${vip.discountPrice}-${vip.virtualMoney}</li>
+            <li><input type="radio" name="vipItem" value="${vip.vipId}"/>${vip.days}-${vip.price}-${vip.discountPrice}-${vip.virtualMoney}</li>
         </#list>
     </ul>
 </#if>
 <script>
     function alipay(){
         var vipId = $("input[name='vipItem']:checked").val();
-
+        window.location.href = "/alipay/order.go?userId=1&type=-4&productId="+vipId;
     }
 </script>
 </body>

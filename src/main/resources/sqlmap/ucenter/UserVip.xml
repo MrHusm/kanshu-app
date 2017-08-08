@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UserMapper">
+    <resultMap id="BaseResultMap" type="com.kanshu.ucenter.model.User">
+        <id column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="logo" property="logo" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="INTEGER" />
+        <result column="channel" property="channel" jdbcType="INTEGER" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="tel" property="tel" jdbcType="VARCHAR" />
+        <result column="imsi" property="imsi" jdbcType="VARCHAR" />
+        <result column="imei" property="imei" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="userId != null"> and user_id= #{userId}</if>
+        <if test="name != null and name !=''"> and name= #{name}</if>
+        <if test="nickName != null and nickName !=''"> and nick_name= #{nickName}</if>
+        <if test="password != null and password !=''"> and password= #{password}</if>
+        <if test="sex != null"> and sex= #{sex}</if>
+        <if test="channel != null"> and channel= #{channel}</if>
+        <if test="email != null email tel !=''"> and email= #{email}</if>
+        <if test="tel != null and tel !=''"> and tel= #{tel}</if>
+        <if test="imsi != null and imsi !=''"> and `imsi`= #{imsi}</if>
+        <if test="imei != null and imei !=''"> and `imei`= #{imei}</if>
+        <if test="type != null"> and `type`= #{type}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        user_id ,`name`,nick_name,password,logo,sex,channel,email,tel,imsi,imei,type,create_date,update_date
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" />
+        from user where user_id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from user where
+        user_id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.ucenter.model.User">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="name != null and name !=''">`name`,</if>
+            <if test="password != null and password !=''">password,</if>
+            <if test="nickName != null and nickName !=''">nick_name,</if>
+            <if test="logo != null and logo !=''">logo,</if>
+            <if test="sex != null">sex,</if>
+            <if test="channel != null">channel,</if>
+            <if test="email != null and email !=''">email,</if>
+            <if test="tel != null and tel !=''">tel,</if>
+            <if test="imsi != null and imsi !=''">imsi,</if>
+            <if test="imei != null and imei !=''">imei,</if>
+            <if test="type != null">`type`,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="name != null and name !=''">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password !=''">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null and nickName !=''">
+                #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null and logo !=''">
+                #{logo,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null">
+                #{channel,jdbcType=INTEGER},
+            </if>
+            <if test="email != null and email !=''">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null and tel !=''">
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="imsi != null and imsi !=''">
+                #{imsi,jdbcType=VARCHAR},
+            </if>
+            <if test="imei != null and imei !=''">
+                #{imei,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.ucenter.model.User">
+        update user
+        <set>
+            <if test="name != null and name !=''">
+                `name`= #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password !=''">
+                password= #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null and nickName !=''">
+                nick_name= #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null and logo !=''">
+                logo= #{logo,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex= #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null">
+                channel= #{channel,jdbcType=INTEGER},
+            </if>
+            <if test="email != null and email !=''">
+                email= #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null and tel !=''">
+                tel= #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="imsi != null and imsi !=''">
+                imsi= #{imsi,jdbcType=VARCHAR},
+            </if>
+            <if test="imei != null and imei !=''">
+                imei= #{imei,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type= #{type,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                create_date= #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                update_date= #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where
+        user_id = #{userId,jdbcType=BIGINT}
+    </update>
+
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from user where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from user where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from user where 1=1
+        <include refid="Base_Where" />
+        order by create_date desc
+    </select>
+</mapper>

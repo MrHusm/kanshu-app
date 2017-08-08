@@ -16,22 +16,15 @@ public class UserAccountLog {
     private Long userId;
 
     /**
-     * 订单ID
+     * 订单号
      */
-    private Long orderId;
-
-    private Integer beforeMoney;
-
-    private Integer curMoney;
+    private String orderNo;
 
     /**
      * 花费金额
      */
     private Integer unitMoney;
 
-    private Integer beforeVirtual;
-
-    private Integer curVirtual;
 
     /**
      * 花费虚拟币
@@ -73,28 +66,12 @@ public class UserAccountLog {
         this.userId = userId;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public String getOrderNo() {
+        return orderNo;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
-
-    public Integer getBeforeMoney() {
-        return beforeMoney;
-    }
-
-    public void setBeforeMoney(Integer beforeMoney) {
-        this.beforeMoney = beforeMoney;
-    }
-
-    public Integer getCurMoney() {
-        return curMoney;
-    }
-
-    public void setCurMoney(Integer curMoney) {
-        this.curMoney = curMoney;
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
     }
 
     public Integer getUnitMoney() {
@@ -105,21 +82,6 @@ public class UserAccountLog {
         this.unitMoney = unitMoney;
     }
 
-    public Integer getBeforeVirtual() {
-        return beforeVirtual;
-    }
-
-    public void setBeforeVirtual(Integer beforeVirtual) {
-        this.beforeVirtual = beforeVirtual;
-    }
-
-    public Integer getCurVirtual() {
-        return curVirtual;
-    }
-
-    public void setCurVirtual(Integer curVirtual) {
-        this.curVirtual = curVirtual;
-    }
 
     public Integer getUnitVirtual() {
         return unitVirtual;
