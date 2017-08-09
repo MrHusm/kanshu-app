@@ -28,7 +28,7 @@
     </delete>
 
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.ucenter.model.UserVip">
-        insert into user
+        insert into user_vip
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userVipId != null">user_vip_id,</if>
             <if test="userId != null">user_id,</if>

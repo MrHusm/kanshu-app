@@ -49,7 +49,7 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="accountLogId != null">account_log_id,</if>
             <if test="userId != null">user_id,</if>
-            <if test="orderNo != null and orderNo != ''">order_id,</if>
+            <if test="orderNo != null and orderNo != ''">order_no,</if>
             <if test="unitMoney != null">unit_money,</if>
             <if test="unitVirtual != null">unit_virtual,</if>
             <if test="type != null">type,</if>
@@ -64,7 +64,7 @@
             <if test="userId != null">
                 #{userId,jdbcType=BIGINT},
             </if>
-            <if test="orderId != null and orderId != ''">
+            <if test="orderNo != null and orderNo != ''">
                 #{orderNo,jdbcType=BIGINT},
             </if>
             <if test="unitMoney != null">
