@@ -9,6 +9,7 @@
 
 </head>
 <body>
+${userAccount.money}-${userAccount.virtualMoney}
 <input type="button" name="weixin" id="weixin" value="微信充值"/>&nbsp;&nbsp;&nbsp;
 <input type="button" name="alipay" onclick="alipay()" id="alipay" value="支付宝充值"/>
 <#if vips??>

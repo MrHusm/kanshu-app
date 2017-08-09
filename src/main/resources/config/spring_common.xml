@@ -67,38 +67,38 @@
 	</bean>
 	
 	<!-- 配置主库数据源 -->
-	<bean id="business_dataSource" parent="parentDataSource">
+	<bean id="kanshu_dataSource" parent="parentDataSource">
 		<property name="jdbcUrl">
-			<value>${business.jdbc.url}</value>
+			<value>${kanshu.jdbc.url}</value>
 		</property>
 		<property name="user">
-			<value>${business.jdbc.username}</value>
+			<value>${kanshu.jdbc.username}</value>
 		</property>
 		<property name="password">
-			<value>${business.jdbc.password}</value>
+			<value>${kanshu.jdbc.password}</value>
 		</property>
 	</bean>
 
  	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="business_dataSource" />
+		<property name="dataSource" ref="kanshu_dataSource" />
 	</bean>  
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<!-- 配置事物数据库 -->
-	<bean id="business_sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="business_dataSource" />
+	<bean id="kanshu_sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="kanshu_dataSource" />
 		<property name="configLocation" value="classpath:config/sql-map-config.xml" />
 		<property name="mapperLocations" value="classpath*:sqlmap/*/*.xml" />
 	</bean>
 
 	<bean id="master_sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
-		<constructor-arg index="0" ref="business_sqlSessionFactory" />
+		<constructor-arg index="0" ref="kanshu_sqlSessionFactory" />
 	</bean>
 
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="business_dataSource"/>
+        <property name="dataSource" ref="kanshu_dataSource"/>
     </bean>
 
 	<!-- 文件上传配置 -->

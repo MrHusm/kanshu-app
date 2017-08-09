@@ -35,7 +35,7 @@
     </bean>
     <!-- redis主库配置结束 -->
 
-	<!-- redis从库配置开始 -->
+	<!-- redis从库配置开始-->
 	<bean id="slaveRedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="maxActive" value="${slave.redis.pool.maxActive}" />
 		<property name="maxIdle" value="${slave.redis.pool.maxIdle}" />

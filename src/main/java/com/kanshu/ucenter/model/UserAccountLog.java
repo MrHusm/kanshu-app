@@ -1,12 +1,15 @@
 package com.kanshu.ucenter.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author hushengmeng
  * @date 2017/8/1.
  */
-public class UserAccountLog {
+public class UserAccountLog implements Serializable {
+
+    private static final long serialVersionUID = 3384663496721317312L;
 
     private Long accountLogId;
 

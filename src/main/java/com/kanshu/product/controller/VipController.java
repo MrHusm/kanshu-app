@@ -4,6 +4,8 @@ import com.kanshu.base.controller.BaseController;
 import com.kanshu.product.model.Vip;
 import com.kanshu.product.service.IVipService;
 import com.kanshu.ucenter.model.User;
+import com.kanshu.ucenter.model.UserAccount;
+import com.kanshu.ucenter.service.IUserAccountService;
 import com.kanshu.ucenter.service.IUserService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -33,6 +35,9 @@ public class VipController extends BaseController {
     @Resource(name="userService")
     IUserService userService;
 
+    @Resource(name="userAccountService")
+    IUserAccountService userAccountService;
+
     @RequestMapping("index")
     public String index(HttpServletResponse response, HttpServletRequest request,Model model) {
         String userId = request.getParameter("userId");
@@ -44,10 +49,12 @@ public class VipController extends BaseController {
             }
 
             User user = userService.getUserByUserId(Long.parseLong(userId));
+            UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
             if(user != null){
                 List<Vip> vips = this.vipService.findListByParams();
                 model.addAttribute("vips",vips);
                 model.addAttribute("user",user);
+                model.addAttribute("userAccount",userAccount);
             }else{
                 logger.error("VipController_index:根据userId未查到用户");
                 response.sendRedirect("/user/login.go");

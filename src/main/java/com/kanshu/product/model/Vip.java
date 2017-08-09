@@ -1,11 +1,15 @@
 package com.kanshu.product.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by lenovo on 2017/8/7.
  */
-public class Vip {
+public class Vip implements Serializable {
+
+    private static final long serialVersionUID = 8675778179026300782L;
+
     private Long vipId;
 
     /**

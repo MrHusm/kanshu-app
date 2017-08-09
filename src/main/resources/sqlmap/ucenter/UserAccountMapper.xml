@@ -70,7 +70,7 @@
                 money= #{money,jdbcType=INTEGER},
             </if>
             <if test="virtualMoney != null">
-                virtual_money= #{nickName,jdbcType=INTEGER},
+                virtual_money= #{virtualMoney,jdbcType=INTEGER},
             </if>
             <if test="updateDate != null">
                 update_date= #{updateDate,jdbcType=TIMESTAMP},

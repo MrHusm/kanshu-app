@@ -1,11 +1,14 @@
 package com.kanshu.ucenter.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by hushengmeng on 2017/7/4.
  */
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 5758035800481847812L;
+
     private Long userId;
     /**
      * 姓名

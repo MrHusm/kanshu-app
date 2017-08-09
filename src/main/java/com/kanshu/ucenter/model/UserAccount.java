@@ -1,12 +1,15 @@
 package com.kanshu.ucenter.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author hushengmeng
  * @date 2017/8/1.
  */
-public class UserAccount {
+public class UserAccount implements Serializable {
+
+    private static final long serialVersionUID = -5174579865745867846L;
 
     private Long accountId;
 
@@ -18,12 +21,12 @@ public class UserAccount {
     /**
      * 账户金额
      */
-    private Long money;
+    private Integer money;
 
     /**
      * 虚拟币金额
      */
-    private Long virtualMoney;
+    private Integer virtualMoney;
 
     /**
      * 创建时间
@@ -51,19 +54,19 @@ public class UserAccount {
         this.userId = userId;
     }
 
-    public Long getMoney() {
+    public Integer getMoney() {
         return money;
     }
 
-    public void setMoney(Long money) {
+    public void setMoney(Integer money) {
         this.money = money;
     }
 
-    public Long getVirtualMoney() {
+    public Integer getVirtualMoney() {
         return virtualMoney;
     }
 
-    public void setVirtualMoney(Long virtualMoney) {
+    public void setVirtualMoney(Integer virtualMoney) {
         this.virtualMoney = virtualMoney;
     }
 
