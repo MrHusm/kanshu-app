@@ -14,6 +14,7 @@ import com.kanshu.base.utils.ResultSender;
 import com.kanshu.pay.config.AlipayConfig;
 import com.kanshu.pay.model.AlipayOrder;
 import com.kanshu.pay.model.AlipayResponse;
+import com.kanshu.pay.model.RechargeItem;
 import com.kanshu.pay.service.IAlipayOrderService;
 import com.kanshu.pay.service.IAlipayResponseService;
 import com.kanshu.pay.service.IRechargeItemService;
