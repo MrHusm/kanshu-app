@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RechargeItemMapper">
+    <resultMap id="BaseResultMap" type="com.kanshu.pay.model.RechargeItem">
+        <id column="recharge_item_id" property="rechargeItemId" jdbcType="BIGINT" />
+        <result column="price" property="price" jdbcType="NUMERIC" />
+        <result column="money" property="money" jdbcType="INTEGER" />
+        <result column="virtual" property="virtual" jdbcType="INTEGER" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="rechargeItemId != null"> and recharge_item_id= #{rechargeItemId}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        recharge_item_id,price,money,virtual,create_date,update_date
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" />
+        from recharge_item where recharge_item_id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from recharge_item where recharge_item_id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.pay.model.RechargeItem">
+        insert into recharge_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rechargeItemId != null">recharge_item_id,</if>
+            <if test="price != null">price,</if>
+            <if test="money != null">money,</if>
+            <if test="virtual != null">virtual,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rechargeItemId != null">
+                #{rechargeItemId,jdbcType=BIGINT},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=NUMERIC},
+            </if>
+            <if test="money != null">
+                #{money,jdbcType=INTEGER},
+            </if>
+            <if test="virtual != null">
+                #{virtual,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from recharge_item where 1=1
+        <include refid="Base_Where" /> order by money asc
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from recharge_item where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from recharge_item where 1=1
+        <include refid="Base_Where" />
+        order by create_date desc
+    </select>
+</mapper>
