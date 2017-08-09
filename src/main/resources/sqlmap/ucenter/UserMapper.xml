@@ -24,7 +24,7 @@
         <if test="password != null and password !=''"> and password= #{password}</if>
         <if test="sex != null"> and sex= #{sex}</if>
         <if test="channel != null"> and channel= #{channel}</if>
-        <if test="email != null email tel !=''"> and email= #{email}</if>
+        <if test="email != null and email !=''"> and email= #{email}</if>
         <if test="tel != null and tel !=''"> and tel= #{tel}</if>
         <if test="imsi != null and imsi !=''"> and `imsi`= #{imsi}</if>
         <if test="imei != null and imei !=''"> and `imei`= #{imei}</if>
@@ -44,7 +44,7 @@
         user_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.ucenter.model.User">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="userId" parameterType="com.kanshu.ucenter.model.User">
         insert into user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">user_id,</if>

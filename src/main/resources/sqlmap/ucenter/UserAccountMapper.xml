@@ -28,7 +28,7 @@
         delete from user_account where account_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.ucenter.model.UserAccount">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="accountId" parameterType="com.kanshu.ucenter.model.UserAccount">
         insert into user_account
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="accountId != null">account_id,</if>

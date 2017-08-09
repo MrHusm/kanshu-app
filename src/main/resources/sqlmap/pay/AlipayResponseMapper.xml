@@ -32,7 +32,7 @@
         alipay_response_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.kanshu.pay.model.AlipayOrder">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="alipayResponseId" parameterType="com.kanshu.pay.model.AlipayOrder">
         insert into alipay_response
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="alipayResponseId != null">alipay_response_id,</if>

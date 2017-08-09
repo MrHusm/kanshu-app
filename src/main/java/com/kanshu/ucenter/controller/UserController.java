@@ -8,6 +8,7 @@ import com.kanshu.base.utils.PageFinder;
 import com.kanshu.base.utils.Query;
 import com.kanshu.base.utils.ResultSender;
 import com.kanshu.ucenter.model.User;
+import com.kanshu.ucenter.model.UserAccount;
 import com.kanshu.ucenter.model.UserAccountLog;
 import com.kanshu.ucenter.model.UserUuid;
 import com.kanshu.ucenter.service.IUserAccountLogService;
@@ -89,10 +90,11 @@ public class UserController extends BaseController {
                 user = userService.findUniqueByParams("imei",imei.toLowerCase());
             }
             if(StringUtils.isNotBlank(imsi) && user == null){
-                user = userService.findUniqueByParams("imei",imei.toLowerCase());
+                user = userService.findUniqueByParams("imsi",imsi.toLowerCase());
             }
             if(user == null){
                 UserUuid userUuid = new UserUuid();
+                userUuid.setCreateDate(new Date());
                 userUuidService.save(userUuid);
                 user = new User();
                 user.setName("v"+userUuid.getId());
@@ -111,12 +113,20 @@ public class UserController extends BaseController {
                 user.setCreateDate(new Date());
                 user.setUpdateDate(new Date());
                 userService.save(user);
+                //保存账号相关信息
+                UserAccount userAccount = new UserAccount();
+                userAccount.setUserId(user.getUserId());
+                userAccount.setMoney(0);
+                userAccount.setVirtualMoney(0);
+                userAccount.setCreateDate(new Date());
+                userAccount.setUpdateDate(new Date());
+                userAccountService.save(userAccount);
             }
             sender.put("user",user);
             sender.send(response);
         }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
-            logger.error("系统错误："+ request.getRequestURL());
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
     }
@@ -126,15 +136,15 @@ public class UserController extends BaseController {
      * @param response
      * @param request
      */
-    @RequestMapping("findUniqueByCondition")
-    public void findUniqueByCondition(HttpServletResponse response,HttpServletRequest request) {
+    @RequestMapping("findUserByCondition")
+    public void findUserByCondition(HttpServletResponse response,HttpServletRequest request) {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String userId = request.getParameter("userId");
         String nickName = request.getParameter("nickName");
 
         if(StringUtils.isBlank(userId) && StringUtils.isBlank(nickName)){
-            logger.error("UserController_findUniqueByCondition:userId和nickName为空");
+            logger.error("UserController_findUserByCondition:userId和nickName为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
@@ -148,18 +158,48 @@ public class UserController extends BaseController {
                 user = userService.findUniqueByParams("nickName",nickName);
             }
             if(user != null){
+                UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
                 sender.put("user",user);
+                sender.put("userAccount",userAccount);
                 sender.send(response);
             }else{
                 sender.fail(ErrorCodeEnum.ERROR_CODE_10007.getErrorCode(),
                         ErrorCodeEnum.ERROR_CODE_10007.getErrorMessage(), response);
             }
         }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
-            logger.error("系统错误："+ request.getRequestURL());
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
     }
+
+    /**
+     * 修改用户昵称
+     * @param response
+     * @param request
+     * @param model
+     * @return
+     */
+    public String toUpdateNickName(HttpServletResponse response,HttpServletRequest request,Model model){
+        //入参
+        String userId = request.getParameter("userId");
+        try{
+            if(StringUtils.isBlank(userId)){
+                logger.error("UserController_toUpdateNickName:userId为空");
+                response.sendRedirect("/user/toLogin.go");
+                return null;
+            }
+            User user = this.userService.getUserByUserId(Long.parseLong(userId));
+            model.addAttribute("user",user);
+            return "/ucenter/toUpdateNickName";
+        }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+request.getQueryString());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
     /**
      * 修改用户昵称nickName
@@ -188,8 +228,8 @@ public class UserController extends BaseController {
             sender.put("user", user);
             sender.send(response);
         }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+request.getQueryString());
             e.printStackTrace();
-            logger.error("系统错误："+ request.getRequestURL());
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
     }
@@ -238,8 +278,8 @@ public class UserController extends BaseController {
             }
 
         }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+request.getQueryString());
             e.printStackTrace();
-            logger.error("系统错误："+ request.getRequestURL());
             return "error";
         }
         //1：查询收入  2：查询书籍消费  3：查询其他消费（例如:购买VIP） 4:查询所有消费
