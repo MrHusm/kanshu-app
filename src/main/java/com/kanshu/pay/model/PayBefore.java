@@ -1,11 +1,15 @@
 package com.kanshu.pay.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by lenovo on 2017/8/6.
  */
-public class PayBefore {
+public class PayBefore implements Serializable {
+
+    private static final long serialVersionUID = -367764852964831963L;
+
     private Long id;
 
     private Long userId;
