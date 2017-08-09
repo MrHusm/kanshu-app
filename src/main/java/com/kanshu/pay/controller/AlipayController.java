@@ -16,11 +16,14 @@ import com.kanshu.pay.model.AlipayOrder;
 import com.kanshu.pay.model.AlipayResponse;
 import com.kanshu.pay.service.IAlipayOrderService;
 import com.kanshu.pay.service.IAlipayResponseService;
+import com.kanshu.pay.service.IRechargeItemService;
 import com.kanshu.product.model.Vip;
 import com.kanshu.product.service.IVipService;
+import com.kanshu.ucenter.model.UserAccount;
 import com.kanshu.ucenter.model.UserAccountLog;
 import com.kanshu.ucenter.model.UserVip;
 import com.kanshu.ucenter.service.IUserAccountLogService;
+import com.kanshu.ucenter.service.IUserAccountService;
 import com.kanshu.ucenter.service.IUserService;
 import com.kanshu.ucenter.service.IUserVipService;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +54,9 @@ public class AlipayController extends BaseController {
 	@Resource(name="userService")
 	IUserService userService;
 
+	@Resource(name="userAccountService")
+	IUserAccountService userAccountService;
+
 	@Resource(name="userAccountLogService")
 	IUserAccountLogService userAccountLogService;
 
@@ -62,6 +68,9 @@ public class AlipayController extends BaseController {
 
 	@Resource(name="alipayResponseService")
 	IAlipayResponseService alipayResponseService;
+
+	@Resource(name="rechargeItemService")
+	IRechargeItemService rechargeItemService;
 
 	/**
 	 * 支付宝充值首页
@@ -100,13 +109,19 @@ public class AlipayController extends BaseController {
 					ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
 			return;
 		}
+		if(StringUtils.isBlank(type)){
+			logger.error("AlipayController_order：type为空");
+			sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+					ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+			return;
+		}
 		try{
 			AlipayOrder order = new AlipayOrder();
 			order.setChannel(StringUtils.isBlank(channel) ? null : Integer.parseInt(channel));
 			order.setUserId(Long.parseLong(userId));
 			order.setProductId(Long.parseLong(productId));
-			order.setType(StringUtils.isBlank(type) ? 1 : Integer.parseInt(type));
-			if("-4".equals(type)){
+			order.setType(Integer.parseInt(type));
+			if(order.getType() == Constants.CONSUME_TYPE_S4){
 				Vip vip = this.vipService.get(Long.parseLong(productId));
 				order.setWIDsubject("VIP"+vip.getDays()+"天");
 				order.setWIDbody("VIP"+vip.getDays()+"天");
@@ -115,6 +130,11 @@ public class AlipayController extends BaseController {
 				}else{
 					order.setWIDtotalAmount(new Double(vip.getDiscountPrice()));
 				}
+			}else if(order.getType() == Constants.CONSUME_TYPE_1){
+				RechargeItem rechargeItem = rechargeItemService.get(Long.parseLong(productId));
+				order.setWIDsubject("充值"+rechargeItem.getMoney()+"钻");
+				order.setWIDbody("充值"+rechargeItem.getMoney()+"钻赠送"+rechargeItem.getVirtual()+"钻");
+				order.setWIDtotalAmount(rechargeItem.getPrice());
 			}
 			order.setWIDoutTradeNo(Long.toHexString(System.currentTimeMillis()));
 			order.setCreateDate(new Date());
@@ -228,12 +248,22 @@ public class AlipayController extends BaseController {
 					if(alipayResponse.getStatus() == null || alipayResponse.getStatus() != 1){
 						//购买业务
 						AlipayOrder order = this.alipayOrderService.findUniqueByParams("WIDoutTradeNo",out_trade_no);
-						Vip vip = this.vipService.get(order.getProductId());
+						//消费日志
+						UserAccountLog accountLog = new UserAccountLog();
+						accountLog.setUserId(order.getUserId());
+						accountLog.setChannel(order.getChannel());
+						accountLog.setOrderNo(out_trade_no);
+						accountLog.setType(order.getType());
+						accountLog.setCreateDate(new Date());
 						if(order.getType() == Constants.CONSUME_TYPE_S4){
+							Vip vip = this.vipService.get(order.getProductId());
+							accountLog.setUnitMoney((int)(order.getWIDtotalAmount()*100));
+							accountLog.setUnitVirtual(0);
 							//vip购买
 							//保存用户vip数据
 							UserVip userVip = this.userVipService.findUniqueByParams("userId",order.getUserId());
 							if(userVip == null){
+								userVip = new UserVip();
 								userVip.setChannel(order.getChannel());
 								userVip.setUserId(order.getUserId());
 								Calendar cal = Calendar.getInstance();
@@ -257,22 +287,23 @@ public class AlipayController extends BaseController {
 								userVip.setUpdateDate(new Date());
 								this.userVipService.update(userVip);
 							}
-						}else{
+						}else if(order.getType() == Constants.CONSUME_TYPE_1){
 							//充值
-							//TODO
+							RechargeItem rechargeItem = this.rechargeItemService.get(order.getProductId());
+							//用户账户充值
+							UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",order.getUserId());
+							userAccount.setMoney(userAccount.getMoney() + rechargeItem.getMoney());
+							if(rechargeItem.getVirtual() != null){
+								userAccount.setVirtualMoney(userAccount.getVirtualMoney() + rechargeItem.getVirtual());
+							}
+							userAccount.setUpdateDate(new Date());
+							this.userAccountService.update(userAccount);
 
+							accountLog.setUnitMoney(rechargeItem.getMoney());
+							accountLog.setUnitVirtual(rechargeItem.getVirtual());
 						}
 						//保存消费日志表
-						UserAccountLog accountLog = new UserAccountLog();
-						accountLog.setUserId(order.getUserId());
-						accountLog.setChannel(order.getChannel());
-						accountLog.setOrderNo(out_trade_no);
-						accountLog.setType(order.getType());
-						accountLog.setUnitMoney((int)(order.getWIDtotalAmount()*100));
-						accountLog.setUnitVirtual(0);
-						accountLog.setCreateDate(new Date());
 						userAccountLogService.save(accountLog);
-
 						alipayResponse.setStatus(1);
 					}
 				}else{
@@ -328,7 +359,7 @@ public class AlipayController extends BaseController {
 				valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
 				params.put(name, valueStr);
 			}
-			logger.info("notifyUrl_params:"+JSON.toJSONString(params));
+			logger.info("returnUrl_params:"+JSON.toJSONString(params));
 			//获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以下仅供参考)//
 			//商户订单号
 			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"),"UTF-8");
@@ -349,8 +380,8 @@ public class AlipayController extends BaseController {
 				AlipayOrder order = this.alipayOrderService.findUniqueByParams("WIDoutTradeNo",out_trade_no);
 				if(order.getType() == Constants.CONSUME_TYPE_S4){
 					response.sendRedirect("/vip/index.go?userId="+order.getUserId());
-				}else{
-					//TODO
+				}else if(order.getType() == Constants.CONSUME_TYPE_1){
+					response.sendRedirect("/pay/index.go?userId="+order.getUserId());
 				}
 				return null;
 

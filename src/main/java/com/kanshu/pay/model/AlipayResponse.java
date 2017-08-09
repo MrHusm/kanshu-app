@@ -1,11 +1,15 @@
 package com.kanshu.pay.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by lenovo on 2017/8/6.
  */
-public class AlipayResponse {
+public class AlipayResponse implements Serializable {
+
+    private static final long serialVersionUID = 2336759349824938498L;
+
     private Long alipayResponseId;
 
     /**
