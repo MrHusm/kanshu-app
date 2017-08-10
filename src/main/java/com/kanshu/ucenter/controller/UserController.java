@@ -158,7 +158,7 @@ public class UserController extends BaseController {
                 user = userService.findUniqueByParams("nickName",nickName);
             }
             if(user != null){
-                UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
+                UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",user.getUserId());
                 sender.put("user",user);
                 sender.put("userAccount",userAccount);
                 sender.send(response);
@@ -167,7 +167,7 @@ public class UserController extends BaseController {
                         ErrorCodeEnum.ERROR_CODE_10007.getErrorMessage(), response);
             }
         }catch (Exception e){
-            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
@@ -180,6 +180,7 @@ public class UserController extends BaseController {
      * @param model
      * @return
      */
+    @RequestMapping("toUpdateNickName")
     public String toUpdateNickName(HttpServletResponse response,HttpServletRequest request,Model model){
         //入参
         String userId = request.getParameter("userId");
@@ -228,7 +229,7 @@ public class UserController extends BaseController {
             sender.put("user", user);
             sender.send(response);
         }catch (Exception e){
-            logger.error("系统错误："+ request.getRequestURL()+request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
@@ -278,7 +279,7 @@ public class UserController extends BaseController {
             }
 
         }catch (Exception e){
-            logger.error("系统错误："+ request.getRequestURL()+request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
             e.printStackTrace();
             return "error";
         }

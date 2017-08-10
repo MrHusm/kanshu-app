@@ -9,22 +9,43 @@
 
 </head>
 <body>
-<#if userAccount??>
-${userAccount.money}-${userAccount.virtualMoney}
-</#if>
-<input type="button" name="weixin" id="weixin" value="微信充值"/>&nbsp;&nbsp;&nbsp;
-<input type="button" name="alipay" onclick="alipay()" id="alipay" value="支付宝充值"/>
-<#if rechargeItems??>
-<ul>
-    <#list rechargeItems as rechargeItem>
-        <li><input type="radio" name="rechargeItem" value="${rechargeItem.rechargeItemId}"/>${rechargeItem.price}-${rechargeItem.money}-${rechargeItem.virtual}</li>
-    </#list>
-</ul>
-</#if>
+<form id="form" action="/user/updateNickNameByUid.go" method="post">
+    <input type="hidden" name="userId" id="userId" value="${user.userId}"/>
+    <input type="hidden" name="oldName" id="oldName" value="${user.nickName}"/>
+
+    <input type="text" name="nickName" id="nickName" value="${user.nickName}"/>
+    <span id="errorTxt"></span>
+    <input type="button" value="修改" onclick="update()">
+</form>
 <script>
-    function alipay(){
-        var rechargeItemId = $("input[name='rechargeItem']:checked").val();
-        window.location.href = "/alipay/order.go?userId=1&type=1&productId="+rechargeItemId;
+    function update(){
+        var nickName = $("#nickName").val();
+        var oldName = $("#oldName").val();
+        var userId = $("#userId").val();
+        if(nickName == null || nickName == ""){
+            alert("昵称不能为空");
+        }
+        if(nickName.length > 8){
+            alert("昵称不能超过8个字");
+        }
+        $.ajax({
+            type:"POST",
+            url:"/user/findUserByCondition.go",
+            data: {"nickName":nickName},
+            dataType:"json",
+            success: function(msg) {
+                if(msg.status.code == 10007){
+                    $("#form").submit();
+                }else{
+                    if(msg.data.user.nickName == oldName){
+                        $("#form").submit();
+                    }else{
+                        alert("“昵称不能重复，再起一个吧");
+                    }
+                }
+
+            }
+        });
     }
 </script>
 </body>
