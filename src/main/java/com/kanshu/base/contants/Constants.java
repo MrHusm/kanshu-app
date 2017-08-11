@@ -2,6 +2,7 @@ package com.kanshu.base.contants;
 
 import java.util.regex.Pattern;
 
+
 /**
  * @author hushengmeng
  * @date 2017/7/5.
