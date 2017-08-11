@@ -42,6 +42,7 @@ public class UserController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    
     @Resource(name="userService")
     IUserService userService;
 
