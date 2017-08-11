@@ -247,6 +247,8 @@ public class UserController extends BaseController {
         String page = request.getParameter("page");
         //1：查询收入  2：查询书籍消费  3：查询其他消费（例如:购买VIP） 4:查询所有消费
         String type = request.getParameter("type");
+        String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+        model.addAttribute("syn",syn);
 
         if(StringUtils.isBlank(userId)){
             logger.error("UserController_findUserRechargeLog：userId为空");
