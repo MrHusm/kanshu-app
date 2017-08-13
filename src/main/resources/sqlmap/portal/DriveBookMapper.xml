@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DriveBookMapper" >
+  <resultMap id="BaseResultMap" type="com.kanshu.portal.model.DriveBook" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="book_id" property="bookId" jdbcType="BIGINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="SMALLINT" />
+    <result column="score" property="score" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="withBookInfoMap" type="com.kanshu.portal.model.DriveBook"  extends="BaseResultMap" >
+   		<collection property="book" ofType="com.kanshu.product.model.Book">
+		     <id column="book_id" property="bookId" jdbcType="BIGINT" />
+		    <result column="title" property="title" jdbcType="VARCHAR" />
+		    <result column="img" property="img" jdbcType="VARCHAR" />
+		    <result column="author" property="author" jdbcType="VARCHAR" />
+		    <result column="author_penname" property="authorPenname" jdbcType="VARCHAR" />
+		    <result column="desc" property="desc" jdbcType="VARCHAR" />
+		    <result column="shelf_status" property="shelfStatus" jdbcType="SMALLINT" />
+		    <result column="category_sec" property="categorySec" jdbcType="VARCHAR" />
+		    <result column="category_thr" property="categoryThr" jdbcType="VARCHAR" />
+		    <result column="word_count" property="wordCount" jdbcType="INTEGER" />
+		    <result column="keyword" property="keyword" jdbcType="VARCHAR" />
+		    <result column="is_support_full_buy" property="isSupportFullBuy" jdbcType="SMALLINT" />
+		    <result column="is_full" property="isFull" jdbcType="SMALLINT" />
+		    <result column="price" property="price" jdbcType="INTEGER" />
+		    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+		    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+       </collection>
+  </resultMap>
+  
+    <sql id="Base_Where">
+        <if test="id != null"> and d.id= #{id}</if>
+        <if test="bookId != null and bookId !=''"> and d.book_id= #{bookId}</if>
+        <if test="createDate != null and createDate !=''"> and d.type= #{createDate}</if>
+        <if test="type != null and type !=''"> and d.type= #{type}</if>
+        <if test="score != null and score !=''"> and d.score= #{score}</if>
+   </sql>
+
+  <sql id="Base_Column_List" >
+    id, book_id, create_date, type, score
+  </sql>
+  
+   <sql id="Base_Column_List2" >
+   d.id, d.create_date, d.type, d.score,d.book_id,
+   b.title, b.img, b.author, b.author_penname, b.desc, b.shelf_status, b.category_sec, b.category_thr, 
+    b.word_count, b.keyword, b.is_support_full_buy, b.is_full, b.price, b.create_date, b.update_date 
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from drive_book
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from drive_book
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.kanshu.portal.model.DriveBook">
+    insert into drive_book
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bookId != null" >
+        book_id,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="score != null" >
+        score,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bookId != null" >
+        #{bookId,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=SMALLINT},
+      </if>
+      <if test="score != null" >
+        #{score,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.portal.model.DriveBook" >
+    update drive_book
+    <set >
+      <if test="bookId != null" >
+        book_id = #{bookId,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=SMALLINT},
+      </if>
+      <if test="score != null" >
+        score = #{score,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kanshu.portal.model.DriveBook" >
+    update drive_book
+    set book_id = #{bookId,jdbcType=BIGINT},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=SMALLINT},
+      score = #{score,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+   <select id="getAll" resultMap="withBookInfoMap" parameterType="map">
+        select
+        <include refid="Base_Column_List2" />
+         from drive_book d
+		LEFT JOIN book b 
+		ON d.book_id = b.book_id where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+          select count(1)  from drive_book d
+		LEFT JOIN book b 
+		ON d.book_id = b.book_id where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="withBookInfoMap" parameterType="map">
+        select
+        <include refid="Base_Column_List2" />
+          from  drive_book d
+		LEFT JOIN book b 
+		ON d.book_id = b.book_id where 1=1
+        <include refid="Base_Where" />
+        order by d.score asc
+    </select>
+  
+</mapper>

@@ -1,4 +1,3 @@
-<#if syn=='0'>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -25,42 +24,24 @@
                     </h2>
                 </div>
                 <ul class="am-list pageLoad">
-</#if>
                     <!--缩略图在标题左边-->
                     <#if pageFinder.data??>
-                        <#list pageFinder.data as historyToday>
-                            <#if historyToday.imgs?? && (historyToday.imgs?size> 0)>
-                                <li onclick="showDetail('${historyToday.id?c}')" class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left am_list_li">
-                                    <#list historyToday.imgs as img>
-                                        <#if img_index == 0>
-                                            <div class="am-u-sm-3 am-list-thumb am_list_thumb">
-                                                <img src="http://120.25.125.138:8082/media/${img.fileName}" class="am_news_list_img" alt="${img.title}"/>
-                                            </div>
-                                        </#if>
-                                    </#list>
-                                    <div class=" am-u-sm-9 am-list-main am_list_main">
-                                        <h3 class="am-list-item-hd am_list_title">
-                                            ${historyToday.title}
-                                        </h3>
-                                        <div class="am-list-item-text am_list_item_text ">${historyToday.content}</div>
-                                    </div>
-                                </li>
-                            <#else>
-                                <li onclick="showDetail('${historyToday.id?c}')" class="am-g am-list-item-desced am_list_li">
+                        <#list pageFinder.data as driveBook>
+                            <li class="am-g am-list-item-desced am_list_li">
                                     <div class=" am-list-main">
                                         <h3 class="am-list-item-hd am_list_title am_list_title_s">
-                                            ${historyToday.title}
+                                            ${driveBook.book.title}
                                         </h3>
-                                        <div class="am-list-item-text am_list_item_text">${historyToday.content}</div>
+                                        <div class="am-list-item-text am_list_item_text">${driveBook.book.desc}</div>
+                                        <div class="am-list-item-text am_list_item_text">${driveBook.book.categorySec}</div>
+                                         <div class="am-list-item-text am_list_item_text">${driveBook.book.categoryThr}</div>
                                     </div>
-                                </li>
-                            </#if>
+                              </li>
                         </#list>
                         <#if syn=='0'>
                             <p class="v3_btmload" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/portalIndex.go?&page=${pageFinder.pageNo+1}&syn=1" style="display:none;"></p>
                         </#if>
                     </#if>
-<#if syn=='0'>
                 </ul>
             </div>
         </div>
@@ -87,4 +68,3 @@
 </script>
 </body>
 </html>
-</#if>

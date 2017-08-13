@@ -1,13 +1,10 @@
 package com.kanshu.portal.model;
 
-import java.io.Serializable;
 import java.util.Date;
 
-/**
- * Created by lenovo on 2017/8/12.
- */
-public class DriveBook implements Serializable{
+import com.kanshu.product.model.Book;
 
+public class DriveBook {
     private Long id;
 
     /**
@@ -16,18 +13,32 @@ public class DriveBook implements Serializable{
     private Long bookId;
 
     /**
+     * 创建时间
+     */
+    private Date createDate;
+
+    /**
      * 类型 1：限免榜 2：搜索榜 3：畅销榜
      */
-    private Integer type;
+    private Short type;
 
     /**
      * 排序分数
      */
     private Integer score;
+    
+    
+    private Book book;
 
-    private Date createDate;
+    public Book getBook() {
+		return book;
+	}
 
-    public Long getId() {
+	public void setBook(Book book) {
+		this.book = book;
+	}
+
+	public Long getId() {
         return id;
     }
 
@@ -43,11 +54,19 @@ public class DriveBook implements Serializable{
         this.bookId = bookId;
     }
 
-    public Integer getType() {
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Short getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(Short type) {
         this.type = type;
     }
 
@@ -57,13 +76,5 @@ public class DriveBook implements Serializable{
 
     public void setScore(Integer score) {
         this.score = score;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
     }
 }
