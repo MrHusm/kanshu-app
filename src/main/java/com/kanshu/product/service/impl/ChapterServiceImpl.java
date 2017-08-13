@@ -53,11 +53,11 @@ public class ChapterServiceImpl extends BaseServiceImpl<Chapter, Long> implement
     }
 
     @Override
-    public Chapter getChapterWithContentById(Long chapterId) {
-        String key = RedisKeyConstants.CACHE_CHAPTER_CONTENT_KEY + chapterId;
+    public Chapter getChapterById(Long chapterId,Integer type) {
+        String key = String.format(RedisKeyConstants.CACHE_CHAPTER_TYPE_KEY,chapterId,type);
         Chapter chapter = this.slaveRedisTemplate.opsForValue().get(key);
         if(chapter == null){
-            chapter = this.getBaseDao().selectOne("getChapterWithContent",chapter);
+            chapter = this.findUniqueByParams("chapterId",chapterId,"type",type);
             if(chapter != null){
                 this.masterRedisTemplate.opsForValue().set(key,chapter,1, TimeUnit.HOURS);
             }

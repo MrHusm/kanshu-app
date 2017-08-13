@@ -19,5 +19,5 @@ public class RedisKeyConstants {
     public final static String CACHE_DRIVE_BOOK_ONE_KEY = "drive_book_type_%s_bid_%s";
 
     //章节+内容key
-    public final static String CACHE_CHAPTER_CONTENT_KEY = "chapter_content_cid_";
+    public final static String CACHE_CHAPTER_TYPE_KEY = "chapter_content_cid_%s_type_%s";
 }

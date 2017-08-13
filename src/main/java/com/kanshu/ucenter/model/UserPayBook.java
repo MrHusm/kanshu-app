@@ -41,7 +41,7 @@ public class UserPayBook implements Serializable {
     /**
      * 开始章节序号
      */
-    private Long startChapterIdx;
+    private Integer startChapterIdx;
 
     /**
      * 结束章节id
@@ -51,7 +51,7 @@ public class UserPayBook implements Serializable {
     /**
      * 结束章节序号
      */
-    private Long endChapterIdx;
+    private Integer endChapterIdx;
 
     private Date createDate;
 
@@ -105,11 +105,11 @@ public class UserPayBook implements Serializable {
         this.startChapterId = startChapterId;
     }
 
-    public Long getStartChapterIdx() {
+    public Integer getStartChapterIdx() {
         return startChapterIdx;
     }
 
-    public void setStartChapterIdx(Long startChapterIdx) {
+    public void setStartChapterIdx(Integer startChapterIdx) {
         this.startChapterIdx = startChapterIdx;
     }
 
@@ -121,11 +121,11 @@ public class UserPayBook implements Serializable {
         this.endChapterId = endChapterId;
     }
 
-    public Long getEndChapterIdx() {
+    public Integer getEndChapterIdx() {
         return endChapterIdx;
     }
 
-    public void setEndChapterIdx(Long endChapterIdx) {
+    public void setEndChapterIdx(Integer endChapterIdx) {
         this.endChapterIdx = endChapterIdx;
     }
 

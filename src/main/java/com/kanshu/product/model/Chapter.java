@@ -20,6 +20,11 @@ public class Chapter implements Serializable {
     private Long bookId;
 
     /**
+     * 章节价格
+     */
+    private Integer price;
+
+    /**
      * 排序
      */
     private Integer idx;
@@ -90,5 +95,13 @@ public class Chapter implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 }

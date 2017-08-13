@@ -17,9 +17,11 @@ public interface IChapterService extends IBaseService<Chapter,Long> {
     public List<Chapter> getChaptersByBookId(Long bookId);
 
     /**
-     * 获取包含章节内容的章节信息
+     * 获取章节信息
      * @param chapterId
+     * @param type 1:带章节内容 其他：不带章节内容
      * @return
      */
-    public Chapter getChapterWithContentById(Long chapterId);
+    public Chapter getChapterById(Long chapterId,Integer type);
+
 }

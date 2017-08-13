@@ -18,6 +18,8 @@
         <if test="chapterId != null"> and chapter_id= #{chapterId}</if>
         <if test="bookId != null"> and book_id= #{bookId}</if>
         <if test="volumeId != null"> and volume_id= #{volumeId}</if>
+        <if test="startIdx"><![CDATA[ and idx >= #{startIdx} ]]></if>
+        <if test="endIdx"><![CDATA[ and idx <= #{endIdx} ]]></if>
     </sql>
     <sql id="Base_Column_List">
         chapter_id,volume_id,book_id,name,idx,price,word_count,status,create_date,update_date
@@ -70,6 +72,9 @@
     <select id="getAll" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List" />
+        <if test="type == 1">
+            ,content
+        </if>
         from chapter where 1=1
         <include refid="Base_Where" />
         order by idx
