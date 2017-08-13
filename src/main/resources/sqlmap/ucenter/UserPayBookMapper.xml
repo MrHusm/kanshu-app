@@ -18,7 +18,7 @@
         <if test="userId != null"> and user_id= #{userId}</if>
     </sql>
     <sql id="Base_Column_List">
-        id ,`user_id`,order_no,book_id,type,start_chapter_id,start_chapter_idx,end_chapter_id,end_chapter_idx,end_date,create_date,update_date
+        id ,`user_id`,order_no,book_id,type,start_chapter_id,start_chapter_idx,end_chapter_id,end_chapter_idx,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -35,23 +35,43 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="userId != null">user_id,</if>
-            <if test="channel != null">channel,</if>
-            <if test="endDate != null">end_date,</if>
+            <if test="orderNo != null">order_no,</if>
+            <if test="bookId != null">book_id,</if>
+            <if test="type != null">type,</if>
+            <if test="startChapterId != null">start_chapter_id,</if>
+            <if test="startChapterIdx != null">start_chapter_idx,</if>
+            <if test="endChapterId != null">end_chapter_id,</if>
+            <if test="endChapterIdx != null">end_chapter_idx,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="userVipId != null">
-                #{userVipId,jdbcType=BIGINT},
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
             </if>
             <if test="userId != null">
                 #{userId,jdbcType=BIGINT},
             </if>
-            <if test="channel != null">
-                #{channel,jdbcType=INTEGER},
+            <if test="orderNo != null">
+                #{orderNo,jdbcType=VARCHAR},
             </if>
-            <if test="endDate != null">
-                #{endDate,jdbcType=TIMESTAMP},
+            <if test="bookId != null">
+                #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="startChapterId != null">
+                #{startChapterId,jdbcType=BIGINT},
+            </if>
+            <if test="startChapterIdx != null">
+                #{startChapterIdx,jdbcType=INTEGER},
+            </if>
+            <if test="endChapterId != null">
+                #{endChapterId,jdbcType=BIGINT},
+            </if>
+            <if test="endChapterIdx != null">
+                #{endChapterIdx,jdbcType=INTEGER},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
@@ -62,17 +82,32 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.ucenter.model.UserVip">
-        update user_vip
+    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.ucenter.model.UserPayBook">
+        update user_pay_book
         <set>
             <if test="userId != null">
                 user_id = #{userId,jdbcType=BIGINT},
             </if>
-            <if test="channel != null">
-                channel = #{channel,jdbcType=INTEGER},
+            <if test="orderNo != null">
+                order_no = #{orderNo,jdbcType=VARCHAR},
             </if>
-            <if test="endDate != null">
-                end_date = #{endDate,jdbcType=TIMESTAMP},
+            <if test="bookId != null">
+                book_id = #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="startChapterId != null">
+                start_chapter_id = #{startChapterId,jdbcType=BIGINT},
+            </if>
+            <if test="startChapterIdx != null">
+                start_chapter_idx = #{startChapterIdx,jdbcType=INTEGER},
+            </if>
+            <if test="endChapterId != null">
+                end_chapter_id = #{endChapterId,jdbcType=BIGINT},
+            </if>
+            <if test="endChapterIdx != null">
+                end_chapter_idx = #{endChapterIdx,jdbcType=INTEGER},
             </if>
             <if test="createDate != null">
                 create_date = #{createDate,jdbcType=TIMESTAMP},
@@ -81,25 +116,23 @@
                 update_date = #{updateDate,jdbcType=TIMESTAMP},
             </if>
         </set>
-        where
-        user_vip_id = #{userVipId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
     </update>
 
 
     <select id="getAll" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List" />
-        from user_vip where 1=1
+        from user_pay_book where 1=1
         <include refid="Base_Where" />
     </select>
     <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
-        select count(1) from user_vip where 1=1
+        select count(1) from user_pay_book where 1=1
         <include refid="Base_Where" />
     </select>
     <select id="pageData" resultMap="BaseResultMap" parameterType="map">
-        select
-        <include refid="Base_Column_List" />
-        from user_vip where 1=1
+        select <include refid="Base_Column_List" />
+        from user_pay_book where 1=1
         <include refid="Base_Where" />
         order by create_date desc
     </select>
