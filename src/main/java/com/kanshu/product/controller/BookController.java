@@ -211,6 +211,11 @@ public class BookController extends BaseController {
                     }
                 }
             }
+            if(chapter.isLock()){
+                if(chapter.getContent().length() > 100){
+                    chapter.setContent(chapter.getContent().substring(0,100));
+                }
+            }
             sender.put("chapter",chapter);
             sender.send(response);
         }catch(Exception e){

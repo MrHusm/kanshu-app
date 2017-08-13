@@ -25,6 +25,11 @@ public class Chapter implements Serializable {
     private Integer idx;
 
     /**
+     * 章节内容
+     */
+    private String content;
+
+    /**
      * true:加锁 false：解锁
      */
     private boolean isLock = true;
@@ -55,7 +60,6 @@ public class Chapter implements Serializable {
         this.bookId = bookId;
     }
 
-
     public Volume getVolume() {
         return volume;
     }
@@ -78,5 +82,13 @@ public class Chapter implements Serializable {
 
     public void setLock(boolean lock) {
         isLock = lock;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }
