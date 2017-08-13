@@ -103,28 +103,29 @@ public class BookController extends BaseController {
                     continue;
                 }
 
-                for(UserPayBook userPayBook : userPayBooks){
-                    if(userPayBook.getType() == 2){
-                        //全本购买过
-                        chapter.setLock(false);
-                        continue;
-                    }else if(userPayBook.getType() == 1){
-                        if(userPayBook.getStartChapterIdx() < chapter.getIdx() && userPayBook.getEndChapterIdx() > chapter.getIdx()){
-                            //批量购买过
+                if(CollectionUtils.isNotEmpty(userPayBooks)){
+                    for(UserPayBook userPayBook : userPayBooks){
+                        if(userPayBook.getType() == 2){
+                            //全本购买过
                             chapter.setLock(false);
                             continue;
+                        }else if(userPayBook.getType() == 1){
+                            if(userPayBook.getStartChapterIdx() < chapter.getIdx() && userPayBook.getEndChapterIdx() > chapter.getIdx()){
+                                //批量购买过
+                                chapter.setLock(false);
+                                continue;
+                            }
                         }
                     }
                 }
 
                 if(CollectionUtils.isNotEmpty(userPayChapterIds)){
-                    if(userPayBooks.contains(chapter.getChapterId())){
+                    if(userPayChapterIds.contains(chapter.getChapterId())){
                         //单章购买过章节
                         chapter.setLock(false);
                         continue;
                     }
                 }
-
             }
             sender.put("chapters",chapters);
             sender.send(response);
@@ -147,78 +148,75 @@ public class BookController extends BaseController {
         //入参
         String chapterId = request.getParameter("chapterId");
         String userId = request.getParameter("userId");
+        String bookId = request.getParameter("bookId");
 
-        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(userId)){
-            logger.error("BookController_getBookCatalog:chapterId或userId为空");
+        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(userId)|| StringUtils.isBlank(bookId)){
+            logger.error("BookController_getChapterContent:chapterId或userId或bookId为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
         }
         try{
+            Chapter chapter = this.chapterService.getChapterWithContentById(Long.parseLong(chapterId));
 
-            //获取图书所有章节
-            List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId));
-            //获取限免图书
-            DriveBook driveBook = this.driveBookService.getDriveBookByCondition(1,Long.parseLong(bookId));
-
-            //批量或整本购买的图书
-            List<UserPayBook> userPayBooks = this.userPayBookService.findListByParams("userId",userId,"bookId",bookId);
-            //单章购买的图书
-            List<UserPayChapter> userPayChapters = this.userPayChapterService.findListByParams("userId",userId,"bookId",bookId);
-            List<Long> userPayChapterIds = new ArrayList<Long>();
-            if(CollectionUtils.isNotEmpty(userPayChapters)){
-                for(UserPayChapter userPayChapter : userPayChapters){
-                    userPayChapterIds.add(userPayChapter.getChapterId());
-                }
+            if(chapter.getIdx() < 30){
+                //前30章免费
+                chapter.setLock(false);
             }
-
-            for(int i = 0; i < chapters.size(); i++){
-                Chapter chapter = chapters.get(i);
+            if(chapter.isLock()){
+                //获取限免图书
+                DriveBook driveBook = this.driveBookService.getDriveBookByCondition(1,Long.parseLong(bookId));
                 if(driveBook != null) {
                     //限免图书 解锁
                     chapter.setLock(false);
-                    continue;
                 }
+            }
+
+            if(chapter.isLock()){
                 //用户有新手礼包
                 //TODO
+            }
 
-                if(i < 30){
-                    //前30章免费
-                    chapter.setLock(false);
-                    continue;
-                }
-
-                for(UserPayBook userPayBook : userPayBooks){
-                    if(userPayBook.getType() == 2){
-                        //全本购买过
-                        chapter.setLock(false);
-                        continue;
-                    }else if(userPayBook.getType() == 1){
-                        if(userPayBook.getStartChapterIdx() < chapter.getIdx() && userPayBook.getEndChapterIdx() > chapter.getIdx()){
-                            //批量购买过
+            if(chapter.isLock()){
+                //批量或整本购买的图书
+                List<UserPayBook> userPayBooks = this.userPayBookService.findListByParams("userId",userId,"bookId",bookId);
+                if(CollectionUtils.isNotEmpty(userPayBooks)){
+                    for(UserPayBook userPayBook : userPayBooks){
+                        if(userPayBook.getType() == 2){
+                            //全本购买过
                             chapter.setLock(false);
-                            continue;
+                        }else if(userPayBook.getType() == 1){
+                            if(userPayBook.getStartChapterIdx() < chapter.getIdx() && userPayBook.getEndChapterIdx() > chapter.getIdx()){
+                                //批量购买过
+                                chapter.setLock(false);
+                            }
                         }
                     }
                 }
+            }
 
-                if(CollectionUtils.isNotEmpty(userPayChapterIds)){
-                    if(userPayBooks.contains(chapter.getChapterId())){
-                        //单章购买过章节
-                        chapter.setLock(false);
-                        continue;
+            if(chapter.isLock()){
+                //单章购买的图书
+                List<UserPayChapter> userPayChapters = this.userPayChapterService.findListByParams("userId",userId,"bookId",bookId);
+                List<Long> userPayChapterIds = new ArrayList<Long>();
+                if(CollectionUtils.isNotEmpty(userPayChapters)){
+                    for(UserPayChapter userPayChapter : userPayChapters){
+                        userPayChapterIds.add(userPayChapter.getChapterId());
                     }
                 }
-
+                if(CollectionUtils.isNotEmpty(userPayChapterIds)){
+                    if(userPayChapterIds.contains(chapter.getChapterId())){
+                        //单章购买过章节
+                        chapter.setLock(false);
+                    }
+                }
             }
-            sender.put("chapters",chapters);
+            sender.put("chapter",chapter);
             sender.send(response);
-
         }catch(Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
     }
-
 }

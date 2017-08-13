@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by lenovo on 2017/8/7.
@@ -56,8 +57,11 @@ public class ChapterServiceImpl extends BaseServiceImpl<Chapter, Long> implement
         String key = RedisKeyConstants.CACHE_CHAPTER_CONTENT_KEY + chapterId;
         Chapter chapter = this.slaveRedisTemplate.opsForValue().get(key);
         if(chapter == null){
-
+            chapter = this.getBaseDao().selectOne("getChapterWithContent",chapter);
+            if(chapter != null){
+                this.masterRedisTemplate.opsForValue().set(key,chapter,1, TimeUnit.HOURS);
+            }
         }
-        return null;
+        return chapter;
     }
 }
