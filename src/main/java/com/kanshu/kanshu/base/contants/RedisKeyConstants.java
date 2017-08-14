@@ -20,4 +20,7 @@ public class RedisKeyConstants {
 
     //章节+内容key
     public final static String CACHE_CHAPTER_TYPE_KEY = "chapter_content_cid_%s_type_%s";
+
+    //图书信息key
+    public final static String CACHE_BOOK_KEY = "book_id_";
 }

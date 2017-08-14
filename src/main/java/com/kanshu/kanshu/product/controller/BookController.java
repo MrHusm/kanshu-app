@@ -1,28 +1,30 @@
 package com.kanshu.kanshu.product.controller;
 
+import com.kanshu.chapter.base.service.IChapterService;
 import com.kanshu.kanshu.base.contants.ErrorCodeEnum;
 import com.kanshu.kanshu.base.controller.BaseController;
 import com.kanshu.kanshu.base.utils.JsonResultSender;
 import com.kanshu.kanshu.base.utils.ResultSender;
-import com.kanshu.kanshu.product.service.IBookService;
-import com.kanshu.chapter.base.service.IChapterService;
-import com.kanshu.kanshu.ucenter.model.UserAccountLog;
-import com.kanshu.kanshu.ucenter.model.UserPayBook;
-import com.kanshu.kanshu.ucenter.service.IUserAccountLogService;
-import com.kanshu.kanshu.ucenter.service.IUserAccountService;
-import com.kanshu.kanshu.ucenter.service.IUserPayChapterService;
 import com.kanshu.kanshu.portal.model.DriveBook;
 import com.kanshu.kanshu.portal.service.IDriveBookService;
+import com.kanshu.kanshu.product.model.Book;
 import com.kanshu.kanshu.product.model.Chapter;
+import com.kanshu.kanshu.product.service.IBookService;
 import com.kanshu.kanshu.ucenter.model.UserAccount;
+import com.kanshu.kanshu.ucenter.model.UserAccountLog;
+import com.kanshu.kanshu.ucenter.model.UserPayBook;
 import com.kanshu.kanshu.ucenter.model.UserPayChapter;
+import com.kanshu.kanshu.ucenter.service.IUserAccountLogService;
+import com.kanshu.kanshu.ucenter.service.IUserAccountService;
 import com.kanshu.kanshu.ucenter.service.IUserPayBookService;
+import com.kanshu.kanshu.ucenter.service.IUserPayChapterService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
@@ -62,6 +64,29 @@ public class BookController extends BaseController {
 
     @Resource(name="userPayBookService")
     IUserPayBookService userPayBookService;
+
+    /**
+     * 获取章节目录
+     * @param response
+     * @param request
+     */
+    @RequestMapping("bookDetail")
+    public String bookDetail(HttpServletResponse response, HttpServletRequest request, Model model) {
+        //入参
+        String bookId = request.getParameter("bookId");
+        String channel = request.getParameter("channel");
+
+        if(StringUtils.isBlank(bookId)){
+            logger.error("BookController_bookDetail:bookId为空");
+            return "error";
+        }
+        Book book = this.bookService.getBookById(Long.parseLong(bookId));
+
+
+        model.addAttribute("book",book);
+        return "/product/book_detail";
+    }
+
 
     /**
      * 获取章节目录
@@ -467,6 +492,87 @@ public class BookController extends BaseController {
 
     }
 
+    /**
+     * 全本购买一本书
+     * @param response
+     * @param request
+     */
+    @RequestMapping("buyBook")
+    public void buyBook(HttpServletResponse response, HttpServletRequest request) {
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String userId = request.getParameter("userId");
+        String bookId = request.getParameter("bookId");
+        String channel = request.getParameter("channel");
+
+        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(userId)){
+            logger.error("BookController_buyBook:userId或count或bookId为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+
+            Book book = this.bookService.getBookById(Long.parseLong(bookId));
+
+            UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
+            if((userAccount.getMoney() + userAccount.getVirtualMoney()) >= book.getPrice()){
+                UserPayBook userPayBook = new UserPayBook();
+                userPayBook.setBookId(book.getBookId());
+                userPayBook.setOrderNo(Long.toHexString(System.currentTimeMillis()));
+                userPayBook.setType(2);
+                userPayBook.setUserId(Long.parseLong(userId));
+                userPayBook.setCreateDate(new Date());
+                userPayBook.setUpdateDate(new Date());
+
+                //保存批量购买数据
+                userPayBookService.save(userPayBook);
+
+                UserAccountLog userAccountLog = new UserAccountLog();
+                userAccountLog.setUserId(Long.parseLong(userId));
+                userAccountLog.setChannel(Integer.parseInt(channel));
+                userAccountLog.setOrderNo(userPayBook.getOrderNo());
+                userAccountLog.setType(-3);
+                userAccountLog.setComment("");
+                userAccountLog.setCreateDate(new Date());
+
+                if(userAccount.getVirtualMoney() >= book.getPrice()){
+                    userAccount.setVirtualMoney(userAccount.getVirtualMoney() - book.getPrice());
+
+                    userAccountLog.setUnitMoney(0);
+                    userAccountLog.setUnitVirtual(book.getPrice());
+                }else{
+                    userAccountLog.setUnitMoney(book.getPrice() - userAccount.getVirtualMoney());
+                    userAccountLog.setUnitVirtual(userAccount.getVirtualMoney());
+
+                    userAccount.setMoney(userAccount.getMoney() - (book.getPrice() - userAccount.getVirtualMoney()));
+                    userAccount.setVirtualMoney(0);
+                }
+                userAccount.setUpdateDate(new Date());
+                //修改账户数据
+                userAccountService.update(userAccount);
+                //保存账户日志数据
+                userAccountLogService.save(userAccountLog);
+                sender.success(response);
+            }else{
+                //跳转到充值首页
+                response.sendRedirect("/pay/index.go?userId"+userId);
+            }
+        }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+
+    }
+
+
+    /**
+     * 获取后续未购买的章节
+     * @param chapter
+     * @param userId
+     * @return
+     */
     private List<Chapter> getNotBuyChapters(Chapter chapter,Long userId){
         //获取该章后续所有章节
         List<Chapter> chapters = BookController.this.chapterService.findListByParams("startIdx",chapter.getIdx());
