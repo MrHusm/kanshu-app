@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="UserAccountMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.ucenter.model.UserAccount">
+    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.ucenter.model.UserAccount">
         <id column="account_id" property="accountId" jdbcType="BIGINT" />
         <result column="user_id" property="userId" jdbcType="BIGINT" />
         <result column="money" property="money" jdbcType="INTEGER" />
@@ -28,7 +28,7 @@
         delete from user_account where account_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="accountId" parameterType="com.kanshu.ucenter.model.UserAccount">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="accountId" parameterType="com.kanshu.kanshu.ucenter.model.UserAccount">
         insert into user_account
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="accountId != null">account_id,</if>
@@ -60,7 +60,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.ucenter.model.UserAccount">
+    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.ucenter.model.UserAccount">
         update user_account
         <set>
             <if test="userId != null">

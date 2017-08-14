@@ -12,7 +12,7 @@
 	default-autowire="byName">
 
 	<!-- 自动搜索@Controller标注的类 -->
-	<context:component-scan base-package="com.kanshu.ucenter,com.kanshu.portal,com.kanshu.pay,com.kanshu.product" use-default-filters="false">
+	<context:component-scan base-package="com.kanshu.kanshu.ucenter,com.kanshu.kanshu.portal,com.kanshu.kanshu.pay,com.kanshu.kanshu.product,com.kanshu.chapter.base" use-default-filters="false">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 
@@ -20,7 +20,7 @@
 	<aop:aspectj-autoproxy />
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
 	<bean id="byteArrayHttpMessageConverter" class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
-	<bean class="com.kanshu.base.extend.AnnotationMethodHandlerAdapterExtend">
+	<bean class="com.kanshu.kanshu.base.extend.AnnotationMethodHandlerAdapterExtend">
 		<property name="messageConverters">
 			<list>
 				<ref bean="byteArrayHttpMessageConverter"/>
@@ -37,7 +37,7 @@
 		
 		<!-- 日期格式转换 -->
         <property name="webBindingInitializer">
-         <bean class="com.kanshu.base.utils.DateConverter"/>
+         <bean class="com.kanshu.kanshu.base.utils.DateConverter"/>
         </property>
 	</bean>
 	
