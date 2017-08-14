@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="AlipayResponseMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.pay.model.AlipayResponse">
+    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.pay.model.AlipayResponse">
         <id column="alipay_response_id" property="alipayResponseId" jdbcType="BIGINT" />
         <result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
         <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
@@ -32,7 +32,7 @@
         alipay_response_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="alipayResponseId" parameterType="com.kanshu.pay.model.AlipayOrder">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="alipayResponseId" parameterType="com.kanshu.kanshu.pay.model.AlipayOrder">
         insert into alipay_response
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="alipayResponseId != null">alipay_response_id,</if>
@@ -76,7 +76,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.pay.model.AlipayResponse">
+    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.pay.model.AlipayResponse">
         update alipay_response
         <set>
             <if test="tradeNo != null and tradeNo !=''">

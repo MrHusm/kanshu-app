@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="BookMapper" >
-  <resultMap id="BaseResultMap" type="com.kanshu.product.model.Book" >
+  <resultMap id="BaseResultMap" type="com.kanshu.kanshu.product.model.Book" >
     <id column="book_id" property="bookId" jdbcType="BIGINT" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="img" property="img" jdbcType="VARCHAR" />
@@ -37,7 +37,7 @@
     where book_id = #{bookId,jdbcType=BIGINT}
   </delete>
   
-  <insert id="insert" parameterType="com.kanshu.product.model.Book" >
+  <insert id="insert" parameterType="com.kanshu.kanshu.product.model.Book" >
     insert into book (book_id, title, img, 
       author, author_penname, desc, 
       shelf_status, category_sec, category_thr, 
@@ -51,7 +51,7 @@
       #{isFull,jdbcType=SMALLINT}, #{price,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP}, 
       #{updateDate,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.kanshu.product.model.Book" >
+  <insert id="insertSelective" parameterType="com.kanshu.kanshu.product.model.Book" >
     insert into book
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="bookId != null" >
@@ -154,7 +154,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.product.model.Book" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.Book" >
     update book
     <set >
       <if test="title != null" >
@@ -205,7 +205,7 @@
     </set>
     where book_id = #{bookId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.kanshu.product.model.Book" >
+  <update id="updateByPrimaryKey" parameterType="com.kanshu.kanshu.product.model.Book" >
     update book
     set title = #{title,jdbcType=VARCHAR},
       img = #{img,jdbcType=VARCHAR},
