@@ -23,7 +23,7 @@ public class Chapter implements Serializable {
     /**
      * 章节名称
      */
-    private String name;
+    private String title;
 
     /**
      * 排序
@@ -41,21 +41,24 @@ public class Chapter implements Serializable {
     private Integer wordCount;
 
     /**
-     * 章节内容
-     */
-    private String content;
-
-    /**
      * 1：上架 1：下架
      */
-    private Integer status;
+    private Integer shelfStatus;
+
+    /**
+     * 是否免费 1：收费 0：免费
+     */
+    private Integer isFree;
+
+    /**
+     * 用于对章节内容的一致性进
+     */
+    private String contentMd5;
 
     /**
      * true:加锁 false：解锁
      */
     private boolean isLock = true;
-
-    private Volume volume;
 
     private Date createDate;
 
@@ -85,12 +88,12 @@ public class Chapter implements Serializable {
         this.bookId = bookId;
     }
 
-    public Volume getVolume() {
-        return volume;
+    public String getTitle() {
+        return title;
     }
 
-    public void setVolume(Volume volume) {
-        this.volume = volume;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Integer getIdx() {
@@ -101,36 +104,12 @@ public class Chapter implements Serializable {
         this.idx = idx;
     }
 
-    public boolean isLock() {
-        return isLock;
-    }
-
-    public void setLock(boolean lock) {
-        isLock = lock;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public Integer getPrice() {
         return price;
     }
 
     public void setPrice(Integer price) {
         this.price = price;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Integer getWordCount() {
@@ -141,16 +120,36 @@ public class Chapter implements Serializable {
         this.wordCount = wordCount;
     }
 
-    public Integer getStatus() {
-        return status;
+    public Integer getShelfStatus() {
+        return shelfStatus;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setShelfStatus(Integer shelfStatus) {
+        this.shelfStatus = shelfStatus;
     }
 
-    public void setIsLock(boolean isLock) {
-        this.isLock = isLock;
+    public Integer getIsFree() {
+        return isFree;
+    }
+
+    public void setIsFree(Integer isFree) {
+        this.isFree = isFree;
+    }
+
+    public String getContentMd5() {
+        return contentMd5;
+    }
+
+    public void setContentMd5(String contentMd5) {
+        this.contentMd5 = contentMd5;
+    }
+
+    public boolean isLock() {
+        return isLock;
+    }
+
+    public void setLock(boolean lock) {
+        isLock = lock;
     }
 
     public Date getCreateDate() {

@@ -26,6 +26,11 @@ public class Volume implements Serializable{
      */
     private Integer idx;
 
+    /**
+     * 卷描述
+     */
+    private String desc;
+
     private List<Chapter> chapters;
 
     private Date createDate;
@@ -86,5 +91,13 @@ public class Volume implements Serializable{
 
     public void setChapters(List<Chapter> chapters) {
         this.chapters = chapters;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 }

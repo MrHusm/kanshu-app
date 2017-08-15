@@ -4,26 +4,39 @@
   <resultMap id="BaseResultMap" type="com.kanshu.kanshu.product.model.Book" >
     <id column="book_id" property="bookId" jdbcType="BIGINT" />
     <result column="title" property="title" jdbcType="VARCHAR" />
-    <result column="img" property="img" jdbcType="VARCHAR" />
-    <result column="author" property="author" jdbcType="VARCHAR" />
-    <result column="author_penname" property="authorPenname" jdbcType="VARCHAR" />
-    <result column="desc" property="desc" jdbcType="VARCHAR" />
-    <result column="shelf_status" property="shelfStatus" jdbcType="SMALLINT" />
-    <result column="category_sec" property="categorySec" jdbcType="VARCHAR" />
-    <result column="category_thr" property="categoryThr" jdbcType="VARCHAR" />
     <result column="word_count" property="wordCount" jdbcType="INTEGER" />
+    <result column="cover_url" property="coverUrl" jdbcType="VARCHAR" />
+    <result column="author_id" property="authorId" jdbcType="BIGINT" />
+    <result column="author_name" property="authorName" jdbcType="VARCHAR" />
+    <result column="author_penname" property="authorPenname" jdbcType="VARCHAR" />
+    <result column="intro" property="intro" jdbcType="VARCHAR" />
+    <result column="shelf_status" property="shelfStatus" jdbcType="INTEGER" />
+    <result column="category_sec_id" property="categorySecId" jdbcType="BIGINT" />
+    <result column="category_thr_id" property="categoryThrId" jdbcType="BIGINT" />
     <result column="keyword" property="keyword" jdbcType="VARCHAR" />
-    <result column="is_support_full_buy" property="isSupportFullBuy" jdbcType="SMALLINT" />
-    <result column="is_full" property="isFull" jdbcType="SMALLINT" />
+    <result column="charge_type" property="chargeType" jdbcType="INTEGER" />
+    <result column="is_full" property="isFull" jdbcType="INTEGER" />
     <result column="price" property="price" jdbcType="INTEGER" />
+    <result column="is_free" property="isFree" jdbcType="INTEGER" />
+    <result column="tag" property="tag" jdbcType="VARCHAR" />
+    <result column="last_chapter_update_date" property="lastChapterUpdateDate" jdbcType="TIMESTAMP" />
+    <result column="copyright" property="copyright" jdbcType="VARCHAR" />
+    <result column="copyright_book_id" property="copyrightBookId" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="unit_price" property="unitPrice" jdbcType="INTEGER" />
+    <result column="file_format" property="fileFormat" jdbcType="INTEGER" />
+    <result column="is_monthly" property="isMonthly" jdbcType="INTEGER" />
+    <result column="monthly_start_date" property="monthlyStartDate" jdbcType="TIMESTAMP" />
+    <result column="monthly_end_date" property="monthlyEndDate" jdbcType="TIMESTAMP" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
   
   
   <sql id="Base_Column_List" >
-    book_id, title, img, author, author_penname, desc, shelf_status, category_sec, category_thr, 
-    word_count, keyword, is_support_full_buy, is_full, price, create_date, update_date
+    book_id,title,word_count,cover_url,author_id,author_name,author_penname,intro,shelf_status,category_sec_id,category_thr_id,
+    keyword,charge_type,is_full,price,is_free,tag,last_chapter_update_date,copyright,copyright_book_id,type,unit_price,file_format,
+    is_monthly,monthly_start_date,monthly_end_date,create_date,update_date
   </sql>
   
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -36,65 +49,88 @@
     delete from book
     where book_id = #{bookId,jdbcType=BIGINT}
   </delete>
-  
-  <insert id="insert" parameterType="com.kanshu.kanshu.product.model.Book" >
-    insert into book (book_id, title, img, 
-      author, author_penname, desc, 
-      shelf_status, category_sec, category_thr, 
-      word_count, keyword, is_support_full_buy, 
-      is_full, price, create_date, 
-      update_date)
-    values (#{bookId,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, 
-      #{author,jdbcType=VARCHAR}, #{authorPenname,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
-      #{shelfStatus,jdbcType=SMALLINT}, #{categorySec,jdbcType=VARCHAR}, #{categoryThr,jdbcType=VARCHAR}, 
-      #{wordCount,jdbcType=INTEGER}, #{keyword,jdbcType=VARCHAR}, #{isSupportFullBuy,jdbcType=SMALLINT}, 
-      #{isFull,jdbcType=SMALLINT}, #{price,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP}, 
-      #{updateDate,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" parameterType="com.kanshu.kanshu.product.model.Book" >
+
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="bookId" parameterType="com.kanshu.kanshu.product.model.Book" >
     insert into book
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="bookId != null" >
         book_id,
       </if>
-      <if test="title != null" >
+      <if test="title != null and title != ''" >
         title,
-      </if>
-      <if test="img != null" >
-        img,
-      </if>
-      <if test="author != null" >
-        author,
-      </if>
-      <if test="authorPenname != null" >
-        author_penname,
-      </if>
-      <if test="desc != null" >
-        desc,
-      </if>
-      <if test="shelfStatus != null" >
-        shelf_status,
-      </if>
-      <if test="categorySec != null" >
-        category_sec,
-      </if>
-      <if test="categoryThr != null" >
-        category_thr,
       </if>
       <if test="wordCount != null" >
         word_count,
       </if>
-      <if test="keyword != null" >
+      <if test="coverUrl != null and coverUrl != ''" >
+        cover_url,
+      </if>
+      <if test="authorId != null" >
+        author_id,
+      </if>
+      <if test="authorName != null and authorName != ''" >
+        author_name,
+      </if>
+      <if test="authorPenname != null and authorPenname != ''" >
+        author_penname,
+      </if>
+      <if test="intro != null and intro != ''" >
+        intro,
+      </if>
+      <if test="shelfStatus != null" >
+        shelf_status,
+      </if>
+      <if test="categorySecId != null" >
+        category_sec_id,
+      </if>
+      <if test="categoryThrId != null" >
+        category_thr_id,
+      </if>
+
+      <if test="keyword != null and keyword != ''" >
         keyword,
       </if>
-      <if test="isSupportFullBuy != null" >
-        is_support_full_buy,
+      <if test="chargeType != null" >
+        charge_type,
       </if>
       <if test="isFull != null" >
         is_full,
       </if>
       <if test="price != null" >
         price,
+      </if>
+      <if test="isFree != null" >
+        is_free,
+      </if>
+      <if test="tag != null and tag != ''" >
+        tag,
+      </if>
+      <if test="lastChapterUpdateDate != null">
+        last_chapter_update_date,
+      </if>
+      <if test="copyright != null and copyright != ''">
+        copyright,
+      </if>
+      <if test="copyrightBookId != null">
+        copyright_book_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="unitPrice != null">
+        unit_price,
+      </if>
+      <if test="fileFormat != null">
+        file_format,
+      </if>
+      <if test="isMonthly != null">
+        is_monthly,
+      </if>
+      <if test="monthlyStartDate != null">
+        monthly_start_date,
+      </if>
+      <if test="monthlyEndDate != null">
+        monthly_end_date,
       </if>
       <if test="createDate != null" >
         create_date,
@@ -107,44 +143,80 @@
       <if test="bookId != null" >
         #{bookId,jdbcType=BIGINT},
       </if>
-      <if test="title != null" >
+      <if test="title != null and title != ''" >
         #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="img != null" >
-        #{img,jdbcType=VARCHAR},
-      </if>
-      <if test="author != null" >
-        #{author,jdbcType=VARCHAR},
-      </if>
-      <if test="authorPenname != null" >
-        #{authorPenname,jdbcType=VARCHAR},
-      </if>
-      <if test="desc != null" >
-        #{desc,jdbcType=VARCHAR},
-      </if>
-      <if test="shelfStatus != null" >
-        #{shelfStatus,jdbcType=SMALLINT},
-      </if>
-      <if test="categorySec != null" >
-        #{categorySec,jdbcType=VARCHAR},
-      </if>
-      <if test="categoryThr != null" >
-        #{categoryThr,jdbcType=VARCHAR},
       </if>
       <if test="wordCount != null" >
         #{wordCount,jdbcType=INTEGER},
       </if>
-      <if test="keyword != null" >
+      <if test="coverUrl != null and coverUrl != ''" >
+        #{coverUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="authorId != null" >
+        #{authorId,jdbcType=BIGINT},
+      </if>
+      <if test="authorName != null and authorName != ''" >
+        #{authorName,jdbcType=VARCHAR},
+      </if>
+      <if test="authorPenname != null and authorPenname != ''" >
+        #{authorPenname,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null and intro != ''" >
+        #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="shelfStatus != null" >
+        #{shelfStatus,jdbcType=INTEGER},
+      </if>
+      <if test="categorySecId != null" >
+        #{categorySecId,jdbcType=BIGINT},
+      </if>
+      <if test="categoryThrId != null" >
+        #{categoryThrId,jdbcType=BIGINT},
+      </if>
+      <if test="keyword != null and keyword != ''" >
         #{keyword,jdbcType=VARCHAR},
       </if>
-      <if test="isSupportFullBuy != null" >
-        #{isSupportFullBuy,jdbcType=SMALLINT},
+      <if test="chargeType != null" >
+        #{chargeType,jdbcType=INTEGER},
       </if>
       <if test="isFull != null" >
-        #{isFull,jdbcType=SMALLINT},
+        #{isFull,jdbcType=INTEGER},
       </if>
       <if test="price != null" >
         #{price,jdbcType=INTEGER},
+      </if>
+      <if test="isFree != null" >
+        #{isFree,jdbcType=INTEGER},
+      </if>
+      <if test="tag != null and tag != ''" >
+        #{tag,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChapterUpdateDate != null">
+        #{lastChapterUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="copyright != null and copyright != ''">
+        #{copyright,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightBookId != null">
+        #{copyrightBookId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="unitPrice != null">
+        #{unitPrice,jdbcType=INTEGER},
+      </if>
+      <if test="fileFormat != null">
+        #{fileFormat,jdbcType=INTEGER},
+      </if>
+      <if test="isMonthly != null">
+        #{isMonthly,jdbcType=INTEGER},
+      </if>
+      <if test="monthlyStartDate != null">
+        #{monthlyStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="monthlyEndDate != null">
+        #{monthlyEndDate,jdbcType=TIMESTAMP},
       </if>
       <if test="createDate != null" >
         #{createDate,jdbcType=TIMESTAMP},
@@ -157,71 +229,85 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.Book" >
     update book
     <set >
-      <if test="title != null" >
+      <if test="title != null and title != ''" >
         title = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="img != null" >
-        img = #{img,jdbcType=VARCHAR},
-      </if>
-      <if test="author != null" >
-        author = #{author,jdbcType=VARCHAR},
-      </if>
-      <if test="authorPenname != null" >
-        author_penname = #{authorPenname,jdbcType=VARCHAR},
-      </if>
-      <if test="desc != null" >
-        desc = #{desc,jdbcType=VARCHAR},
-      </if>
-      <if test="shelfStatus != null" >
-        shelf_status = #{shelfStatus,jdbcType=SMALLINT},
-      </if>
-      <if test="categorySec != null" >
-        category_sec = #{categorySec,jdbcType=VARCHAR},
-      </if>
-      <if test="categoryThr != null" >
-        category_thr = #{categoryThr,jdbcType=VARCHAR},
       </if>
       <if test="wordCount != null" >
         word_count = #{wordCount,jdbcType=INTEGER},
       </if>
-      <if test="keyword != null" >
+      <if test="coverUrl != null and coverUrl != ''" >
+        cover_url = #{coverUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="authorId != null" >
+        author_id = #{authorId,jdbcType=BIGINT},
+      </if>
+      <if test="authorName != null and authorName != ''" >
+        author_name = #{authorName,jdbcType=VARCHAR},
+      </if>
+      <if test="authorPenname != null and authorPenname != ''" >
+        author_penname = #{authorPenname,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null and intro != ''" >
+        intro = #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="shelfStatus != null" >
+        shelf_status = #{shelfStatus,jdbcType=INTEGER},
+      </if>
+      <if test="categorySecId != null" >
+        category_sec_id = #{categorySecId,jdbcType=BIGINT},
+      </if>
+      <if test="categoryThrId != null" >
+        category_thr_id = #{categoryThrId,jdbcType=BIGINT},
+      </if>
+      <if test="keyword != null and keyword != ''" >
         keyword = #{keyword,jdbcType=VARCHAR},
       </if>
-      <if test="isSupportFullBuy != null" >
-        is_support_full_buy = #{isSupportFullBuy,jdbcType=SMALLINT},
+      <if test="chargeType != null" >
+        charge_type = #{chargeType,jdbcType=INTEGER},
       </if>
       <if test="isFull != null" >
-        is_full = #{isFull,jdbcType=SMALLINT},
+        is_full = #{isFull,jdbcType=INTEGER},
       </if>
       <if test="price != null" >
         price = #{price,jdbcType=INTEGER},
       </if>
-      <if test="createDate != null" >
-        create_date = #{createDate,jdbcType=TIMESTAMP},
+      <if test="isFree != null" >
+        is_free = #{isFree,jdbcType=INTEGER},
+      </if>
+      <if test="tag != null and tag != ''" >
+        tag = #{tag,jdbcType=VARCHAR},
+      </if>
+      <if test="lastChapterUpdateDate != null">
+        last_chapter_update_date  = #{lastChapterUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="copyright != null and copyright != ''">
+        copyright = #{copyright,jdbcType=VARCHAR},
+      </if>
+      <if test="copyrightBookId != null">
+        copyright_book_id  = #{copyrightBookId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="unitPrice != null">
+        unit_price = #{unitPrice,jdbcType=INTEGER},
+      </if>
+      <if test="fileFormat != null">
+        file_format = #{fileFormat,jdbcType=INTEGER},
+      </if>
+      <if test="isMonthly != null">
+        is_monthly = #{isMonthly,jdbcType=INTEGER},
+      </if>
+      <if test="monthlyStartDate != null">
+        monthly_start_date = #{monthlyStartDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="monthlyEndDate != null">
+        monthly_end_date = #{monthlyEndDate,jdbcType=TIMESTAMP},
       </if>
       <if test="updateDate != null" >
         update_date = #{updateDate,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where book_id = #{bookId,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.kanshu.kanshu.product.model.Book" >
-    update book
-    set title = #{title,jdbcType=VARCHAR},
-      img = #{img,jdbcType=VARCHAR},
-      author = #{author,jdbcType=VARCHAR},
-      author_penname = #{authorPenname,jdbcType=VARCHAR},
-      desc = #{desc,jdbcType=VARCHAR},
-      shelf_status = #{shelfStatus,jdbcType=SMALLINT},
-      category_sec = #{categorySec,jdbcType=VARCHAR},
-      category_thr = #{categoryThr,jdbcType=VARCHAR},
-      word_count = #{wordCount,jdbcType=INTEGER},
-      keyword = #{keyword,jdbcType=VARCHAR},
-      is_support_full_buy = #{isSupportFullBuy,jdbcType=SMALLINT},
-      is_full = #{isFull,jdbcType=SMALLINT},
-      price = #{price,jdbcType=INTEGER},
-      create_date = #{createDate,jdbcType=TIMESTAMP},
-      update_date = #{updateDate,jdbcType=TIMESTAMP}
     where book_id = #{bookId,jdbcType=BIGINT}
   </update>
 </mapper>

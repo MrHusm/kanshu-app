@@ -1,9 +1,10 @@
 package com.kanshu.kanshu.product.model;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Book {
+public class Book implements Serializable{
     private Long bookId;
 
     /**
@@ -12,14 +13,24 @@ public class Book {
     private String title;
 
     /**
-     * 图书封面
+     * 字数
      */
-    private String img;
+    private Integer wordCount;
 
     /**
-     * 作者名
+     * 图书封面
      */
-    private String author;
+    private String coverUrl;
+
+    /**
+     * 作者id
+     */
+    private Long authorId;
+
+    /**
+     * 作者名称
+     */
+    private String authorName;
 
     /**
      * 笔名
@@ -29,27 +40,22 @@ public class Book {
     /**
      * 简介
      */
-    private String desc;
+    private String intro;
 
     /**
      * 在架状态 0：下架 1：在架
      */
-    private Short shelfStatus;
+    private Integer shelfStatus;
 
     /**
      * 二级分类
      */
-    private String categorySec;
+    private Long categorySecId;
 
     /**
      * 三级分类
      */
-    private String categoryThr;
-
-    /**
-     * 字数
-     */
-    private Integer wordCount;
+    private Long categoryThrId;
 
     /**
      * 关键字
@@ -59,7 +65,7 @@ public class Book {
     /**
      * 是否支持全本购买 0：不支持 1：支持
      */
-    private Short isSupportFullBuy;
+    private Integer chargeType;
 
     /**
      * 是否完结 0：连载 1：完结
@@ -70,6 +76,61 @@ public class Book {
      * 全本购买价格
      */
     private Integer price;
+
+    /**
+     * 是否免费 1：收费 0：免费
+     */
+    private Integer isFree;
+
+    /**
+     * 标签
+     */
+    private String tag;
+
+    /**
+     * 最近一个章节的更新时间
+     */
+    private Date lastChapterUpdateDate;
+
+    /**
+     * 版权方
+     */
+    private String copyright;
+
+    /**
+     * 版权方图书id
+     */
+    private Long copyrightBookId;
+
+    /**
+     * 类型 1：原创 2 出版物
+     */
+    private Integer type;
+
+    /**
+     * 千字价格
+     */
+    private Integer unitPrice;
+
+    /**
+     * 书文件格式 1:txt 2:腾讯精排简版 3:腾讯精排完整 4: 以上三种都支持
+     */
+    private Integer fileFormat;
+
+    /**
+     * 是否允许包月 0：不允许 1：允许
+     */
+    private Integer isMonthly;
+
+    /**
+     * 包月开始时间
+     */
+    private Date monthlyStartDate;
+
+    /**
+     * 包月结束时间
+     */
+    private Date monthlyEndDate;
 
     private Date createDate;
 
@@ -91,20 +152,36 @@ public class Book {
         this.title = title;
     }
 
-    public String getImg() {
-        return img;
+    public Integer getWordCount() {
+        return wordCount;
     }
 
-    public void setImg(String img) {
-        this.img = img;
+    public void setWordCount(Integer wordCount) {
+        this.wordCount = wordCount;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getCoverUrl() {
+        return coverUrl;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public String getAuthorPenname() {
@@ -115,44 +192,36 @@ public class Book {
         this.authorPenname = authorPenname;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getIntro() {
+        return intro;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setIntro(String intro) {
+        this.intro = intro;
     }
 
-    public Short getShelfStatus() {
+    public Integer getShelfStatus() {
         return shelfStatus;
     }
 
-    public void setShelfStatus(Short shelfStatus) {
+    public void setShelfStatus(Integer shelfStatus) {
         this.shelfStatus = shelfStatus;
     }
 
-    public String getCategorySec() {
-        return categorySec;
+    public Long getCategorySecId() {
+        return categorySecId;
     }
 
-    public void setCategorySec(String categorySec) {
-        this.categorySec = categorySec;
+    public void setCategorySecId(Long categorySecId) {
+        this.categorySecId = categorySecId;
     }
 
-    public String getCategoryThr() {
-        return categoryThr;
+    public Long getCategoryThrId() {
+        return categoryThrId;
     }
 
-    public void setCategoryThr(String categoryThr) {
-        this.categoryThr = categoryThr;
-    }
-
-    public Integer getWordCount() {
-        return wordCount;
-    }
-
-    public void setWordCount(Integer wordCount) {
-        this.wordCount = wordCount;
+    public void setCategoryThrId(Long categoryThrId) {
+        this.categoryThrId = categoryThrId;
     }
 
     public String getKeyword() {
@@ -163,12 +232,12 @@ public class Book {
         this.keyword = keyword;
     }
 
-    public Short getIsSupportFullBuy() {
-        return isSupportFullBuy;
+    public Integer getChargeType() {
+        return chargeType;
     }
 
-    public void setIsSupportFullBuy(Short isSupportFullBuy) {
-        this.isSupportFullBuy = isSupportFullBuy;
+    public void setChargeType(Integer chargeType) {
+        this.chargeType = chargeType;
     }
 
     public Short getIsFull() {
@@ -185,6 +254,94 @@ public class Book {
 
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    public Integer getIsFree() {
+        return isFree;
+    }
+
+    public void setIsFree(Integer isFree) {
+        this.isFree = isFree;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public Date getLastChapterUpdateDate() {
+        return lastChapterUpdateDate;
+    }
+
+    public void setLastChapterUpdateDate(Date lastChapterUpdateDate) {
+        this.lastChapterUpdateDate = lastChapterUpdateDate;
+    }
+
+    public String getCopyright() {
+        return copyright;
+    }
+
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
+    }
+
+    public Long getCopyrightBookId() {
+        return copyrightBookId;
+    }
+
+    public void setCopyrightBookId(Long copyrightBookId) {
+        this.copyrightBookId = copyrightBookId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(Integer unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public Integer getFileFormat() {
+        return fileFormat;
+    }
+
+    public void setFileFormat(Integer fileFormat) {
+        this.fileFormat = fileFormat;
+    }
+
+    public Integer getIsMonthly() {
+        return isMonthly;
+    }
+
+    public void setIsMonthly(Integer isMonthly) {
+        this.isMonthly = isMonthly;
+    }
+
+    public Date getMonthlyStartDate() {
+        return monthlyStartDate;
+    }
+
+    public void setMonthlyStartDate(Date monthlyStartDate) {
+        this.monthlyStartDate = monthlyStartDate;
+    }
+
+    public Date getMonthlyEndDate() {
+        return monthlyEndDate;
+    }
+
+    public void setMonthlyEndDate(Date monthlyEndDate) {
+        this.monthlyEndDate = monthlyEndDate;
     }
 
     public Date getCreateDate() {
