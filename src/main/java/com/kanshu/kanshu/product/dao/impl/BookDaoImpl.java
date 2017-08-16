@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * Created by hushengmeng on 2017/7/4.
  */
 @Repository(value="bookDao")
-public class BookImpl extends BaseDaoImpl<Book> implements IBookDao {
+public class BookDaoImpl extends BaseDaoImpl<Book> implements IBookDao {
 }
