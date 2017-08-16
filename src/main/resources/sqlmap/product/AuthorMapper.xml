@@ -2,52 +2,52 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="AuthorMapper">
     <resultMap id="BaseResultMap" type="com.kanshu.kanshu.product.model.Author">
-        <id column="category_id" property="authorId" jdbcType="BIGINT" />
+        <id column="author_id" property="authorId" jdbcType="BIGINT" />
         <result column="name" property="name" jdbcType="VARCHAR" />
-        <result column="level" property="level" jdbcType="INTEGER" />
-        <result column="pid" property="pid" jdbcType="INTEGER" />
+        <result column="penname" property="penname" jdbcType="VARCHAR" />
+        <result column="desc" property="desc" jdbcType="VARCHAR" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
     <sql id="Base_Where">
-        <if test="categoryId != null"> and category_id= #{categoryId}</if>
+        <if test="authorId != null"> and author_id= #{authorId}</if>
         <if test="name != null and name = ''"> and name= #{name}</if>
-        <if test="pid != null"> and pid= #{pid}</if>
+        <if test="penname != null and penname = ''"> and penname= #{penname}</if>
     </sql>
     <sql id="Base_Column_List">
-        category_id,name,level,pid,create_date,update_date
+        author_id,name,penname,desc,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
-        select <include refid="Base_Column_List" /> from category where category_id = #{id,jdbcType=BIGINT}
+        select <include refid="Base_Column_List" /> from author where author_id = #{id,jdbcType=BIGINT}
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-        delete from category where category_id = #{id,jdbcType=BIGINT}
+        delete from author where author_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="categoryId" parameterType="com.kanshu.kanshu.product.model.Category">
-        insert into category
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="authorId" parameterType="com.kanshu.kanshu.product.model.Author">
+        insert into author
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="categoryId != null">category_id,</if>
+            <if test="authorId != null">author_id,</if>
             <if test="name != null and name = ''">name,</if>
-            <if test="level != null">level,</if>
-            <if test="pid != null">pid,</if>
+            <if test="penname != null and penname = ''">penname,</if>
+            <if test="desc != null and desc != ''">desc,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="categoryId != null">
-                #{categoryId,jdbcType=BIGINT},
+            <if test="authorId != null">
+                #{authorId,jdbcType=BIGINT},
             </if>
             <if test="name != null and name = ''">
                 #{name,jdbcType=VARCHAR},
             </if>
-            <if test="level != null">
-                #{level,jdbcType=INTEGER},
+            <if test="penname != null and penname = ''">
+                #{penname,jdbcType=VARCHAR},
             </if>
-            <if test="pid != null">
-                #{pid,jdbcType=INTEGER},
+            <if test="desc != null and desc = ''">
+                #{desc,jdbcType=VARCHAR},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
@@ -58,41 +58,41 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.Category">
-        update category
+    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.Author">
+        update author
         <set>
             <if test="name != null and name = ''">
-                name = #{name,jdbcType=VARCHAR},
+               nam = #{name,jdbcType=VARCHAR},
             </if>
-            <if test="level != null">
-                level = #{level,jdbcType=INTEGER},
+            <if test="penname != null and penname = ''">
+                penname =  #{penname,jdbcType=VARCHAR},
             </if>
-            <if test="pid != null">
-                pid = #{pid,jdbcType=INTEGER},
+            <if test="desc != null and desc = ''">
+                desc =  #{desc,jdbcType=VARCHAR},
             </if>
             <if test="updateDate != null">
                 update_date = #{updateDate,jdbcType=TIMESTAMP},
             </if>
         </set>
-        where category_id = #{categoryId,jdbcType=BIGINT}
+        where author_id = #{authorId,jdbcType=BIGINT}
     </update>
 
     <select id="getAll" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List" />
-        from category where 1=1
+        from author where 1=1
         <include refid="Base_Where" />
-        order by id
+        order by author_id
     </select>
     <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
-        select count(1) from category where 1=1
+        select count(1) from author where 1=1
         <include refid="Base_Where" />
     </select>
     <select id="pageData" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List" />
-        from category where 1=1
+        from author where 1=1
         <include refid="Base_Where" />
-        order by id desc
+        order by author_id desc
     </select>
 </mapper>

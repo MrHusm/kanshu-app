@@ -31,8 +31,27 @@
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
-  
-  
+
+  <sql id="Base_Where">
+    <if test="bookId != null"> and book_id= #{bookId}</if>
+    <if test="title != null and title !=''"> and title= #{title}</if>
+    <if test="authorId != null"> and author_id= #{authorId}</if>
+    <if test="authorName != null and authorName !=''"> and author_name= #{authorName}</if>
+    <if test="authorPenname != null and authorPenname !=''"> and author_penname= #{authorPenname}</if>
+    <if test="shelfStatus != null"> and shelf_status= #{shelfStatus}</if>
+    <if test="categorySecId != null"> and category_sec_id= #{categorySecId}</if>
+    <if test="categoryThrId != null"> and category_thr_id= #{categoryThrId}</if>
+    <if test="keyword != null and keyword !=''"> and keyword= #{keyword}</if>
+    <if test="chargeType != null"> and charge_type= #{chargeType}</if>
+    <if test="isFull != null"> and is_full= #{isFull}</if>
+    <if test="isFree != null"> and is_free= #{isFree}</if>
+    <if test="tag != null and tag != ''"> and tag= #{tag}</if>
+    <if test="copyright != null and copyright != ''"> and copyright= #{copyright}</if>
+    <if test="copyrightBookId != null"> and copyright_book_id= #{copyrightBookId}</if>
+    <if test="type != null"> and type= #{type}</if>
+    <if test="isMonthly != null"> and is_monthly= #{isMonthly}</if>
+  </sql>
+
   <sql id="Base_Column_List" >
     book_id,title,word_count,cover_url,author_id,author_name,author_penname,intro,shelf_status,category_sec_id,category_thr_id,
     keyword,charge_type,is_full,price,is_free,tag,last_chapter_update_date,copyright,copyright_book_id,type,unit_price,file_format,
@@ -43,11 +62,11 @@
     select 
     <include refid="Base_Column_List" />
     from book
-    where book_id = #{bookId,jdbcType=BIGINT}
+    where book_id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from book
-    where book_id = #{bookId,jdbcType=BIGINT}
+    where book_id = #{id,jdbcType=BIGINT}
   </delete>
 
   <insert id="insertSelective" useGeneratedKeys="true" keyProperty="bookId" parameterType="com.kanshu.kanshu.product.model.Book" >
@@ -310,4 +329,20 @@
     </set>
     where book_id = #{bookId,jdbcType=BIGINT}
   </update>
+
+  <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+    select <include refid="Base_Column_List" />
+    from book where 1=1
+    <include refid="Base_Where" />
+  </select>
+  <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+    select count(1) from book where 1=1 <include refid="Base_Where" />
+  </select>
+  <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+    select
+    <include refid="Base_Column_List" />
+    from book where 1=1
+    <include refid="Base_Where" />
+    order by id desc
+  </select>
 </mapper>

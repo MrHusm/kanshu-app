@@ -5,12 +5,13 @@
         <id column="chapter_id" property="chapterId" jdbcType="BIGINT" />
         <result column="volume_id" property="volumeId" jdbcType="BIGINT" />
         <result column="book_id" property="bookId" jdbcType="BIGINT" />
-        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
         <result column="idx" property="idx" jdbcType="INTEGER" />
         <result column="price" property="price" jdbcType="INTEGER" />
         <result column="word_count" property="wordCount" jdbcType="INTEGER" />
-        <result column="content" property="content" jdbcType="VARCHAR" />
-        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="shelf_status" property="shelfStatus" jdbcType="INTEGER" />
+        <result column="is_free" property="isFree" jdbcType="INTEGER" />
+        <result column="content_md5" property="contentMd5" jdbcType="VARCHAR" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -18,11 +19,14 @@
         <if test="chapterId != null"> and chapter_id= #{chapterId}</if>
         <if test="bookId != null"> and book_id= #{bookId}</if>
         <if test="volumeId != null"> and volume_id= #{volumeId}</if>
+        <if test="title != null and title != ''"> and title= #{title}</if>
+        <if test="shelfStatus != null"> and shelf_status= #{shelfStatus}</if>
+        <if test="isFree != null"> and is_free= #{isFree}</if>
         <if test="startIdx"><![CDATA[ and idx >= #{startIdx} ]]></if>
         <if test="endIdx"><![CDATA[ and idx <= #{endIdx} ]]></if>
     </sql>
     <sql id="Base_Column_List">
-        chapter_id,volume_id,book_id,name,idx,price,word_count,status,create_date,update_date
+        chapter_id,volume_id,book_id,title,idx,price,word_count,shelf_status,is_free,content_md5,update_date,create_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map">
@@ -39,27 +43,28 @@
             <if test="chapterId != null">chapter_id,</if>
             <if test="volumeId != null">volume_id,</if>
             <if test="bookId != null">book_id,</if>
-            <if test="name != null and name != ''">name,</if>
+            <if test="title != null and title != ''">title,</if>
             <if test="idx != null">idx,</if>
             <if test="price != null">price,</if>
             <if test="wordCount != null">word_count,</if>
-            <if test="content != null and content != ''">content,</if>
-            <if test="status != null">status,</if>
-            <if test="createDate != null">create_date,</if>
+            <if test="shelfStatus != null">shelf_status,</if>
+            <if test="isFree != null">is_free,</if>
+            <if test="contentMd5 != null">content_md5,</if>
             <if test="updateDate != null">update_date,</if>
+            <if test="createDate != null">create_date,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="chapterId != null">
-                #{chapter_id,jdbcType=BIGINT},
+                #{chapterId,jdbcType=BIGINT},
             </if>
             <if test="volumeId != null">
-                #{volume_id,jdbcType=BIGINT},
+                #{volumeId,jdbcType=BIGINT},
             </if>
             <if test="bookId != null">
-                #{book_id,jdbcType=BIGINT},
+                #{bookId,jdbcType=BIGINT},
             </if>
-            <if test="name != null and name != ''">
-                #{name,jdbcType=VARCHAR},
+            <if test="title != null and title != ''">
+                #{title,jdbcType=VARCHAR},
             </if>
             <if test="idx != null">
                 #{idx,jdbcType=INTEGER},
@@ -68,29 +73,67 @@
                 #{price,jdbcType=INTEGER},
             </if>
             <if test="wordCount != null">
-                #{word_count,jdbcType=INTEGER},
+                #{wordCount,jdbcType=INTEGER},
             </if>
-            <if test="content != null and content != ''">
-                #{content,jdbcType=VARCHAR},
+            <if test="shelfStatus != null">
+                #{shelfStatus,jdbcType=INTEGER},
             </if>
-            <if test="status != null">
-                #{status,jdbcType=INTEGER},
+            <if test="isFree != null">
+                #{isFree,jdbcType=INTEGER},
             </if>
-            <if test="createDate != null">
-                #{createDate,jdbcType=TIMESTAMP},
+            <if test="contentMd5 != null and contentMd5 != ''">
+                #{contentMd5,jdbcType=VARCHAR},
             </if>
             <if test="updateDate != null">
                 #{updateDate,jdbcType=TIMESTAMP},
             </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
         </trim>
     </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.Chapter">
+        update chapter${num}
+        <set>
+            <if test="volumeId != null">
+                volume_id = #{volumeId,jdbcType=BIGINT},
+            </if>
+            <if test="bookId != null">
+                book_id = #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="idx != null">
+                idx = #{idx,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=INTEGER},
+            </if>
+            <if test="wordCount != null">
+                word_count = #{wordCount,jdbcType=INTEGER},
+            </if>
+            <if test="shelfStatus != null">
+                shelf_status = #{shelfStatus,jdbcType=INTEGER},
+            </if>
+            <if test="isFree != null">
+                is_free = #{isFree,jdbcType=INTEGER},
+            </if>
+            <if test="contentMd5 != null and contentMd5 != ''">
+                content_md5 = #{contentMd5,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where
+        chapter_id = #{chapterId,jdbcType=BIGINT}
+    </update>
 
     <select id="getAll" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List" />
-        <if test="type == 1">
-            ,content
-        </if>
         from chapter${num} where 1=1
         <include refid="Base_Where" />
         order by idx
@@ -100,8 +143,7 @@
         <include refid="Base_Where" />
     </select>
     <select id="pageData" resultMap="BaseResultMap" parameterType="map">
-        select
-        <include refid="Base_Column_List" />
+        select <include refid="Base_Column_List" />
         from chapter${num} where 1=1
         <include refid="Base_Where" />
         order by create_date desc

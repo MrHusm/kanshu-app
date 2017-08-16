@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="ChapterContentMapper">
+    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.product.model.ChapterContent">
+        <id column="chapter_id" property="chapterId" jdbcType="BIGINT" />
+        <result column="book_id" property="bookId" jdbcType="BIGINT" />
+        <result column="content" property="content" jdbcType="LONGVARCHAR" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="chapterId != null"> and chapter_id= #{chapterId}</if>
+        <if test="bookId != null"> and book_id= #{bookId}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        chapter_id,book_id,content,update_date,create_date
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" /> from chapter_content${num} where chapter_id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="map">
+        delete from chapter_content${num} where chapter_id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="chapterId" parameterType="com.kanshu.kanshu.product.model.ChapterContent">
+        insert into chapter_content${num}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="chapterId != null">chapter_id,</if>
+            <if test="bookId != null">book_id,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="createDate != null">create_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="chapterId != null">
+                #{chapterId,jdbcType=BIGINT},
+            </if>
+            <if test="bookId != null">
+                #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="content != null and content != ''">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.ChapterContent">
+        update chapter_content${num}
+        <set>
+            <if test="bookId != null">
+                book_id = #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where
+        chapter_id = #{chapterId,jdbcType=BIGINT}
+    </update>
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from chapter_content${num} where 1=1
+        <include refid="Base_Where" />
+        order by idx
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from chapter_content${num} where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List" />
+        from chapter_content${num} where 1=1
+        <include refid="Base_Where" />
+        order by create_date desc
+    </select>
+</mapper>

@@ -248,9 +248,9 @@ public class BookController extends BaseController {
                 }
             }
             if(chapter.isLock()){
-                if(chapter.getContent().length() > 100){
-                    chapter.setContent(chapter.getContent().substring(0,100));
-                }
+                //if(chapter.getContent().length() > 100){
+                //    chapter.setContent(chapter.getContent().substring(0,100));
+                //}
             }
 
             //收费章节显示用户账号信息
