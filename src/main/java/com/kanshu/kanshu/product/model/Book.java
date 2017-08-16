@@ -70,7 +70,7 @@ public class Book implements Serializable{
     /**
      * 是否完结 0：连载 1：完结
      */
-    private Short isFull;
+    private Integer isFull;
 
     /**
      * 全本购买价格
@@ -91,6 +91,11 @@ public class Book implements Serializable{
      * 最近一个章节的更新时间
      */
     private Date lastChapterUpdateDate;
+
+    /**
+     * 版权方编码
+     */
+    private String copyrightCode;
 
     /**
      * 版权方
@@ -240,11 +245,11 @@ public class Book implements Serializable{
         this.chargeType = chargeType;
     }
 
-    public Short getIsFull() {
+    public Integer getIsFull() {
         return isFull;
     }
 
-    public void setIsFull(Short isFull) {
+    public void setIsFull(Integer isFull) {
         this.isFull = isFull;
     }
 
@@ -358,5 +363,13 @@ public class Book implements Serializable{
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getCopyrightCode() {
+        return copyrightCode;
+    }
+
+    public void setCopyrightCode(String copyrightCode) {
+        this.copyrightCode = copyrightCode;
     }
 }

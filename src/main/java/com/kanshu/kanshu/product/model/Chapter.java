@@ -56,6 +56,26 @@ public class Chapter implements Serializable {
     private String contentMd5;
 
     /**
+     * 版权方code
+     */
+    private String copyrightCode;
+
+    /**
+     * 版权方图书id
+     */
+    private Long copyrightBookId;
+
+    /**
+     * 版权方卷id
+     */
+    private Long copyrightVolumeId;
+
+    /**
+     * 版权方章节id
+     */
+    private Long copyrightChapterId;
+
+    /**
      * true:加锁 false：解锁
      */
     private boolean isLock = true;
@@ -166,5 +186,37 @@ public class Chapter implements Serializable {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getCopyrightCode() {
+        return copyrightCode;
+    }
+
+    public void setCopyrightCode(String copyrightCode) {
+        this.copyrightCode = copyrightCode;
+    }
+
+    public Long getCopyrightBookId() {
+        return copyrightBookId;
+    }
+
+    public void setCopyrightBookId(Long copyrightBookId) {
+        this.copyrightBookId = copyrightBookId;
+    }
+
+    public Long getCopyrightVolumeId() {
+        return copyrightVolumeId;
+    }
+
+    public void setCopyrightVolumeId(Long copyrightVolumeId) {
+        this.copyrightVolumeId = copyrightVolumeId;
+    }
+
+    public Long getCopyrightChapterId() {
+        return copyrightChapterId;
+    }
+
+    public void setCopyrightChapterId(Long copyrightChapterId) {
+        this.copyrightChapterId = copyrightChapterId;
     }
 }

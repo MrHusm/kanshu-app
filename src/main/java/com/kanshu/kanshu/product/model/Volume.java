@@ -31,6 +31,21 @@ public class Volume implements Serializable{
      */
     private String desc;
 
+    /**
+     * 版权方code
+     */
+    private String copyrightCode;
+
+    /**
+     * 版权方图书id
+     */
+    private Long copyrightBookId;
+
+    /**
+     * 版权方卷id
+     */
+    private Long copyrightVolumeId;
+
     private List<Chapter> chapters;
 
     private Date createDate;
@@ -99,5 +114,29 @@ public class Volume implements Serializable{
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public String getCopyrightCode() {
+        return copyrightCode;
+    }
+
+    public void setCopyrightCode(String copyrightCode) {
+        this.copyrightCode = copyrightCode;
+    }
+
+    public Long getCopyrightBookId() {
+        return copyrightBookId;
+    }
+
+    public void setCopyrightBookId(Long copyrightBookId) {
+        this.copyrightBookId = copyrightBookId;
+    }
+
+    public Long getCopyrightVolumeId() {
+        return copyrightVolumeId;
+    }
+
+    public void setCopyrightVolumeId(Long copyrightVolumeId) {
+        this.copyrightVolumeId = copyrightVolumeId;
     }
 }

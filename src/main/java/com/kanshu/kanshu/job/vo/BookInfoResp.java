@@ -1,4 +1,4 @@
-package com.kanshu.job.vo;
+package com.kanshu.kanshu.job.vo;
 
 import java.io.Serializable;
 
@@ -6,14 +6,11 @@ import java.io.Serializable;
  * 
  * @ClassName: BookInfoResp 
  * @Description: 图书信息返回对象
- * @author wangdingtai
- * @date 2016年5月24日 下午5:53:05 
+ * @author hushengmeng
+ * @date 2017年8月16日
  *
  */
 public class BookInfoResp implements Serializable{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3651205333707256668L;
 	private long cBID;// 书号
 	private int allwords;// 总字数
@@ -33,6 +30,14 @@ public class BookInfoResp implements Serializable{
 	private String updatetime;// 最新更新
 	private int site;// 5:起点男生1：创世2：云起3：起点女生6：阅文集团9：起点文学网
 	private long cPID;// 1：创世2：云起3：起点女生5:起点男生9：起点文学网66960: 红袖添香56029：小说阅读网56030：晋江中文网
+	private int form;//-1:原创 1:出版
+	private int chargetype;//计费方式 1:按章2:按本
+	private int unitprice;//千字价格 单位:分
+	private int totalprice;//按本计费价格
+	private int file_format;//按位标识本书全部文件格式1:txt 2:腾讯精排简版 4:腾讯精排完整 7: 以上三种都支持
+	private int monthlyallowed;//是否允许包月 -1:否 1:是
+	private String monthlytime;//允许包月时间
+	private String canclemonthlytime;//取消包月时间
 	public BookInfoResp() {
 		super();
 	}
@@ -144,17 +149,100 @@ public class BookInfoResp implements Serializable{
 	public void setcPID(long cPID) {
 		this.cPID = cPID;
 	}
+
+	public int getForm() {
+		return form;
+	}
+
+	public void setForm(int form) {
+		this.form = form;
+	}
+
+	public int getChargetype() {
+		return chargetype;
+	}
+
+	public void setChargetype(int chargetype) {
+		this.chargetype = chargetype;
+	}
+
+	public int getUnitprice() {
+		return unitprice;
+	}
+
+	public void setUnitprice(int unitprice) {
+		this.unitprice = unitprice;
+	}
+
+	public int getTotalprice() {
+		return totalprice;
+	}
+
+	public void setTotalprice(int totalprice) {
+		this.totalprice = totalprice;
+	}
+
+	public int getFile_format() {
+		return file_format;
+	}
+
+	public void setFile_format(int file_format) {
+		this.file_format = file_format;
+	}
+
+	public int getMonthlyallowed() {
+		return monthlyallowed;
+	}
+
+	public void setMonthlyallowed(int monthlyallowed) {
+		this.monthlyallowed = monthlyallowed;
+	}
+
+	public String getMonthlytime() {
+		return monthlytime;
+	}
+
+	public void setMonthlytime(String monthlytime) {
+		this.monthlytime = monthlytime;
+	}
+
+	public String getCanclemonthlytime() {
+		return canclemonthlytime;
+	}
+
+	public void setCanclemonthlytime(String canclemonthlytime) {
+		this.canclemonthlytime = canclemonthlytime;
+	}
+
 	@Override
 	public String toString() {
-		return "BookInfoResp [cBID=" + cBID + ", allwords=" + allwords
-				+ ", authorid=" + authorid + ", authorname=" + authorname
-				+ ", categoryid=" + categoryid + ", coverurl=" + coverurl
-				+ ", createtime=" + createtime + ", status=" + status
-				+ ", subcategoryid=" + subcategoryid + ", title=" + title
-				+ ", vipstatus=" + vipstatus + ", viptime=" + viptime
-				+ ", intro=" + intro + ", keyword=" + keyword + ", tag=" + tag
-				+ ", updatetime=" + updatetime + ", site=" + site + ", cPID="
-				+ cPID + "]";
+		return "BookInfoResp{" +
+				"cBID=" + cBID +
+				", allwords=" + allwords +
+				", authorid=" + authorid +
+				", authorname='" + authorname + '\'' +
+				", categoryid=" + categoryid +
+				", coverurl='" + coverurl + '\'' +
+				", createtime='" + createtime + '\'' +
+				", status=" + status +
+				", subcategoryid=" + subcategoryid +
+				", title='" + title + '\'' +
+				", vipstatus=" + vipstatus +
+				", viptime='" + viptime + '\'' +
+				", intro='" + intro + '\'' +
+				", keyword='" + keyword + '\'' +
+				", tag='" + tag + '\'' +
+				", updatetime='" + updatetime + '\'' +
+				", site=" + site +
+				", cPID=" + cPID +
+				", form=" + form +
+				", chargetype=" + chargetype +
+				", unitprice=" + unitprice +
+				", totalprice=" + totalprice +
+				", file_format=" + file_format +
+				", monthlyallowed=" + monthlyallowed +
+				", monthlytime='" + monthlytime + '\'' +
+				", canclemonthlytime='" + canclemonthlytime + '\'' +
+				'}';
 	}
-	
 }

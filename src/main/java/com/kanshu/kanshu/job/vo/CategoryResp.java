@@ -1,4 +1,4 @@
-package com.kanshu.job.vo;
+package com.kanshu.kanshu.job.vo;
 /**
  * 
  * @ClassName: CategoryResp 
