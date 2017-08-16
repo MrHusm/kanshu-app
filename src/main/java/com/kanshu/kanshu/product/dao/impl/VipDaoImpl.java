@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * Created by hushengmeng on 2017/7/4.
  */
 @Repository(value="vipDao")
-public class VipImpl extends BaseDaoImpl<Vip> implements IVipDao {
+public class VipDaoImpl extends BaseDaoImpl<Vip> implements IVipDao {
 }
