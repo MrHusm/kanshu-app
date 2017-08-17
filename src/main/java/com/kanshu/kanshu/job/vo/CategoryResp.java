@@ -3,7 +3,7 @@ package com.kanshu.kanshu.job.vo;
  * 
  * @ClassName: CategoryResp 
  * @Description: 分类返回信息
- * @author wangdingtai
+ * @author hushengmeng
  * @date 2016年5月25日 下午5:37:05 
  *
  */
@@ -16,6 +16,7 @@ public class CategoryResp {
 	private Integer subcategoryid;// 三级分类ID
 	private String subcategoryname;// 三年级分类名称
 	private Integer status;// 状态 0:无效 1:有效
+	private Integer site;
 	public CategoryResp() {
 		super();
 	}

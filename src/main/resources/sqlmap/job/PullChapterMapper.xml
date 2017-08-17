@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="PullChapterMapper">
+	<resultMap id="BaseResultMap" type="com.kanshu.kanshu.job.model.PullChapter">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="copyright_code" property="copyrightCode" jdbcType="VARCHAR" />
+		<result column="copyright_book_id" property="copyrightBookId" jdbcType="BIGINT" />
+		<result column="copyright_volume_id" property="copyrightVolumeId" jdbcType="BIGINT" />
+		<result column="copyright_chapter_id" property="copyrightChapterId" jdbcType="BIGINT" />
+		<result column="pull_status" property="pullStatus" jdbcType="INTEGER" />
+		<result column="pull_failure_cause" property="pullFailureCause" jdbcType="VARCHAR" />
+		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Where">
+		<if test="id != null"> and id= #{id}</if>	
+		<if test="copyrightCode != null and copyrightCode !=''"> and copyright_code= #{copyrightCode}</if>
+		<if test="copyrightBookId != null"> and copyright_book_id= #{copyrightBookId}</if>
+		<if test="copyrightVolumeId != null"> and copyright_volume_id= #{copyrightVolumeId}</if>
+		<if test="copyrightChapterId != null"> and copyright_chapter_id= #{copyrightChapterId}</if>
+		<if test="pullStatus != null"> and pull_status= #{pullStatus}</if>	
+		<if test="pullFailureCause != null and pullFailureCause !=''"> and pull_failure_cause= #{pullFailureCause}</if>
+		<if test="createDate != null"> and create_date= #{createDate}</if>	
+		<if test="updateDate != null"> and update_date= #{updateDate}</if>
+		<if test="pullFailureCause1 != null and pullFailureCause1 !=''"> 
+			and pull_failure_cause not like CONCAT('%',#{pullFailureCause1},'%')
+		</if>
+		<if test="pullFailureCause2 != null and pullFailureCause2 !=''"> 
+			and pull_failure_cause not like CONCAT('%',#{pullFailureCause2},'%')
+		</if>
+	</sql>
+	<sql id="Base_Column_List">
+		id ,copyright_code ,copyright_book_id ,
+		copyright_volume_id ,copyright_chapter_id ,
+		pull_status ,pull_failure_cause ,
+		create_date ,update_date 
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from pull_chapter
+		where
+		id = #{id,jdbcType=BIGINT}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from pull_chapter
+		where
+		id = #{id,jdbcType=BIGINT}
+	</delete>
+
+	<insert id="insertSelective" parameterType="com.kanshu.kanshu.job.model.PullChapter">
+		insert into pull_chapter
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>	
+			<if test="copyrightCode != null and copyrightCode !=''">copyright_code,</if>
+			<if test="copyrightBookId != null">copyright_book_id,</if>
+			<if test="copyrightVolumeId != null">copyright_volume_id,</if>
+			<if test="copyrightChapterId != null">copyright_chapter_id,</if>
+			<if test="pullStatus != null">pull_status,</if>	
+			<if test="pullFailureCause != null and pullFailureCause !=''">pull_failure_cause,</if>
+			<if test="createDate != null">create_date,</if>	
+			<if test="updateDate != null">update_date,</if>	
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=BIGINT},
+			</if>
+			<if test="copyrightCode != null and copyrightCode !=''">
+				#{copyrightCode,jdbcType=VARCHAR},
+			</if>
+			<if test="copyrightBookId != null">
+				#{copyrightBookId,jdbcType=BIGINT},
+			</if>
+			<if test="copyrightVolumeId != null">
+				#{copyrightVolumeId,jdbcType=BIGINT},
+			</if>
+			<if test="copyrightChapterId != null">
+				#{copyrightChapterId,jdbcType=BIGINT},
+			</if>
+			<if test="pullStatus != null">
+				#{pullStatus,jdbcType=INTEGER},
+			</if>
+			<if test="pullFailureCause != null and pullFailureCause !=''">
+				#{pullFailureCause,jdbcType=VARCHAR},
+			</if>
+			<if test="createDate != null">
+				#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateDate != null">
+				#{updateDate,jdbcType=TIMESTAMP},
+			</if>
+			
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.job.model.PullChapter">
+		update pull_chapter
+		<set>
+			<if test="copyrightCode != null and copyrightCode !=''">
+				copyright_code= #{copyrightCode,jdbcType=VARCHAR},
+			</if>
+			<if test="copyrightBookId != null">
+				copyright_book_id= #{copyrightBookId,jdbcType=BIGINT},
+			</if>
+			<if test="copyrightVolumeId != null">
+				copyright_volume_id= #{copyrightVolumeId,jdbcType=BIGINT},
+			</if>
+			<if test="copyrightChapterId != null">
+				copyright_chapter_id= #{copyrightChapterId,jdbcType=BIGINT},
+			</if>
+			<if test="pullStatus != null">
+				pull_status= #{pullStatus,jdbcType=INTEGER},
+			</if>
+			<if test="pullFailureCause != null">
+				pull_failure_cause= #{pullFailureCause,jdbcType=VARCHAR},
+			</if>
+			<if test="createDate != null">
+				create_date= #{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateDate != null">
+				update_date= #{updateDate,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		where
+		id = #{id,jdbcType=BIGINT}
+	</update>
+
+	<select id="getAll" resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from pull_chapter where 1=1
+		<include refid="Base_Where" />
+	</select>
+	<select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+		select count(1) from pull_chapter where 1=1
+		<include refid="Base_Where" />
+	</select>
+	<select id="pageData" resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from pull_chapter where 1=1
+		<include refid="Base_Where" />
+	</select>
+
+
+	<select id="selectByIds" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from pull_chapter where id in
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<select id="selectByCopyrightChapterIds" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from pull_chapter where copyright_chapter_id in
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+</mapper>

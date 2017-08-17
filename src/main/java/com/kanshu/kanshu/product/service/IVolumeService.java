@@ -8,4 +8,13 @@ import com.kanshu.kanshu.product.model.Volume;
  */
 public interface IVolumeService extends IBaseService<Volume,Long> {
 
+    /**
+     *
+     * @Title: findCount
+     * @Description: 查询卷的数量
+     * @param volume
+     * @return
+     * @author hushengmeng
+     */
+    int findCount(Volume volume);
 }

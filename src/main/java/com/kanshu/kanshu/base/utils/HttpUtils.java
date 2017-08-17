@@ -671,7 +671,7 @@ public abstract class HttpUtils {
 	/**
 	 * 
 	 * @Description:发送类型为multipart/form-data的表单的请求
-	 * @author wangdingtai
+	 * @author hushengmeng
 	 * @time:2015年10月19日 下午3:19:05
 	 * @param url
 	 * @param params
@@ -758,7 +758,7 @@ public abstract class HttpUtils {
 	/**
 	 * 
 	 * @Description:发送类型为multipart/form-data的表单的请求
-	 * @author wangdingtai
+	 * @author hushengmeng
 	 * @time:2015年10月19日 下午3:19:05
 	 * @param url
 	 * @param params

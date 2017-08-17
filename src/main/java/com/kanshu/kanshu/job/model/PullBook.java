@@ -1,5 +1,7 @@
 package com.kanshu.kanshu.job.model;
 
+import com.kanshu.kanshu.base.utils.DateUtil;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -33,6 +35,21 @@ public class PullBook implements Serializable{
     private Date createDate;
 
     private Date updateDate;
+
+    public PullBook() {
+        super();
+    }
+
+    public PullBook(String copyrightCode, String copyrightBookId,
+                              Integer pullStatus, String pullFailureCause) {
+        super();
+        this.copyrightCode = copyrightCode;
+        this.copyrightBookId = Long.parseLong(copyrightBookId);
+        this.pullStatus = pullStatus;
+        this.pullFailureCause = pullFailureCause;
+        this.createDate = DateUtil.getCurrentDateTime();
+        this.updateDate= DateUtil.getCurrentDateTime();
+    }
 
     public Long getId() {
         return id;

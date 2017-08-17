@@ -1,5 +1,7 @@
 package com.kanshu.kanshu.job.model;
 
+import com.kanshu.kanshu.base.utils.DateUtil;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -21,6 +23,16 @@ public class PullChapter implements Serializable{
     private Long copyrightBookId;
 
     /**
+     * 版权方卷id
+     */
+    private Long copyrightVolumeId;
+
+    /**
+     * 版权方章节id
+     */
+    private Long copyrightChapterId;
+
+    /**
      * 拉取状态 1：拉取成功 0：拉取失败
      */
     private Integer pullStatus;
@@ -33,6 +45,24 @@ public class PullChapter implements Serializable{
     private Date createDate;
 
     private Date updateDate;
+
+    public PullChapter() {
+        super();
+    }
+
+    public PullChapter(String copyrightCode, String copyrightBookId,
+                                 String copyrightVolumeId, String copyrightChapterId,
+                                 Integer pullStatus, String pullFailureCause) {
+        super();
+        this.copyrightCode = copyrightCode;
+        this.copyrightBookId = Long.parseLong(copyrightBookId);
+        this.copyrightVolumeId = Long.parseLong(copyrightVolumeId);
+        this.copyrightChapterId = Long.parseLong(copyrightChapterId);
+        this.pullStatus = pullStatus;
+        this.pullFailureCause = pullFailureCause;
+        this.createDate = DateUtil.getCurrentDateTime();
+        this.updateDate = DateUtil.getCurrentDateTime();
+    }
 
     public Long getId() {
         return id;
@@ -88,5 +118,21 @@ public class PullChapter implements Serializable{
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public Long getCopyrightVolumeId() {
+        return copyrightVolumeId;
+    }
+
+    public void setCopyrightVolumeId(Long copyrightVolumeId) {
+        this.copyrightVolumeId = copyrightVolumeId;
+    }
+
+    public Long getCopyrightChapterId() {
+        return copyrightChapterId;
+    }
+
+    public void setCopyrightChapterId(Long copyrightChapterId) {
+        this.copyrightChapterId = copyrightChapterId;
     }
 }

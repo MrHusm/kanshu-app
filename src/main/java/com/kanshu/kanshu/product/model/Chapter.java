@@ -56,6 +56,11 @@ public class Chapter implements Serializable {
     private String contentMd5;
 
     /**
+     * 章节内容
+     */
+    private String content;
+
+    /**
      * 版权方code
      */
     private String copyrightCode;
@@ -218,5 +223,13 @@ public class Chapter implements Serializable {
 
     public void setCopyrightChapterId(Long copyrightChapterId) {
         this.copyrightChapterId = copyrightChapterId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }
