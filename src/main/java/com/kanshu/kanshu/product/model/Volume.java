@@ -46,6 +46,11 @@ public class Volume implements Serializable{
      */
     private Long copyrightVolumeId;
 
+    /**
+     * 在架状态 0：下架 1：在架
+     */
+    private Integer shelfStatus;
+
     private List<Chapter> chapters;
 
     private Date createDate;
@@ -138,5 +143,13 @@ public class Volume implements Serializable{
 
     public void setCopyrightVolumeId(Long copyrightVolumeId) {
         this.copyrightVolumeId = copyrightVolumeId;
+    }
+
+    public Integer getShelfStatus() {
+        return shelfStatus;
+    }
+
+    public void setShelfStatus(Integer shelfStatus) {
+        this.shelfStatus = shelfStatus;
     }
 }

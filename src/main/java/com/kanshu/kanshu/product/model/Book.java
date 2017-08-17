@@ -53,9 +53,19 @@ public class Book implements Serializable{
     private Long categorySecId;
 
     /**
+     * 二级分类名称
+     */
+    private String categorySecName;
+
+    /**
      * 三级分类
      */
     private Long categoryThrId;
+
+    /**
+     * 三级分类名称
+     */
+    private String categoryThrName;
 
     /**
      * 关键字
@@ -63,7 +73,7 @@ public class Book implements Serializable{
     private String keyword;
 
     /**
-     * 是否支持全本购买 0：不支持 1：支持
+     * 计费方式 1:按章 2:按本
      */
     private Integer chargeType;
 
@@ -371,5 +381,21 @@ public class Book implements Serializable{
 
     public void setCopyrightCode(String copyrightCode) {
         this.copyrightCode = copyrightCode;
+    }
+
+    public String getCategorySecName() {
+        return categorySecName;
+    }
+
+    public void setCategorySecName(String categorySecName) {
+        this.categorySecName = categorySecName;
+    }
+
+    public String getCategoryThrName() {
+        return categoryThrName;
+    }
+
+    public void setCategoryThrName(String categoryThrName) {
+        this.categoryThrName = categoryThrName;
     }
 }

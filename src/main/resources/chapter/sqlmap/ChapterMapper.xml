@@ -29,15 +29,8 @@
         chapter_id,volume_id,book_id,title,idx,price,word_count,shelf_status,is_free,content_md5,update_date,create_date
     </sql>
 
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map">
-        select <include refid="Base_Column_List" /> from chapter${num} where chapter_id = #{id,jdbcType=BIGINT}
-    </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="map">
-        delete from chapter${num} where chapter_id = #{id,jdbcType=BIGINT}
-    </delete>
-
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="chapterId" parameterType="com.kanshu.kanshu.product.model.Chapter">
+    <insert id="insertByMap" useGeneratedKeys="true" keyProperty="chapterId" parameterType="map">
         insert into chapter${num}
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="chapterId != null">chapter_id,</if>
@@ -93,7 +86,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.Chapter">
+    <update id="updateByMap" parameterType="map">
         update chapter${num}
         <set>
             <if test="volumeId != null">

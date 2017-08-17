@@ -1,16 +1,18 @@
 package com.kanshu.chapter.base.service.impl;
 
-import com.kanshu.kanshu.base.contants.RedisKeyConstants;
 import com.kanshu.chapter.base.dao.IBaseDao;
 import com.kanshu.chapter.base.dao.IChapterDao;
-import com.kanshu.kanshu.product.model.Chapter;
 import com.kanshu.chapter.base.service.IChapterService;
+import com.kanshu.kanshu.base.contants.RedisKeyConstants;
+import com.kanshu.kanshu.base.utils.BeanUtils;
+import com.kanshu.kanshu.product.model.Chapter;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,5 +67,23 @@ public class ChapterServiceImpl extends BaseServiceImpl<Chapter, Long> implement
             }
         }
         return chapter;
+    }
+
+    @Override
+    public int saveChapter(Chapter chapter, Integer num) {
+        //TODO
+        //压缩章节内容
+        Map<String,Object> map = BeanUtils.convertBeanToMap(chapter);
+        map.put("num",num);
+        return this.getBaseDao().insert("ChapterMapper.insertByMap",map);
+    }
+
+    @Override
+    public int updateChapter(Chapter chapter, Integer num) {
+        //TODO
+        //压缩章节内容
+        Map<String,Object> map = BeanUtils.convertBeanToMap(chapter);
+        map.put("num",num);
+        return this.getBaseDao().update("ChapterMapper.updateByMap",map);
     }
 }

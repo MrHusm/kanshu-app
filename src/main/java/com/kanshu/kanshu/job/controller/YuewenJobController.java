@@ -11,10 +11,8 @@ import com.kanshu.kanshu.job.service.IPullBookService;
 import com.kanshu.kanshu.job.service.IPullChapterService;
 import com.kanshu.kanshu.job.service.IPullVolumeService;
 import com.kanshu.kanshu.job.vo.*;
-import com.kanshu.kanshu.product.model.Book;
-import com.kanshu.kanshu.product.model.Category;
-import com.kanshu.kanshu.product.model.Chapter;
-import com.kanshu.kanshu.product.model.Volume;
+import com.kanshu.kanshu.product.model.*;
+import com.kanshu.kanshu.product.service.IAuthorService;
 import com.kanshu.kanshu.product.service.IBookService;
 import com.kanshu.kanshu.product.service.ICategoryService;
 import com.kanshu.kanshu.product.service.IVolumeService;
@@ -87,6 +85,8 @@ public class YuewenJobController extends BaseController {
 	private IPullChapterService pullChapterService;
 	@Resource
 	private ICategoryService categoryService;
+	@Resource
+	private IAuthorService authorService;
 
 
 	/**
@@ -122,6 +122,7 @@ public class YuewenJobController extends BaseController {
 				categoryFirst.setName(categoryResp.getFreetypename());
 				categoryFirst.setUpdateDate(new Date());
 				categoryFirst.setCreateDate(new Date());
+				categoryFirst.setCopyrightCategoryId(categoryResp.getFreetype().longValue());
 				categoryService.save(categoryFirst);
 			}
 			//保存二级分类
@@ -132,6 +133,7 @@ public class YuewenJobController extends BaseController {
 				categorySec.setName(categoryResp.getCategoryname());
 				categorySec.setUpdateDate(new Date());
 				categorySec.setCreateDate(new Date());
+				categoryFirst.setCopyrightCategoryId(categoryResp.getCategoryid().longValue());
 				categoryService.save(categorySec);
 			}
 			//保存三级分类
@@ -142,6 +144,7 @@ public class YuewenJobController extends BaseController {
 				categoryThr.setName(categoryResp.getSubcategoryname());
 				categoryThr.setUpdateDate(new Date());
 				categoryThr.setCreateDate(new Date());
+				categoryFirst.setCopyrightCategoryId(categoryResp.getSubcategoryid().longValue());
 				categoryService.save(categoryThr);
 			}
 		}
@@ -192,18 +195,17 @@ public class YuewenJobController extends BaseController {
 						}
 					}
 					cbids = tempList.toArray(new String[0]);
-					if(cbids.length != pageSize.intValue()){
-						//判断是否拉取过
-						for (int i = 0; i < cbids.length; i++) {
-							logger.info("ifpullBook params:copyrightCode={},copyRightBookId={}", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
-									cbids[i]);
-							PullBook pullBookFromDB = pullBookService.findUniqueByParams("copyRightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
-									"copyRightBookId", cbids[i]);
-							if(pullBookFromDB != null){
-								cbids[i] = "";
-							}
+					//判断是否拉取过
+					for (int i = 0; i < cbids.length; i++) {
+						logger.info("ifpullBook params:copyrightCode={},copyrightBookId={}", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+								cbids[i]);
+						PullBook pullBookFromDB = pullBookService.findUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+								"copyrightBookId", cbids[i]);
+						if(pullBookFromDB != null){
+							cbids[i] = "";
 						}
 					}
+
 					for (final String cbid : cbids) {
 						pullBookPool.execute(new Runnable() {
 
@@ -214,7 +216,7 @@ public class YuewenJobController extends BaseController {
 										//调用阅文接口获取书籍信息并保存到数据库
 										BookInfoResp bookInfoResp = getBookByYuewen(cbid);
 										if(bookInfoResp != null){
-											//调用分销平台添加书接口
+											//封装图书数据
 											Book book = setBook(bookInfoResp);
 											//保存图书
 											bookService.save(book);
@@ -297,10 +299,9 @@ public class YuewenJobController extends BaseController {
 									//更新拉取的书籍信息
 									BookInfoResp bookInfoResp = getBookByYuewen(cbid);
 									if(bookInfoResp != null){
-										//调用分销平台更新书接口
+										//封装图书信息
 										Book book = setBook(bookInfoResp);
 										book.setBookId(beforeBook.getBookId());
-										book.setCreateDate(null);
 										//修改图书
 										bookService.update(book);
 
@@ -395,7 +396,7 @@ public class YuewenJobController extends BaseController {
 					//处理失败的书籍信息
 					BookInfoResp bookInfoResp = getBookByYuewen(cbid);
 					if(bookInfoResp != null){
-						//调用分销平台更新书接口
+						//封装图书信息
 						Book book = setBook(bookInfoResp);
 						Book beforeBook = bookService.findMasterUniqueByParams("copyrightCode",
 								ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid);
@@ -403,7 +404,6 @@ public class YuewenJobController extends BaseController {
 							bookService.save(book);
 						}else{
 							book.setBookId(beforeBook.getBookId());
-							book.setCreateDate(null);
 							bookService.update(book);
 						}
 
@@ -479,11 +479,13 @@ public class YuewenJobController extends BaseController {
 				Volume beforeVolume = volumeService.findMasterUniqueByParams("copyrightCode",
 						ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 						"copyrightVolumeId", volumeInfoResp.getcVID().toString());
+				Book book = bookService.findMasterUniqueByParams("copyrightCode",
+						ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid);
 				if(beforeVolume == null){
+					volume.setBookId(book.getBookId());
 					volumeService.save(volume);
 				}else{
 					volume.setVolumeId(beforeVolume.getVolumeId());
-					volume.setCreateDate(null);
 					volumeService.update(volume);
 				}
 
@@ -500,8 +502,8 @@ public class YuewenJobController extends BaseController {
 							ChapterContentResp chapterContentResp = getChapterContentFromYuewenByChapterId(cbid, chapterInfoResp.getcCID().toString(),
 									chapterInfoResp.getcVID().toString());
 							if(chapterContentResp != null){
-								//调用分销平台增加或者更新章节接口
-								Chapter chapter = setChapter(chapterInfoResp, null, volume.getVolumeId(),
+								//封装章节信息
+								Chapter chapter = setChapter(chapterInfoResp, book.getBookId(), volume.getVolumeId(),
 										chapterContentResp.getContent(), volumeIndex);
 								//查询是否拉取过该章节
 								logger.info("copyrightCode="+ ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE) + ",copyrightBookId="+ cbid
@@ -510,11 +512,10 @@ public class YuewenJobController extends BaseController {
 										ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 										"copyrightChapterId", chapterInfoResp.getcCID().toString());
 								if(beforeChapter == null){
-									chapterService.save(chapter);
+									chapterService.saveChapter(chapter,book.getBookId().intValue() % 10);
 								}else{
 									chapter.setChapterId(beforeChapter.getChapterId());
-									chapter.setCreateDate(null);
-									chapterService.update(chapter);
+									chapterService.updateChapter(chapter,book.getBookId().intValue() % 10);
 								}
 								int chapterPullStatus = 1;
 								String chapterPullFailureCause = "";
@@ -582,8 +583,11 @@ public class YuewenJobController extends BaseController {
 			//调用获取章节内容接口
 			ChapterContentResp chapterContentResp = getChapterContentFromYuewenByChapterId(cbid, ccid, cvid);
 			if(chapterInfoResp != null && chapterContentResp != null && volumeIndex > 0){
+				Volume volume = volumeService.findMasterUniqueByParams("copyrightCode",
+						ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
+						"copyrightVolumeId", cvid);
 				//调用分销平台增加或者更新章节接口
-				Chapter chapter = setChapter(chapterInfoResp, null, null,
+				Chapter chapter = setChapter(chapterInfoResp, volume.getBookId(), volume.getVolumeId(),
 						chapterContentResp.getContent(), volumeIndex);
 				//查询是否拉取过该章节
 				logger.info("beforeChapter params:copyrightBookId={},copyrightChapterId={}", cbid, ccid);
@@ -591,11 +595,10 @@ public class YuewenJobController extends BaseController {
 						ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 						"copyrightChapterId", ccid);
 				if(beforeChapter == null){
-					chapterService.save(chapter);
+					chapterService.saveChapter(chapter,volume.getBookId().intValue() % 10);
 				}else{
 					chapter.setChapterId(beforeChapter.getChapterId());
-					chapter.setCreateDate(null);
-					chapterService.update(chapter);
+					chapterService.updateChapter(chapter,volume.getBookId().intValue() % 10);
 				}
 				int chapterPullStatus = 1;
 				String chapterPullFailureCause = "";
@@ -937,8 +940,11 @@ public class YuewenJobController extends BaseController {
     			pullFailureCause = "调用阅文获取书藉章节内容接口：" + JSON.parseObject(result).getString("returnMsg");
             }
         }
-        pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, cvid,
-				ccid, pullStatus, pullFailureCause);
+        //保存失败的记录
+        if(pullStatus != 1){
+			pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, cvid,
+					ccid, pullStatus, pullFailureCause);
+		}
         return  chapterContentResp;
     }
 	/*
@@ -968,27 +974,57 @@ public class YuewenJobController extends BaseController {
 	 */
 	private Book setBook(BookInfoResp bookInfoResp){
 		Book book = new Book();
-		book.setCopyrightCode(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));// 是	供应商编码
-		book.setCopyright("阅文集团");// 是 供应商名称
-		book.setCopyrightBookId(bookInfoResp.getcBID());// 是	供应商作品id
 		book.setTitle(bookInfoResp.getTitle());// 是	作品名称
-		book.setIntro(bookInfoResp.getIntro());// 否	作品简介
-		book.setAuthorName(bookInfoResp.getAuthorname());// 是	作者名称
-		if(bookInfoResp.getVipstatus() == 1){
-			book.setIsFree(1);
-		}else{
-			book.setIsFree(0);
-		}
+		book.setWordCount(bookInfoResp.getAllwords());// 否	作品字数
 		book.setCoverUrl(bookInfoResp.getCoverurl());
+		book.setAuthorName(bookInfoResp.getAuthorname());// 是	作者名称
+		book.setAuthorPenname(bookInfoResp.getAuthorname());
+		Author author = this.authorService.findUniqueByParams("name",book.getAuthorName());
+		if(author == null){
+			author = new Author();
+			author.setName(bookInfoResp.getAuthorname());
+			author.setPenname(bookInfoResp.getAuthorname());
+			author.setUpdateDate(new Date());
+			author.setCreateDate(new Date());
+			authorService.save(author);
+		}
+		book.setAuthorId(author.getAuthorId());
+		book.setIntro(bookInfoResp.getIntro());// 否	作品简介
+		book.setShelfStatus(1);
+		Category categorySec = this.categoryService.findUniqueByParams("copyrightCategoryId",bookInfoResp.getCategoryid(),"copyrightCode",ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));
+		Category categoryThr = this.categoryService.findUniqueByParams("copyrightCategoryId",bookInfoResp.getSubcategoryid(),"copyrightCode",ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));
+		if(categorySec != null){
+			book.setCategorySecId(categorySec.getCategoryId());
+			book.setCategorySecName(categorySec.getName());
+		}
+		if(categoryThr != null){
+			book.setCategoryThrId(categoryThr.getCategoryId());
+			book.setCategoryThrName(categoryThr.getName());
+		}
 		book.setKeyword(bookInfoResp.getKeyword());// 否	作品关键词，多个关键词请以英文逗号（,）分隔。
+		book.setChargeType(bookInfoResp.getChargetype());
 		if(bookInfoResp.getStatus() == 50){
 			book.setIsFull(1);// 是	是否完本：1完本，0未完本。
 		}else{
 			book.setIsFull(0);
 		}
-		book.setWordCount(bookInfoResp.getAllwords());// 否	作品字数
-		//Category categorySec = this.categoryService.findUniqueByParams("name",bookInfoResp.getCategoryid());
-		book.setChargeType(bookInfoResp.getChargetype());
+		book.setPrice(bookInfoResp.getTotalprice());
+		if(bookInfoResp.getVipstatus() == 1){
+			book.setIsFree(1);
+		}else{
+			book.setIsFree(0);
+		}
+		book.setTag(bookInfoResp.getTag());
+		book.setLastChapterUpdateDate(DateUtil.parseStringToDate(bookInfoResp.getUpdatetime()));
+		book.setCopyrightCode(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));// 是	供应商编码
+		book.setCopyright("阅文集团");// 是 供应商名称
+		book.setCopyrightBookId(bookInfoResp.getcBID());// 是	供应商作品id
+		if(bookInfoResp.getForm() == -1){
+			book.setType(1);
+		}else if(bookInfoResp.getForm() == 1){
+			book.setType(2);
+		}
+		book.setUnitPrice(bookInfoResp.getUnitprice());
 		if(bookInfoResp.getFile_format() == 1){
 			book.setFileFormat(1);
 		}else if(bookInfoResp.getFile_format() == 2){
@@ -1003,19 +1039,8 @@ public class YuewenJobController extends BaseController {
 		}else if(bookInfoResp.getMonthlyallowed() == 1){
 			book.setIsMonthly(1);
 		}
-
-		book.setLastChapterUpdateDate(DateUtil.parseStringToDate(bookInfoResp.getUpdatetime()));
 		book.setMonthlyStartDate(DateUtil.parseStringToDate(bookInfoResp.getMonthlytime()));
 		book.setMonthlyEndDate(DateUtil.parseStringToDate(bookInfoResp.getCanclemonthlytime()));
-		book.setPrice(bookInfoResp.getTotalprice());
-		book.setShelfStatus(1);
-		book.setTag(bookInfoResp.getTag());
-		book.setUnitPrice(bookInfoResp.getUnitprice());
-		if(bookInfoResp.getForm() == -1){
-			book.setType(1);
-		}else if(bookInfoResp.getForm() == 1){
-			book.setType(2);
-		}
 		book.setUpdateDate(new Date());
 		book.setCreateDate(new Date());
 		return book;
@@ -1031,17 +1056,18 @@ public class YuewenJobController extends BaseController {
 	 */
 	private Volume setVolume(VolumeInfoResp volumeInfoResp, Long bookId, int volumeIndex){
 		Volume volume = new Volume();
-		volume.setCopyrightCode(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));// 是	供应商编码
-		volume.setBookId(bookId);// 否	当当读书保存的作品id
-		volume.setCopyrightBookId(volumeInfoResp.getcBID());// 否	供应商作品id
-		volume.setCopyrightVolumeId(volumeInfoResp.getcVID());// 是	供应商卷id
+		volume.setBookId(bookId);// 否	保存的作品id
 		if(StringUtils.isBlank(volumeInfoResp.getVolumename())){
 			volume.setName("第" + volumeIndex +"卷");// 是	卷标题
 		}else{
 			volume.setName(volumeInfoResp.getVolumename());// 是	卷标题
 		}
-		volume.setIdx(volumeInfoResp.getVolumesort());// 是	卷序号，从0开始按卷的顺序递增
 		volume.setDesc(volumeInfoResp.getVolumedesc());// 否	卷描述
+		volume.setIdx(volumeInfoResp.getVolumesort());// 是	卷序号，从0开始按卷的顺序递增
+		volume.setCopyrightCode(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));// 是	供应商编码
+		volume.setCopyrightBookId(volumeInfoResp.getcBID());// 否	供应商作品id
+		volume.setCopyrightVolumeId(volumeInfoResp.getcVID());// 是	供应商卷id
+		volume.setShelfStatus(1);
 		volume.setCreateDate(new Date());
 		volume.setUpdateDate(new Date());
 		return volume;
@@ -1057,26 +1083,23 @@ public class YuewenJobController extends BaseController {
 	 */
 	private Chapter setChapter(ChapterInfoResp chapterInfoResp, Long bookId, Long volumeId, String content, Integer index){
 		Chapter chapter = new Chapter();
+		chapter.setVolumeId(volumeId);// 否	保存的卷id
+		chapter.setBookId(bookId);// 否	保存的作品id
+		chapter.setTitle(chapterInfoResp.getChaptertitle());// 是	章节名称
+		chapter.setIdx(chapterInfoResp.getChaptersort().intValue());// 是
+		chapter.setPrice(chapterInfoResp.getAmount());// 设置价格
+		chapter.setWordCount(chapterInfoResp.getOriginalwords());// 否	章节字数
+		chapter.setShelfStatus(1);
+		if(chapterInfoResp.getVipflag().intValue() == -1){
+			chapter.setIsFree(0);// 否	是否收费：0免费，1收费，默认为免费。
+		}else{
+			chapter.setIsFree(1);// 否	是否收费：1免费，1收费，默认为免费。
+		}
+		chapter.setContentMd5(chapterInfoResp.getContent_md5());
 		chapter.setCopyrightCode(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));// 是	供应商编码
-		chapter.setBookId(bookId);// 否	当当读书保存的作品id。
 		chapter.setCopyrightBookId(chapterInfoResp.getcBID());// 否	供应商作品id
-		chapter.setVolumeId(volumeId);// 否	当当读书保存的卷id
 		chapter.setCopyrightVolumeId(chapterInfoResp.getcVID());// 否	供应商卷id
 		chapter.setCopyrightChapterId(chapterInfoResp.getcCID());// 是	供应商章节id
-		chapter.setTitle(chapterInfoResp.getChaptertitle());// 是	章节名称
-		String chapterSort = chapterInfoResp.getChaptersort().toString();
-		if(index != null){
-			logger.info("setChapter index={},chapterSort={}", index, chapterSort);
-			String sort = "";
-			if(chapterSort.length() > 7){
-				sort = StringUtils.substring(chapterSort, chapterSort.length() - 7);
-			}else{
-				sort = StringUtils.leftPad(chapterSort, 7, "0");
-			}
-			chapterSort = String.valueOf(index) + sort;
-			logger.info("setChapter chapterSort={}", chapterSort);
-		}
-		chapter.setIdx(Integer.parseInt(chapterSort));// 是	章节序号从0开始按章节顺序递增
 		content = "<p>" + content + "</p>";
 		if(content.contains("\r") && content.contains("\n")){
 			content = content.replaceAll("\r", "</p>");
@@ -1091,14 +1114,6 @@ public class YuewenJobController extends BaseController {
     	content = content.replaceAll("\r", "</p>");
     	content = content.replaceAll("\n", "<p>");
 		chapter.setContent(content);// 是	章节内容。章节中的各个段落请使用段落标签<p></p>表示
-		chapter.setWordCount(chapterInfoResp.getOriginalwords());// 否	章节字数
-		if(chapterInfoResp.getVipflag().intValue() == -1){
-			chapter.setIsFree(1);// 否	是否收费：1免费，0收费，默认为免费。
-		}else{
-			chapter.setIsFree(0);// 否	是否收费：1免费，0收费，默认为免费。
-		}
-		chapter.setPrice(chapterInfoResp.getAmount());// 设置价格
-		chapter.setContentMd5(chapterInfoResp.getContent_md5());
 		chapter.setUpdateDate(DateUtil.parseStringToDate(chapterInfoResp.getUpdatetime()));
 		chapter.setCreateDate(new Date());
 		return chapter;
@@ -1119,7 +1134,7 @@ public class YuewenJobController extends BaseController {
 		for (VolumeInfoResp volumeInfoResp : volumeInfoResps) {
 			int volumePullStatus = 1;
 			String volumePullFailureCause = "";
-			//调用分销平台添加卷接口
+			//封装卷信息
 			Volume volume = setVolume(volumeInfoResp, bookId, volumeIndex++);
 			//保存卷信息
 			volumeService.save(volume);
@@ -1141,11 +1156,11 @@ public class YuewenJobController extends BaseController {
 							Chapter chapter = setChapter(chapterInfoResp, bookId, volume.getVolumeId(),
 									chapterContentResp.getContent(), volumeIndex-1);
 							//保存章节信息
-							chapterService.save(chapter);
-							int chapterPullStatus = 1;
-							String chapterPullFailureCause = "";
-							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
-									chapterInfoResp.getcCID().toString(), chapterPullStatus, chapterPullFailureCause);
+							chapterService.saveChapter(chapter,bookId.intValue() % 10);
+//							int chapterPullStatus = 1;
+//							String chapterPullFailureCause = "";
+//							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
+//									chapterInfoResp.getcCID().toString(), chapterPullStatus, chapterPullFailureCause);
 						}
 					}
 					chapterPage++;
@@ -1181,7 +1196,7 @@ public class YuewenJobController extends BaseController {
 						//调用分销平台增加章节接口
 						Chapter chapter = setChapter(chapterInfoResp, bookId, null, chapterContentResp.getContent(), null);
 						//保存章节信息
-						chapterService.save(chapter);
+						chapterService.saveChapter(chapter,bookId.intValue() % 10);
 					}
 				}
 				chapterPage++;
@@ -1207,7 +1222,7 @@ public class YuewenJobController extends BaseController {
 		for (VolumeInfoResp volumeInfoResp : volumeInfoResps) {
 			int volumePullStatus = 1;
 			String volumePullFailureCause = "";
-			//调用分销平台添加卷接口
+			//封装卷信息
 			Volume volume = setVolume(volumeInfoResp, bookId, volumeIndex++);
 			//查询是否拉取过该卷
 			Volume beforeVolume = volumeService.findMasterUniqueByParams("copyrightCode",
@@ -1216,7 +1231,6 @@ public class YuewenJobController extends BaseController {
 			if(beforeVolume == null){
 				volumeService.save(volume);
 			}else{
-				volume.setCreateDate(null);
 				volume.setVolumeId(beforeVolume.getVolumeId());
 				volumeService.update(volume);
 			}
@@ -1234,7 +1248,7 @@ public class YuewenJobController extends BaseController {
 						ChapterContentResp chapterContentResp = getChapterContentFromYuewenByChapterId(cbid, chapterInfoResp.getcCID().toString(),
 								chapterInfoResp.getcVID().toString());
 						if(chapterContentResp != null){
-							//调用分销平台增加或者更新章节接口
+							//封装章节信息
 							Chapter chapter = setChapter(chapterInfoResp, bookId, volume.getVolumeId(),
 									chapterContentResp.getContent(), volumeIndex-1);
 							//查询是否拉取过该章节
@@ -1244,15 +1258,13 @@ public class YuewenJobController extends BaseController {
 							Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
 									"copyrightBookId", cbid, "copyrightChapterId", chapterInfoResp.getcCID().toString());
 
-							String chapterResult = "";
 							int chapterPullStatus = 1;
 							String chapterPullFailureCause = "";
 							if(beforeChapter == null){
-								chapterService.save(chapter);
+								chapterService.saveChapter(chapter,bookId.intValue() % 10);
 							}else{
-								chapter.setCreateDate(null);
 								chapter.setChapterId(beforeChapter.getChapterId());
-								chapterService.update(chapter);
+								chapterService.updateChapter(chapter,bookId.intValue() % 10);
 							}
 							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
 									chapterInfoResp.getcCID().toString(), chapterPullStatus, chapterPullFailureCause);
@@ -1289,18 +1301,17 @@ public class YuewenJobController extends BaseController {
 					ChapterContentResp chapterContentResp = getChapterContentFromYuewenByChapterId(cbid, chapterInfoResp.getcCID().toString(),
 							chapterInfoResp.getcVID().toString());
 					if(chapterContentResp != null){
-						//调用分销平台增加章节接口
+						//封装章节信息
 						Chapter chapter = setChapter(chapterInfoResp, bookId, null, chapterContentResp.getContent(), null);
 						//查询是否拉取过该章节
 						Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode",
 								ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 								"copyrightChapterId", chapterInfoResp.getcCID().toString());
 						if(beforeChapter == null){
-							chapterService.save(chapter);
+							chapterService.saveChapter(chapter,bookId.intValue() % 10);
 						}else{
-							chapter.setCreateDate(null);
 							chapter.setChapterId(beforeChapter.getChapterId());
-							chapterService.update(chapter);
+							chapterService.updateChapter(chapter,bookId.intValue() % 10);
 						}
 					}
 				}

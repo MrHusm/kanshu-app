@@ -1,6 +1,5 @@
 package com.kanshu.chapter.base.service;
 
-import com.kanshu.chapter.base.service.IBaseService;
 import com.kanshu.kanshu.product.model.Chapter;
 
 import java.util.List;
@@ -25,5 +24,19 @@ public interface IChapterService extends IBaseService<Chapter,Long> {
      * @return
      */
     public Chapter getChapterById(Long chapterId,Integer type,Integer num);
+
+    /**
+     * 保存章节信息
+     * @param chapter
+     * @param num
+     */
+    public int saveChapter(Chapter chapter,Integer num);
+
+    /**
+     * 修改章节信息
+     * @param chapter
+     * @param num
+     */
+    public int updateChapter(Chapter chapter,Integer num);
 
 }

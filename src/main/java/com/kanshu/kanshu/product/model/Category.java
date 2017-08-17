@@ -26,6 +26,11 @@ public class Category implements Serializable{
      */
     private Long pid;
 
+    /**
+     * 版权方分类id
+     */
+    private Long copyrightCategoryId;
+
     private Date createDate;
 
     private Date updateDate;
@@ -76,5 +81,13 @@ public class Category implements Serializable{
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public Long getCopyrightCategoryId() {
+        return copyrightCategoryId;
+    }
+
+    public void setCopyrightCategoryId(Long copyrightCategoryId) {
+        this.copyrightCategoryId = copyrightCategoryId;
     }
 }
