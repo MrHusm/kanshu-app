@@ -30,5 +30,18 @@ public class VolumeServiceImpl extends BaseServiceImpl<Volume, Long> implements 
         return volumeDao;
     }
 
+    /**
+     *
+     * @Title: findCount
+     * @Description: 查询卷的数量
+     * @param volume
+     * @return
+     * @author hushengmeng
+     */
+    @Override
+    public int findCount(Volume volume){
+        return this.volumeDao.selectCount(volume);
+    }
+
 
 }
