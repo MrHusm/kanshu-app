@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 /**
  * Created by lenovo on 2017/8/7.
  */
-@Service(value="bookService")
+@Service(value="categoryService")
 public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> implements ICategoryService{
 
     @Resource(name="categoryDao")

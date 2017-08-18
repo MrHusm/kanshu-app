@@ -11,7 +11,12 @@
         <result column="word_count" property="wordCount" jdbcType="INTEGER" />
         <result column="shelf_status" property="shelfStatus" jdbcType="INTEGER" />
         <result column="is_free" property="isFree" jdbcType="INTEGER" />
+        <result column="content" property="content" jdbcType="LONGVARCHAR" />
         <result column="content_md5" property="contentMd5" jdbcType="VARCHAR" />
+        <result column="copyright_code" property="copyrightCode" jdbcType="VARCHAR" />
+        <result column="copyright_book_id" property="copyrightBookId" jdbcType="BIGINT" />
+        <result column="copyright_volume_id" property="copyrightVolumeId" jdbcType="BIGINT" />
+        <result column="copyright_chapter_id" property="copyrightChapterId" jdbcType="BIGINT" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -24,11 +29,15 @@
         <if test="isFree != null"> and is_free= #{isFree}</if>
         <if test="startIdx"><![CDATA[ and idx >= #{startIdx} ]]></if>
         <if test="endIdx"><![CDATA[ and idx <= #{endIdx} ]]></if>
+        <if test="copyrightCode != null and copyrightCode != ''"> and copyright_code= #{copyrightCode}</if>
+        <if test="copyrightBookId != null"> and copyright_book_id= #{copyrightBookId}</if>
+        <if test="copyrightVolumeId != null"> and copyright_volume_id= #{copyrightVolumeId}</if>
+        <if test="copyrightChapterId != null"> and copyright_chapter_id= #{copyrightChapterId}</if>
     </sql>
     <sql id="Base_Column_List">
-        chapter_id,volume_id,book_id,title,idx,price,word_count,shelf_status,is_free,content_md5,update_date,create_date
+        chapter_id,volume_id,book_id,title,idx,price,word_count,shelf_status,is_free,content,content_md5,copyright_code,
+        copyright_book_id,copyright_volume_id,copyright_chapter_id,update_date,create_date
     </sql>
-
 
     <insert id="insertByMap" useGeneratedKeys="true" keyProperty="chapterId" parameterType="map">
         insert into chapter${num}
@@ -42,7 +51,12 @@
             <if test="wordCount != null">word_count,</if>
             <if test="shelfStatus != null">shelf_status,</if>
             <if test="isFree != null">is_free,</if>
-            <if test="contentMd5 != null">content_md5,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="contentMd5 != null and contentMd5 != ''">content_md5,</if>
+            <if test="copyrightCode != null and copyrightCode != ''">copyright_code,</if>
+            <if test="copyrightBookId != null">copyright_book_id,</if>
+            <if test="copyrightVolumeId != null">copyright_volume_id,</if>
+            <if test="copyrightChapterId != null">copyright_chapter_id,</if>
             <if test="updateDate != null">update_date,</if>
             <if test="createDate != null">create_date,</if>
         </trim>
@@ -74,8 +88,23 @@
             <if test="isFree != null">
                 #{isFree,jdbcType=INTEGER},
             </if>
+            <if test="content != null and content != ''">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
             <if test="contentMd5 != null and contentMd5 != ''">
                 #{contentMd5,jdbcType=VARCHAR},
+            </if>
+            <if test="copyrightCode != null and copyrightCode != ''">
+                #{copyrightCode,jdbcType=VARCHAR},
+            </if>
+            <if test="copyrightBookId != null">
+                #{copyrightBookId,jdbcType=BIGINT},
+            </if>
+            <if test="copyrightVolumeId != null">
+                #{copyrightVolumeId,jdbcType=BIGINT},
+            </if>
+            <if test="copyrightChapterId != null">
+                #{copyrightChapterId,jdbcType=BIGINT},
             </if>
             <if test="updateDate != null">
                 #{updateDate,jdbcType=TIMESTAMP},
@@ -113,8 +142,23 @@
             <if test="isFree != null">
                 is_free = #{isFree,jdbcType=INTEGER},
             </if>
+            <if test="content != null and content != ''">
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
             <if test="contentMd5 != null and contentMd5 != ''">
                 content_md5 = #{contentMd5,jdbcType=VARCHAR},
+            </if>
+            <if test="copyrightCode != null and copyrightCode != ''">
+                copyright_code = #{copyrightCode,jdbcType=VARCHAR},
+            </if>
+            <if test="copyrightBookId != null">
+                copyright_book_id = #{copyrightBookId,jdbcType=BIGINT},
+            </if>
+            <if test="copyrightVolumeId != null">
+                copyright_volume_id = #{copyrightVolumeId,jdbcType=BIGINT},
+            </if>
+            <if test="copyrightChapterId != null">
+                copyright_chapter_id = #{copyrightChapterId,jdbcType=BIGINT},
             </if>
             <if test="updateDate != null">
                 update_date = #{updateDate,jdbcType=TIMESTAMP},

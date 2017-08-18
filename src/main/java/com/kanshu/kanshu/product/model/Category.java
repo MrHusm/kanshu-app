@@ -27,6 +27,11 @@ public class Category implements Serializable{
     private Long pid;
 
     /**
+     *  版权方code
+     */
+    private String copyrightCode;
+
+    /**
      * 版权方分类id
      */
     private Long copyrightCategoryId;
@@ -89,5 +94,13 @@ public class Category implements Serializable{
 
     public void setCopyrightCategoryId(Long copyrightCategoryId) {
         this.copyrightCategoryId = copyrightCategoryId;
+    }
+
+    public String getCopyrightCode() {
+        return copyrightCode;
+    }
+
+    public void setCopyrightCode(String copyrightCode) {
+        this.copyrightCode = copyrightCode;
     }
 }

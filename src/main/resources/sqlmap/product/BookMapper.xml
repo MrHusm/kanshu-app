@@ -12,7 +12,9 @@
     <result column="intro" property="intro" jdbcType="VARCHAR" />
     <result column="shelf_status" property="shelfStatus" jdbcType="INTEGER" />
     <result column="category_sec_id" property="categorySecId" jdbcType="BIGINT" />
+    <result column="category_sec_name" property="categorySecName" jdbcType="VARCHAR" />
     <result column="category_thr_id" property="categoryThrId" jdbcType="BIGINT" />
+    <result column="category_thr_name" property="categoryThrName" jdbcType="VARCHAR" />
     <result column="keyword" property="keyword" jdbcType="VARCHAR" />
     <result column="charge_type" property="chargeType" jdbcType="INTEGER" />
     <result column="is_full" property="isFull" jdbcType="INTEGER" />
@@ -20,6 +22,7 @@
     <result column="is_free" property="isFree" jdbcType="INTEGER" />
     <result column="tag" property="tag" jdbcType="VARCHAR" />
     <result column="last_chapter_update_date" property="lastChapterUpdateDate" jdbcType="TIMESTAMP" />
+    <result column="copyright_code" property="copyrightCode" jdbcType="VARCHAR" />
     <result column="copyright" property="copyright" jdbcType="VARCHAR" />
     <result column="copyright_book_id" property="copyrightBookId" jdbcType="BIGINT" />
     <result column="type" property="type" jdbcType="INTEGER" />
@@ -40,22 +43,25 @@
     <if test="authorPenname != null and authorPenname !=''"> and author_penname= #{authorPenname}</if>
     <if test="shelfStatus != null"> and shelf_status= #{shelfStatus}</if>
     <if test="categorySecId != null"> and category_sec_id= #{categorySecId}</if>
+    <if test="categorySecName != null and categorySecName != ''"> and category_sec_name= #{categorySecName}</if>
     <if test="categoryThrId != null"> and category_thr_id= #{categoryThrId}</if>
+    <if test="categoryThrName != null and categoryThrName != ''"> and category_thr_name= #{categoryThrName}</if>
     <if test="keyword != null and keyword !=''"> and keyword= #{keyword}</if>
     <if test="chargeType != null"> and charge_type= #{chargeType}</if>
     <if test="isFull != null"> and is_full= #{isFull}</if>
     <if test="isFree != null"> and is_free= #{isFree}</if>
     <if test="tag != null and tag != ''"> and tag= #{tag}</if>
+    <if test="copyrightCode != null and copyrightCode != ''"> and copyright_code= #{copyrightCode}</if>
     <if test="copyright != null and copyright != ''"> and copyright= #{copyright}</if>
     <if test="copyrightBookId != null"> and copyright_book_id= #{copyrightBookId}</if>
-    <if test="type != null"> and type= #{type}</if>
+    <if test="type != null"> and `type`= #{type}</if>
     <if test="isMonthly != null"> and is_monthly= #{isMonthly}</if>
   </sql>
 
   <sql id="Base_Column_List" >
-    book_id,title,word_count,cover_url,author_id,author_name,author_penname,intro,shelf_status,category_sec_id,category_thr_id,
-    keyword,charge_type,is_full,price,is_free,tag,last_chapter_update_date,copyright,copyright_book_id,type,unit_price,file_format,
-    is_monthly,monthly_start_date,monthly_end_date,create_date,update_date
+    book_id,title,word_count,cover_url,author_id,author_name,author_penname,intro,shelf_status,category_sec_id,category_sec_name,
+    category_thr_id,category_thr_name,keyword,charge_type,is_full,price,is_free,tag,last_chapter_update_date,copyright_code,
+    copyright,copyright_book_id,`type`,unit_price,file_format,is_monthly,monthly_start_date,monthly_end_date,create_date,update_date
   </sql>
   
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -102,10 +108,15 @@
       <if test="categorySecId != null" >
         category_sec_id,
       </if>
+      <if test="categorySecName != null and categorySecName != ''" >
+        category_sec_name,
+      </if>
       <if test="categoryThrId != null" >
         category_thr_id,
       </if>
-
+      <if test="categoryThrName != null and categoryThrName != ''" >
+        category_thr_name,
+      </if>
       <if test="keyword != null and keyword != ''" >
         keyword,
       </if>
@@ -127,6 +138,9 @@
       <if test="lastChapterUpdateDate != null">
         last_chapter_update_date,
       </if>
+      <if test="copyrightCode != null and copyrightCode != ''">
+        copyright_code,
+      </if>
       <if test="copyright != null and copyright != ''">
         copyright,
       </if>
@@ -134,7 +148,7 @@
         copyright_book_id,
       </if>
       <if test="type != null">
-        type,
+        `type`,
       </if>
       <if test="unitPrice != null">
         unit_price,
@@ -189,8 +203,14 @@
       <if test="categorySecId != null" >
         #{categorySecId,jdbcType=BIGINT},
       </if>
+      <if test="categorySecName != null and categorySecName != ''" >
+        #{categorySecName,jdbcType=VARCHAR},
+      </if>
       <if test="categoryThrId != null" >
         #{categoryThrId,jdbcType=BIGINT},
+      </if>
+      <if test="categoryThrName != null and categoryThrName != ''" >
+        #{categoryThrName,jdbcType=VARCHAR},
       </if>
       <if test="keyword != null and keyword != ''" >
         #{keyword,jdbcType=VARCHAR},
@@ -212,6 +232,9 @@
       </if>
       <if test="lastChapterUpdateDate != null">
         #{lastChapterUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="copyrightCode != null and copyrightCode != ''">
+        #{copyrightCode,jdbcType=VARCHAR},
       </if>
       <if test="copyright != null and copyright != ''">
         #{copyright,jdbcType=VARCHAR},
@@ -275,8 +298,14 @@
       <if test="categorySecId != null" >
         category_sec_id = #{categorySecId,jdbcType=BIGINT},
       </if>
+      <if test="categorySecName != null and categorySecName != ''" >
+        category_sec_name = #{categorySecName,jdbcType=VARCHAR},
+      </if>
       <if test="categoryThrId != null" >
         category_thr_id = #{categoryThrId,jdbcType=BIGINT},
+      </if>
+      <if test="categoryThrName != null and categoryThrName != ''" >
+        category_thr_name = #{categoryThrName,jdbcType=VARCHAR},
       </if>
       <if test="keyword != null and keyword != ''" >
         keyword = #{keyword,jdbcType=VARCHAR},
@@ -298,6 +327,9 @@
       </if>
       <if test="lastChapterUpdateDate != null">
         last_chapter_update_date  = #{lastChapterUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="copyrightCode != null and copyrightCode != ''">
+        copyright_code = #{copyrightCode,jdbcType=VARCHAR},
       </if>
       <if test="copyright != null and copyright != ''">
         copyright = #{copyright,jdbcType=VARCHAR},
