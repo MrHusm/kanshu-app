@@ -11,7 +11,7 @@
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
 	default-lazy-init="true">
 
-	<bean id="springQtzJob" class="com.kanshu.kanshu.search.task.HeatSearchTask" />
+	<bean id="springQtzJob" class="com.yxsd.kanshu.search.task.HeatSearchTask" />
 	<bean id="springQtzJobMethod"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject">

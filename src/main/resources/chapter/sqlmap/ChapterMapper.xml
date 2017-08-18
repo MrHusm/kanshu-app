@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="ChapterMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.product.model.Chapter">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.product.model.Chapter">
         <id column="chapter_id" property="chapterId" jdbcType="BIGINT" />
         <result column="volume_id" property="volumeId" jdbcType="BIGINT" />
         <result column="book_id" property="bookId" jdbcType="BIGINT" />

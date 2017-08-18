@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="PullBookMapper">
-	<resultMap id="BaseResultMap" type="com.kanshu.kanshu.job.model.PullBook">
+	<resultMap id="BaseResultMap" type="com.yxsd.kanshu.job.model.PullBook">
 		<id column="id" property="id" jdbcType="BIGINT" />
 		<result column="copyright_code" property="copyrightCode" jdbcType="VARCHAR" />
 		<result column="copyright_book_id" property="copyrightBookId" jdbcType="BIGINT" />
@@ -34,7 +34,7 @@
 		delete from pull_book where id = #{id,jdbcType=BIGINT}
 	</delete>
 
-	<insert id="insertSelective" parameterType="com.kanshu.kanshu.job.model.PullBook">
+	<insert id="insertSelective" parameterType="com.yxsd.kanshu.job.model.PullBook">
 		insert into pull_book
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="id != null">id,</if>
@@ -71,7 +71,7 @@
 		</trim>
 	</insert>
 
-	<update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.job.model.PullBook">
+	<update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.job.model.PullBook">
 		update pull_book
 		<set>
 			<if test="copyrightCode != null and copyrightCode !=''">

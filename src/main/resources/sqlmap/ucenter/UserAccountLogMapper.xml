@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="UserAccountLogMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.ucenter.model.UserAccountLog">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.ucenter.model.UserAccountLog">
         <id column="account_log_id" property="accountLogId" jdbcType="BIGINT" />
         <result column="user_id" property="userId" jdbcType="BIGINT" />
         <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
@@ -44,7 +44,7 @@
         delete from user_account_log where account_log_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="accountLogId" parameterType="com.kanshu.kanshu.ucenter.model.UserAccountLog">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="accountLogId" parameterType="com.yxsd.kanshu.ucenter.model.UserAccountLog">
         insert into user_account_log
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="accountLogId != null">account_log_id,</if>

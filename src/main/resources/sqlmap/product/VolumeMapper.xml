@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="VolumeMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.product.model.Volume">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.product.model.Volume">
         <id column="volume_id" property="volumeId" jdbcType="BIGINT" />
         <result column="book_Id" property="bookId" jdbcType="BIGINT" />
         <result column="name" property="name" jdbcType="VARCHAR" />
@@ -36,7 +36,7 @@
         delete from volume where volume_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="volumeId" parameterType="com.kanshu.kanshu.product.model.Volume">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="volumeId" parameterType="com.yxsd.kanshu.product.model.Volume">
         insert into volume
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="volumeId != null">volume_id,</if>
@@ -88,7 +88,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.Volume">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.product.model.Volume">
         update volume
         <set>
             <if test="name != null and name != ''">

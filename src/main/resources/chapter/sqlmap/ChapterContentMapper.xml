@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="ChapterContentMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.product.model.ChapterContent">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.product.model.ChapterContent">
         <id column="chapter_id" property="chapterId" jdbcType="BIGINT" />
         <result column="book_id" property="bookId" jdbcType="BIGINT" />
         <result column="content" property="content" jdbcType="LONGVARCHAR" />
@@ -24,7 +24,7 @@
         delete from chapter_content${num} where chapter_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="chapterId" parameterType="com.kanshu.kanshu.product.model.ChapterContent">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="chapterId" parameterType="com.yxsd.kanshu.product.model.ChapterContent">
         insert into chapter_content${num}
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="chapterId != null">chapter_id,</if>
@@ -52,7 +52,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.ChapterContent">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.product.model.ChapterContent">
         update chapter_content${num}
         <set>
             <if test="bookId != null">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="BookMapper" >
-  <resultMap id="BaseResultMap" type="com.kanshu.kanshu.product.model.Book" >
+  <resultMap id="BaseResultMap" type="com.yxsd.kanshu.product.model.Book" >
     <id column="book_id" property="bookId" jdbcType="BIGINT" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="word_count" property="wordCount" jdbcType="INTEGER" />
@@ -75,7 +75,7 @@
     where book_id = #{id,jdbcType=BIGINT}
   </delete>
 
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="bookId" parameterType="com.kanshu.kanshu.product.model.Book" >
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="bookId" parameterType="com.yxsd.kanshu.product.model.Book" >
     insert into book
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="bookId != null" >
@@ -268,7 +268,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.product.model.Book" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.product.model.Book" >
     update book
     <set >
       <if test="title != null and title != ''" >

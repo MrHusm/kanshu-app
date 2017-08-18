@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="UserMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.ucenter.model.User">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.ucenter.model.User">
         <id column="user_id" property="userId" jdbcType="BIGINT" />
         <result column="name" property="name" jdbcType="VARCHAR" />
         <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
@@ -44,7 +44,7 @@
         user_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="userId" parameterType="com.kanshu.kanshu.ucenter.model.User">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="userId" parameterType="com.yxsd.kanshu.ucenter.model.User">
         insert into user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">user_id,</if>
@@ -108,7 +108,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.ucenter.model.User">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.ucenter.model.User">
         update user
         <set>
             <if test="name != null and name !=''">

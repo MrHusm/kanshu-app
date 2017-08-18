@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="DriveBookMapper" >
-  <resultMap id="BaseResultMap" type="com.kanshu.kanshu.portal.model.DriveBook" >
+  <resultMap id="BaseResultMap" type="com.yxsd.kanshu.portal.model.DriveBook" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="book_id" property="bookId" jdbcType="BIGINT" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="type" property="type" jdbcType="SMALLINT" />
     <result column="score" property="score" jdbcType="INTEGER" />
   </resultMap>
-  <resultMap id="withBookInfoMap" type="com.kanshu.kanshu.portal.model.DriveBook"  extends="BaseResultMap" >
-   		<collection property="book" ofType="com.kanshu.kanshu.product.model.Book">
+  <resultMap id="withBookInfoMap" type="com.yxsd.kanshu.portal.model.DriveBook"  extends="BaseResultMap" >
+   		<collection property="book" ofType="com.yxsd.kanshu.product.model.Book">
 		     <id column="book_id" property="bookId" jdbcType="BIGINT" />
 		    <result column="title" property="title" jdbcType="VARCHAR" />
 		    <result column="img" property="img" jdbcType="VARCHAR" />
@@ -57,7 +57,7 @@
     delete from drive_book
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.kanshu.kanshu.portal.model.DriveBook">
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.yxsd.kanshu.portal.model.DriveBook">
     insert into drive_book
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="bookId != null" >
@@ -88,7 +88,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.portal.model.DriveBook" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.portal.model.DriveBook" >
     update drive_book
     <set >
       <if test="bookId != null" >
@@ -106,7 +106,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.kanshu.kanshu.portal.model.DriveBook" >
+  <update id="updateByPrimaryKey" parameterType="com.yxsd.kanshu.portal.model.DriveBook" >
     update drive_book
     set book_id = #{bookId,jdbcType=BIGINT},
       create_date = #{createDate,jdbcType=TIMESTAMP},

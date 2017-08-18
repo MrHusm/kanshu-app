@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="HistoryTodayMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.portal.model.HistoryToday">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.portal.model.HistoryToday">
         <id column="id" property="id" jdbcType="BIGINT" />
         <result column="title" property="title" jdbcType="VARCHAR" />
-        <result column="content" property="content" typeHandler="com.kanshu.kanshu.base.handler.MyBlobTypeHandler" />
+        <result column="content" property="content" typeHandler="com.yxsd.kanshu.base.handler.MyBlobTypeHandler" />
         <result column="day" property="day" jdbcType="VARCHAR" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
 
-    <resultMap id="WithImgsMap" type="com.kanshu.kanshu.portal.model.HistoryToday" extends="BaseResultMap">
-        <collection property="imgs" ofType="com.kanshu.kanshu.portal.model.HistoryTodayImg">
+    <resultMap id="WithImgsMap" type="com.yxsd.kanshu.portal.model.HistoryToday" extends="BaseResultMap">
+        <collection property="imgs" ofType="com.yxsd.kanshu.portal.model.HistoryTodayImg">
             <id column="img_id" property="id" jdbcType="BIGINT" />
             <result column="img_title" property="title" jdbcType="VARCHAR" />
             <result column="file_name" property="fileName" jdbcType="VARCHAR" />
@@ -53,7 +53,7 @@
         ID = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.kanshu.kanshu.portal.model.HistoryToday">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.yxsd.kanshu.portal.model.HistoryToday">
         insert into history_today
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
@@ -85,7 +85,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.kanshu.kanshu.portal.model.HistoryToday">
+    <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.portal.model.HistoryToday">
         update history_today
         <set>
             <if test="title != null and title !=''">

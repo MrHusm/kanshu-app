@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="RechargeItemMapper">
-    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.pay.model.RechargeItem">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.pay.model.RechargeItem">
         <id column="recharge_item_id" property="rechargeItemId" jdbcType="BIGINT" />
         <result column="price" property="price" jdbcType="NUMERIC" />
         <result column="money" property="money" jdbcType="INTEGER" />
@@ -25,7 +25,7 @@
         delete from recharge_item where recharge_item_id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="rechargeItemId" parameterType="com.kanshu.kanshu.pay.model.RechargeItem">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="rechargeItemId" parameterType="com.yxsd.kanshu.pay.model.RechargeItem">
         insert into recharge_item
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="rechargeItemId != null">recharge_item_id,</if>
