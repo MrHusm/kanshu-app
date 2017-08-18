@@ -98,7 +98,7 @@ public class YuewenJobController extends BaseController {
 	 */
 	@RequestMapping(value = "/categorys")
 	@ResponseBody
-	public void getCategorys(HttpServletRequest request, HttpServletResponse response) throws IOException{
+	public void getCategorys(HttpServletRequest request, HttpServletResponse response){
 		logger.info("yuewen getCategorys begin!");
 		String appKey = ConfigPropertieUtils.getString(YUEWEN_APPKEY);
 		String token = getYueWenToken();
@@ -109,11 +109,12 @@ public class YuewenJobController extends BaseController {
 		logger.info("yuewen getCategorys result={}", result);
 		String types = JSON.parseObject(result).getJSONObject("result").getString("types");
 		List<CategoryResp> categoryResps = JSON.parseArray(types, CategoryResp.class);
+		String copyrightCode = ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE);
 		//保存分类表
 		for(CategoryResp categoryResp : categoryResps){
-			Category categoryFirst = this.categoryService.findUniqueByParams("name",categoryResp.getFreetypename());
-			Category categorySec = this.categoryService.findUniqueByParams("name",categoryResp.getCategoryname());
-			Category categoryThr = this.categoryService.findUniqueByParams("name",categoryResp.getSubcategoryname());
+			Category categoryFirst = this.categoryService.findUniqueByParams("copyrightCode",copyrightCode,"copyrightCategoryId",categoryResp.getFreetype());
+			Category categorySec = this.categoryService.findUniqueByParams("copyrightCode",copyrightCode,"copyrightCategoryId",categoryResp.getCategoryid());
+			Category categoryThr = this.categoryService.findUniqueByParams("copyrightCode",copyrightCode,"copyrightCategoryId",categoryResp.getSubcategoryid());
 			//保存一级分类
 			if(categoryFirst == null){
 				categoryFirst = new Category();
@@ -122,6 +123,7 @@ public class YuewenJobController extends BaseController {
 				categoryFirst.setName(categoryResp.getFreetypename());
 				categoryFirst.setUpdateDate(new Date());
 				categoryFirst.setCreateDate(new Date());
+				categoryFirst.setCopyrightCode(copyrightCode);
 				categoryFirst.setCopyrightCategoryId(categoryResp.getFreetype().longValue());
 				categoryService.save(categoryFirst);
 			}
@@ -133,7 +135,8 @@ public class YuewenJobController extends BaseController {
 				categorySec.setName(categoryResp.getCategoryname());
 				categorySec.setUpdateDate(new Date());
 				categorySec.setCreateDate(new Date());
-				categoryFirst.setCopyrightCategoryId(categoryResp.getCategoryid().longValue());
+				categorySec.setCopyrightCode(copyrightCode);
+				categorySec.setCopyrightCategoryId(categoryResp.getCategoryid().longValue());
 				categoryService.save(categorySec);
 			}
 			//保存三级分类
@@ -144,7 +147,8 @@ public class YuewenJobController extends BaseController {
 				categoryThr.setName(categoryResp.getSubcategoryname());
 				categoryThr.setUpdateDate(new Date());
 				categoryThr.setCreateDate(new Date());
-				categoryFirst.setCopyrightCategoryId(categoryResp.getSubcategoryid().longValue());
+				categoryThr.setCopyrightCode(copyrightCode);
+				categoryThr.setCopyrightCategoryId(categoryResp.getSubcategoryid().longValue());
 				categoryService.save(categoryThr);
 			}
 		}
@@ -234,6 +238,7 @@ public class YuewenJobController extends BaseController {
 										}
 									}
 								} catch (Exception e) {
+									e.printStackTrace();
 									int pullStatus = 0;
 									String pullFailureCause = "拉取异常：" + ExceptionUtils.getRootCauseMessage(e);
 									pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
@@ -634,6 +639,7 @@ public class YuewenJobController extends BaseController {
 				result = HttpUtils.getContent(bookInfoUrl, "UTF-8");
 				logger.info("yuewen bookinfo result={}", result);
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.error("yuewen bookinfo interface error!", ExceptionUtils.getFullStackTrace(e));
 				pullStatus = 0;
 				pullFailureCause = "调用阅文获取图书接口异常";
@@ -684,6 +690,7 @@ public class YuewenJobController extends BaseController {
 			result = HttpUtils.getContent(volumesInfoUrl, "UTF-8");
 			logger.info("yuewen BookVolumesInfos result={}", result);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("yuewen BookVolumesInfos interface error!", ExceptionUtils.getFullStackTrace(e));
 			pullStatus = 0;
 			pullFailureCause = "调用阅文获取书藉卷列表接口异常";
@@ -737,6 +744,7 @@ public class YuewenJobController extends BaseController {
 			result = HttpUtils.getContent(volumeInfoUrl, "UTF-8");
 			logger.info("yuewen VolumeInfo result={}", result);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("yuewen VolumeInfo interface error!", ExceptionUtils.getFullStackTrace(e));
 			pullStatus = 0;
 			pullFailureCause = "调用阅文获取卷信息接口异常";
@@ -784,6 +792,7 @@ public class YuewenJobController extends BaseController {
 			result = HttpUtils.getContent(chaptersInfoUrl, "UTF-8");
 			logger.info("yuewen VolumeChaptersInfo result={}", result);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("yuewen VolumeChaptersInfo interface error!", ExceptionUtils.getFullStackTrace(e));
 			volumePullStatus = 0;
 			volumePullFailureCause = "调用阅文获取卷的章节列表接口异常";
@@ -829,6 +838,7 @@ public class YuewenJobController extends BaseController {
 			result = HttpUtils.getContent(bookChaptersInfoUrl, "UTF-8");
 			logger.info("yuewen BookChaptersInfo result={}", result);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("yuewen BookChaptersInfo interface error!", ExceptionUtils.getFullStackTrace(e));
 			pullStatus = 0;
 			pullFailureCause = "调用阅文获取书的章节列表接口异常";
@@ -877,6 +887,7 @@ public class YuewenJobController extends BaseController {
 			result = HttpUtils.getContent(chapterInfoUrl, "UTF-8");
 			logger.info("yuewen ChapterInfo result={}", result);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("yuewen ChapterInfo interface error!", ExceptionUtils.getFullStackTrace(e));
 			pullStatus = 0;
 			pullFailureCause = "调用阅文获取章节基本信息接口异常";
@@ -925,6 +936,7 @@ public class YuewenJobController extends BaseController {
 			result = HttpUtils.getContent(chapterInfoUrl, "UTF-8");
 			logger.info("yuewen ChapterContentInfo result={}", JSON.parseObject(result).getString("returnCode"));
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("yuewen ChapterContentInfo interface error!", ExceptionUtils.getFullStackTrace(e));
 			pullStatus = 0;
 			pullFailureCause = "调用阅文获取书的章节内容接口异常";
