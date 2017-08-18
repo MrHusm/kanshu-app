@@ -24,7 +24,7 @@
         delete from key_word where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="vipId" parameterType="com.yxsd.pay.model.PayBefore">
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="vipId" parameterType="com.yxsd.kanshu.search.model.KeyWord">
         insert into key_word
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="vipId != null">vip_id,</if>
