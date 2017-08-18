@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="KeyWordMapper">
+    <resultMap id="BaseResultMap" type="com.kanshu.kanshu.search.model.KeyWord">
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="word" property="word" jdbcType="VARCHAR" />
+        <result column="score" property="score" jdbcType="INTEGER" />
+        <result column="set_source" property="setSource" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="id != null"> and id= #{id}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        id,word,score,set_source,create_time,updateTime
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" /> from key_word where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from key_word where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="vipId" parameterType="com.kanshu.pay.model.PayBefore">
+        insert into key_word
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vipId != null">vip_id,</if>
+            <if test="days != null">days,</if>
+            <if test="price != null">price,</if>
+            <if test="discountPrice != null">discount_price,</if>
+            <if test="virtualMoney != null">virtual_money,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vipId != null">
+                #{vipId,jdbcType=BIGINT},
+            </if>
+            <if test="days != null">
+                #{days,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=INTEGER},
+            </if>
+            <if test="discountPrice != null">
+                #{discountPrice,jdbcType=INTEGER},
+            </if>
+            <if test="virtualMoney != null">
+                #{virtualMoney,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from key_word where 1=1
+        <include refid="Base_Where" />
+        order by days desc
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from key_word where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from key_word where 1=1
+        <include refid="Base_Where" />
+        order by create_time desc
+    </select>
+</mapper>

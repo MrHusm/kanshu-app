@@ -1,4 +1,4 @@
-package com.kanshu.kanshu.search.controller;
+package com.kanshu.kanshu.search.manager;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
