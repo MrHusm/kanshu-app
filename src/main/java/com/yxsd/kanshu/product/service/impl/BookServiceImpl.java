@@ -1,6 +1,6 @@
 package com.yxsd.kanshu.product.service.impl;
 
-import com.yxsd.chapter.base.service.IChapterService;
+import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
@@ -42,7 +42,7 @@ public class BookServiceImpl extends BaseServiceImpl<Book, Long> implements IBoo
         String key = String.format(RedisKeyConstants.CACHE_BOOK_KEY,bookId);
         Book book = this.slaveRedisTemplate.opsForValue().get(key);
         if(book == null){
-            book = this.findUniqueByParams("bookId",bookId,"status",1);
+            book = this.findUniqueByParams("bookId",bookId,"shelfStatus",1);
             if(book != null){
                 this.masterRedisTemplate.opsForValue().set(key,book,5, TimeUnit.HOURS);
             }

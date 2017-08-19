@@ -19,7 +19,7 @@ public interface IDriveBookService extends IBaseService<DriveBook,Long> {
 
     /**
      * 获取不同驱动类型指定图书
-     * @param type
+     * @param type 1：限免榜 2：搜索榜 3：畅销榜
      * @param bookId
      * @return
      */

@@ -57,6 +57,10 @@
         </trim>
     </insert>
 
+    <select id="getMaxVirtual" resultType="java.lang.Integer" parameterType="map">
+        select max(virtual) from recharge_item
+    </select>
+
     <select id="getAll" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List" />

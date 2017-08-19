@@ -40,6 +40,11 @@ public class UserAccountLog implements Serializable {
     private Integer type;
 
     /**
+     * 消费产品id
+     */
+    private String productId;
+
+    /**
      * 备注
      */
     private String comment;
@@ -132,5 +137,13 @@ public class UserAccountLog implements Serializable {
 
     public void setFindType(Integer findType) {
         this.findType = findType;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 }

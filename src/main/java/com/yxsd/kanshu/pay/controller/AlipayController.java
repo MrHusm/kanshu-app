@@ -97,6 +97,7 @@ public class AlipayController extends BaseController {
 		String channel = request.getParameter("channel");
 		String type = request.getParameter("type");
 		String productId = request.getParameter("productId");
+		String param = request.getParameter("param");
 
 		if(StringUtils.isBlank(userId)){
 			logger.error("AlipayController_order：userId为空");
@@ -122,6 +123,7 @@ public class AlipayController extends BaseController {
 			order.setUserId(Long.parseLong(userId));
 			order.setProductId(Long.parseLong(productId));
 			order.setType(Integer.parseInt(type));
+			order.setComment(param);
 			if(order.getType() == Constants.CONSUME_TYPE_S4){
 				Vip vip = this.vipService.get(Long.parseLong(productId));
 				order.setWIDsubject("VIP"+vip.getDays()+"天");
@@ -135,6 +137,11 @@ public class AlipayController extends BaseController {
 				RechargeItem rechargeItem = rechargeItemService.get(Long.parseLong(productId));
 				order.setWIDsubject("充值"+rechargeItem.getMoney()+"钻");
 				order.setWIDbody("充值"+rechargeItem.getMoney()+"钻赠送"+rechargeItem.getVirtual()+"钻");
+				order.setWIDtotalAmount(rechargeItem.getPrice());
+			}else if(order.getType() == Constants.CONSUME_TYPE_S1 || order.getType() == Constants.CONSUME_TYPE_S2 || order.getType() == Constants.CONSUME_TYPE_S3){
+				RechargeItem rechargeItem = rechargeItemService.get(Long.parseLong(productId));
+				order.setWIDsubject("充值"+rechargeItem.getMoney()+"钻");
+				order.setWIDbody("充值"+rechargeItem.getMoney()+"钻赠送"+rechargeItem.getVirtual()+"钻并购买图书");
 				order.setWIDtotalAmount(rechargeItem.getPrice());
 			}
 			order.setWIDoutTradeNo(Long.toHexString(System.currentTimeMillis()));
@@ -288,7 +295,7 @@ public class AlipayController extends BaseController {
 								userVip.setUpdateDate(new Date());
 								this.userVipService.update(userVip);
 							}
-						}else if(order.getType() == Constants.CONSUME_TYPE_1){
+						}else{
 							//充值
 							RechargeItem rechargeItem = this.rechargeItemService.get(order.getProductId());
 							//用户账户充值
@@ -383,6 +390,8 @@ public class AlipayController extends BaseController {
 					response.sendRedirect("/vip/index.go?userId="+order.getUserId());
 				}else if(order.getType() == Constants.CONSUME_TYPE_1){
 					response.sendRedirect("/pay/index.go?userId="+order.getUserId());
+				}else if(order.getType() == Constants.CONSUME_TYPE_S1 || order.getType() == Constants.CONSUME_TYPE_S2 || order.getType() == Constants.CONSUME_TYPE_S3){
+					response.sendRedirect("/book/buyResponse.go?userId="+order.getUserId()+"&payType=1&type="+order.getType()+"&param="+order.getComment()+"&WIDout_trade_no"+order.getWIDoutTradeNo());
 				}
 				return null;
 

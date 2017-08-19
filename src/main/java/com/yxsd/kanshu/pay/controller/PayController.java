@@ -44,6 +44,8 @@ public class PayController extends BaseController{
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String userId = request.getParameter("userId");
+        //充值购买相关参数
+        String param = request.getParameter("param");
         try {
             if(StringUtils.isBlank(userId)){
                 logger.error("PayController_index：userId为空");
@@ -56,6 +58,7 @@ public class PayController extends BaseController{
             List<RechargeItem> rechargeItems = this.rechargeItemService.findListByParams();
             model.addAttribute("rechargeItems",rechargeItems);
             model.addAttribute("userAccount",userAccount);
+            model.addAttribute("param",param);
         } catch (IOException e) {
             e.printStackTrace();
         }

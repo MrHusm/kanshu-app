@@ -11,6 +11,7 @@
         <result column="WIDbody" property="WIDbody" jdbcType="VARCHAR" />
         <result column="channel" property="channel" jdbcType="INTEGER" />
         <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="comment" property="comment" jdbcType="VARCHAR" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -22,7 +23,7 @@
         <if test="channel != null"> and channel= #{channel}</if>
     </sql>
     <sql id="Base_Column_List">
-        alipay_order_id,user_id,product_id,WIDout_trade_no,WIDsubject,WIDtotal_amount,WIDbody,channel,`type`,create_date,update_date
+        alipay_order_id,user_id,product_id,WIDout_trade_no,WIDsubject,WIDtotal_amount,WIDbody,channel,`type`,comment,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -47,6 +48,7 @@
             <if test="WIDbody != null and WIDbody !=''">WIDbody,</if>
             <if test="channel != null">channel,</if>
             <if test="type != null">type,</if>
+            <if test="comment != null and comment !=''">comment,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
@@ -77,6 +79,9 @@
             </if>
             <if test="type != null">
                 #{type,jdbcType=INTEGER},
+            </if>
+            <if test="comment != null and comment !=''">
+                #{comment,jdbcType=VARCHAR},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},

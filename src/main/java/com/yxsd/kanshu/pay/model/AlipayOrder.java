@@ -46,9 +46,14 @@ public class AlipayOrder implements Serializable {
     private Integer channel;
 
     /**
-     * 类型 1：支付宝充值 -4：VIP购买
+     * 类型 ：支付宝充值 -1:充值并单章购买 -2：充值并批量购买 -3：充值并全本购买 -4：VIP购买
      */
     private Integer type;
+
+    /**
+     * 备注
+     */
+    private String comment;
 
     private Date createDate;
 
@@ -140,5 +145,13 @@ public class AlipayOrder implements Serializable {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

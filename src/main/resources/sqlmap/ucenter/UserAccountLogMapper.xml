@@ -8,6 +8,7 @@
         <result column="unit_money" property="unitMoney" jdbcType="INTEGER" />
         <result column="unit_virtual" property="unitVirtual" jdbcType="INTEGER" />
         <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="product_id" property="productId" jdbcType="VARCHAR" />
         <result column="comment" property="comment" jdbcType="VARCHAR" />
         <result column="channel" property="channel" jdbcType="INTEGER" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
@@ -16,6 +17,7 @@
         <if test="accountLogId != null"> and account_log_id= #{accountLogId}</if>
         <if test="userId != null"> and user_id= #{userId}</if>
         <if test="orderNo != null and orderNo != ''"> and order_no= #{orderNo}</if>
+        <if test="productId != null and productId != ''"> and product_id = #{productId}</if>
         <if test="type != null"> and `type`= #{type}</if>
         <if test="channel != null"> and channel= #{channel}</if>
         <if test="findType != null">
@@ -32,7 +34,7 @@
         </if>
     </sql>
     <sql id="Base_Column_List">
-        account_log_id,user_id ,order_no,unit_money,unit_virtual,`type`,comment,channel,create_date
+        account_log_id,user_id ,order_no,unit_money,unit_virtual,`type`,product_id,comment,channel,create_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -53,6 +55,7 @@
             <if test="unitMoney != null">unit_money,</if>
             <if test="unitVirtual != null">unit_virtual,</if>
             <if test="type != null">type,</if>
+            <if test="productId != null and productId != ''">product_id,</if>
             <if test="comment != null and comment !=''">comment,</if>
             <if test="channel != null">channel,</if>
             <if test="createDate != null">create_date,</if>
@@ -75,6 +78,9 @@
             </if>
             <if test="type != null">
                 #{type,jdbcType=INTEGER},
+            </if>
+            <if test="productId != null and productId != ''">
+                #{productId,jdbcType=VARCHAR},
             </if>
             <if test="comment != null and comment != ''">
                 #{comment,jdbcType=VARCHAR},

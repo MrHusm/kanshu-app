@@ -41,7 +41,7 @@ public class Chapter implements Serializable {
     private Integer wordCount;
 
     /**
-     * 1：上架 1：下架
+     * 在架状态 0：下架 1：在架
      */
     private Integer shelfStatus;
 

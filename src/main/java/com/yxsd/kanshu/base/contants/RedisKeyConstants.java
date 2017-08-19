@@ -9,6 +9,15 @@ public class RedisKeyConstants {
      //根据用户id获取用户key
     public final static String CACHE_USER_ID_KEY="user_id_";
 
+    //根据用户id获取绑定qqkey
+    public final static String CACHE_USER_QQ_ID_KEY = "user_qq_id_";
+
+    //根据用户id获取绑定微信key
+    public final static String CACHE_USER_WEIXIN_ID_KEY = "user_weixin_id_";
+
+    //根据用户id获取绑定微博key
+    public final static String CACHE_USER_WEIBO_ID_KEY = "user_weibo_id_";
+
     //图书目录缓存key
     public final static String CACHE_BOOK_CATALOG_KEY = "book_catalog_";
 
@@ -23,4 +32,12 @@ public class RedisKeyConstants {
 
     //图书信息key
     public final static String CACHE_BOOK_KEY = "book_id_";
+
+    //充值赠返最大金额key
+    public final static String CACHE_RECHARGE_MAX_VIRTUAL_KEY = "recharge_max_virtual";
+
+    //版本信息key
+    public final static String CACHE_VERSION_INFO_CHANNEL_KEY = "version_info_channel_";
+
+
 }

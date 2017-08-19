@@ -1,4 +1,4 @@
-package com.yxsd.chapter.base.dao.impl;
+package com.yxsd.kanshu.base.dao.impl;
 
 
 import com.yxsd.kanshu.base.dao.IBaseDao;
@@ -26,7 +26,7 @@ import java.util.Map;
 * @Modified Date:
  */
 @Repository
-public abstract class BaseDaoImpl<T> implements IBaseDao<T> {
+public abstract class ChapterBaseDaoImpl<T> implements IBaseDao<T> {
 
 	@Resource(name = "chapter_sqlSession")
 	private SqlSessionTemplate sqlSession;

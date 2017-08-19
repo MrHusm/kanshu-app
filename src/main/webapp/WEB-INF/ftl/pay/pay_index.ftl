@@ -24,7 +24,7 @@
 <script>
     function alipay(){
         var rechargeItemId = $("input[name='rechargeItem']:checked").val();
-        window.location.href = "/alipay/order.go?userId=1&type=1&productId="+rechargeItemId;
+        window.location.href = "/alipay/order.go?userId=1&type=1&productId="+rechargeItemId+"&param=${param}";
     }
 </script>
 </body>

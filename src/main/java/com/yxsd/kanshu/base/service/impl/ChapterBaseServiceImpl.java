@@ -1,8 +1,8 @@
-package com.yxsd.chapter.base.service.impl;
+package com.yxsd.kanshu.base.service.impl;
 
 
-import com.yxsd.chapter.base.dao.IBaseDao;
-import com.yxsd.chapter.base.service.IBaseService;
+import com.yxsd.kanshu.base.dao.IChapterBaseDao;
+import com.yxsd.kanshu.base.service.IChapterBaseService;
 import com.yxsd.kanshu.base.utils.LogUtil;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
@@ -33,12 +33,12 @@ import java.util.Map;
  * @version 1.0  2017年7月4日 hushengmeng 创建
  */
 @Service
-public abstract class BaseServiceImpl<T, PK extends Serializable> implements IBaseService<T, PK> {
+public abstract class ChapterBaseServiceImpl<T, PK extends Serializable> implements IChapterBaseService<T, PK> {
 
 	private Class<T> entityClass;
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public BaseServiceImpl(){
+	public ChapterBaseServiceImpl(){
 	 	Type genType = getClass().getGenericSuperclass();  
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();  
         entityClass = (Class) params[0];  
@@ -50,7 +50,7 @@ public abstract class BaseServiceImpl<T, PK extends Serializable> implements IBa
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	public abstract IBaseDao<T> getBaseDao();
+	public abstract IChapterBaseDao<T> getBaseDao();
 	
 	public T get(final PK id){
 		

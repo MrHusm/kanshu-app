@@ -10,4 +10,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository(value="rechargeItemDao")
 public class RechargeItemDaoImpl extends BaseDaoImpl<RechargeItem> implements IRechargeItemDao {
+
+
+    @Override
+    public Integer getMaxVirtual() {
+        return (Integer) this.getSqlSessionQueryTemplate().selectOne("RechargeItemMapper.getMaxVirtual");
+    }
 }

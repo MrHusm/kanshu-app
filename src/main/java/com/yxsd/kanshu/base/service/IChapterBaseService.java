@@ -1,6 +1,6 @@
-package com.yxsd.chapter.base.service;
+package com.yxsd.kanshu.base.service;
 
-import com.yxsd.chapter.base.dao.IBaseDao;
+import com.yxsd.kanshu.base.dao.IChapterBaseDao;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
 
@@ -14,10 +14,10 @@ import java.util.List;
  * @param <T>
  * @version 1.0  2017年7月4日 hushengmeng 创建
  */
-public interface IBaseService<T, PK extends Serializable> {
+public interface IChapterBaseService<T, PK extends Serializable> {
 	
 	
-	public IBaseDao<T> getBaseDao();
+	public IChapterBaseDao<T> getBaseDao();
 	
 	
 	/**

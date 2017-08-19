@@ -35,7 +35,7 @@
         <if test="copyrightChapterId != null"> and copyright_chapter_id= #{copyrightChapterId}</if>
     </sql>
     <sql id="Base_Column_List">
-        chapter_id,volume_id,book_id,title,idx,price,word_count,shelf_status,is_free,content,content_md5,copyright_code,
+        chapter_id,volume_id,book_id,title,idx,price,word_count,shelf_status,is_free,content_md5,copyright_code,
         copyright_book_id,copyright_volume_id,copyright_chapter_id,update_date,create_date
     </sql>
 
@@ -168,9 +168,11 @@
         chapter_id = #{chapterId,jdbcType=BIGINT}
     </update>
 
+
     <select id="getAll" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List" />
+        <if test="type == 1">,content </if>
         from chapter${num} where 1=1
         <include refid="Base_Where" />
         order by idx

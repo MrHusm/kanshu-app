@@ -1,4 +1,4 @@
-package com.yxsd.chapter.base.dao;
+package com.yxsd.kanshu.base.dao;
 
 
 import com.yxsd.kanshu.base.utils.PageFinder;
@@ -17,7 +17,7 @@ import java.util.Map;
  * @param <T>
  * @version 1.0  2017年7月4日 下午6:20:09  by hushengmeng 创建
  */
-public interface IBaseDao<T> {
+public interface IChapterBaseDao<T> {
 	/**
 	 * 从库查询
 	 */

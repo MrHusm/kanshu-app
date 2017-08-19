@@ -18,6 +18,8 @@ public class Constants {
     public static final String ALL_FUNCTIONALITIES_SYSTEM = "all_functionalities_system";
     public static final String ALL_FUNCTIONALITIES_USER = "all_functionalities_user";
 
+    public static final int CHAPTR_TABLE_NUM = 10;//章节表数量
+
     public static final int CONSUME_TYPE_1 = 1;//支付宝充值
     public static final int CONSUME_TYPE_2 = 2;//微信充值
     public static final int CONSUME_TYPE_S1 = -1;//单章购买

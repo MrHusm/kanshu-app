@@ -7,14 +7,9 @@ import com.yxsd.kanshu.base.utils.JsonResultSender;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.base.utils.ResultSender;
-import com.yxsd.kanshu.ucenter.model.User;
-import com.yxsd.kanshu.ucenter.model.UserAccountLog;
-import com.yxsd.kanshu.ucenter.service.IUserAccountLogService;
-import com.yxsd.kanshu.ucenter.service.IUserAccountService;
-import com.yxsd.kanshu.ucenter.service.IUserService;
-import com.yxsd.kanshu.ucenter.service.IUserUuidService;
-import com.yxsd.kanshu.ucenter.model.UserAccount;
-import com.yxsd.kanshu.ucenter.model.UserUuid;
+import com.yxsd.kanshu.pay.service.IRechargeItemService;
+import com.yxsd.kanshu.ucenter.model.*;
+import com.yxsd.kanshu.ucenter.service.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -55,6 +50,21 @@ public class UserController extends BaseController {
     @Resource(name="userUuidService")
     IUserUuidService userUuidService;
 
+    @Resource(name="userQqService")
+    IUserQqService userQqService;
+
+    @Resource(name="userWeixinService")
+    IUserWeixinService userWeixinService;
+
+    @Resource(name="userWeiboService")
+    IUserWeiboService userWeiboService;
+
+    @Resource(name="versionInfoService")
+    IVersionInfoService versionInfoService;
+
+    @Resource(name="rechargeItemService")
+    IRechargeItemService rechargeItemService;
+
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate masterRedisTemplate;
 
@@ -76,6 +86,7 @@ public class UserController extends BaseController {
         String imsi = request.getParameter("imsi");
         String imei = request.getParameter("imei");
         String channel = request.getParameter("channel");
+        String key = request.getParameter("key");
         //0:安卓 1：ios 2:h5
         String type = request.getParameter("type");
         if(StringUtils.isBlank(type)){
@@ -86,12 +97,15 @@ public class UserController extends BaseController {
         }
         try{
             User user = null;
-            //根据用户的imei号和imsi号查询用户
+            //根据用户的imei号和imsi号和key查询用户
             if(StringUtils.isNotBlank(imei)){
                 user = userService.findUniqueByParams("imei",imei.toLowerCase());
             }
             if(StringUtils.isNotBlank(imsi) && user == null){
                 user = userService.findUniqueByParams("imsi",imsi.toLowerCase());
+            }
+            if(StringUtils.isNotBlank(key) && user == null){
+                user = userService.findUniqueByParams("key",key.toLowerCase());
             }
             if(user == null){
                 UserUuid userUuid = new UserUuid();
@@ -107,6 +121,9 @@ public class UserController extends BaseController {
                 }
                 if(StringUtils.isNotBlank(imsi)){
                     user.setImsi(imsi.toLowerCase());
+                }
+                if(StringUtils.isNotBlank(key)){
+                    user.setKey(key.toLowerCase());
                 }
                 if(StringUtils.isNotBlank(channel)){
                     user.setChannel(Integer.parseInt(channel));
@@ -172,6 +189,108 @@ public class UserController extends BaseController {
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
+    }
+
+    /**
+     * 获取侧边栏信息
+     * @param response
+     * @param request
+     */
+    @RequestMapping("getSidebarInfo")
+    public void getSidebarInfo(HttpServletResponse response,HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String userId = request.getParameter("userId");
+        String channel = request.getParameter("channel");
+        String version = request.getParameter("version");
+        if(StringUtils.isBlank(userId) || StringUtils.isBlank(version) || StringUtils.isBlank(channel)){
+            logger.error("UserController_getSidebarInfo:userId或version或者channel为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            User user = userService.getUserByUserId(Long.parseLong(userId));
+            Integer maxVirtual = rechargeItemService.getMaxVirtual();
+            if(maxVirtual != null && maxVirtual > 0){
+                sender.put("rechargeContent","充值最高返"+maxVirtual);
+            }
+            UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
+
+            UserQq userQq = this.userQqService.getUserQqByUserId(Long.parseLong(userId));
+            sender.put("bindStatus",0);
+            if(userQq != null){
+                sender.put("bindStatus",1);
+            }else{
+                UserWeixin userWeixin = this.userWeixinService.getUserWeixinByUserId(Long.parseLong(userId));
+                if(userWeixin != null){
+                    sender.put("bindStatus",1);
+                }else{
+                    UserWeibo userWeibo = this.userWeiboService.getUserWeiboByUserId(Long.parseLong(userId));
+                    if(userWeibo != null){
+                        sender.put("bindStatus",1);
+                    }
+                }
+            }
+            VersionInfo versionInfo = this.versionInfoService.getVersionInfoByChannel(Integer.parseInt(channel));
+            sender.put("versionStatus",0);
+            if(versionInfo != null){
+                if(versionInfo.getType() == 1){
+                    //强制更新
+                    sender.put("versionStatus",1);
+                }
+                if(versionInfo.getVersion() > Integer.parseInt(version.replace(".",""))){
+                    //更新
+                    sender.put("versionStatus",1);
+                }
+            }
+           sender.put("user",user);
+           sender.put("userAccount",userAccount);
+           sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+    }
+
+    /**
+     * 检查更新
+     * @param response
+     * @param request
+     */
+    @RequestMapping("checkVersion")
+    public void checkVersion(HttpServletResponse response,HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String channel = request.getParameter("channel");
+        String version = request.getParameter("version");
+        if(StringUtils.isBlank(channel)|| StringUtils.isBlank(version)){
+            logger.error("UserController_checkVersion:channel或者version为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            VersionInfo versionInfo = this.versionInfoService.getVersionInfoByChannel(Integer.parseInt(channel));
+            sender.put("versionStatus",0);
+            if(versionInfo != null){
+                if(versionInfo.getType() == 1){
+                    //强制更新
+                    sender.put("versionStatus",1);
+                }
+                if(versionInfo.getVersion() > Integer.parseInt(version.replace(".",""))){
+                    //更新
+                    sender.put("versionStatus",1);
+                }
+            }
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+
     }
 
     /**

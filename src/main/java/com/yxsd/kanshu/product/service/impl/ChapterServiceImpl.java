@@ -1,9 +1,10 @@
-package com.yxsd.chapter.base.service.impl;
+package com.yxsd.kanshu.product.service.impl;
 
-import com.yxsd.chapter.base.dao.IBaseDao;
-import com.yxsd.chapter.base.dao.IChapterDao;
-import com.yxsd.chapter.base.service.IChapterService;
+import com.yxsd.kanshu.base.dao.IChapterBaseDao;
+import com.yxsd.kanshu.product.dao.IChapterDao;
+import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
+import com.yxsd.kanshu.base.service.impl.ChapterBaseServiceImpl;
 import com.yxsd.kanshu.base.utils.BeanUtils;
 import com.yxsd.kanshu.product.model.Chapter;
 import org.apache.commons.collections.CollectionUtils;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * Created by lenovo on 2017/8/7.
  */
 @Service(value="chapterService")
-public class ChapterServiceImpl extends BaseServiceImpl<Chapter, Long> implements IChapterService {
+public class ChapterServiceImpl extends ChapterBaseServiceImpl<Chapter, Long> implements IChapterService {
 
     @Resource(name="chapterDao")
     private IChapterDao chapterDao;
@@ -31,7 +32,7 @@ public class ChapterServiceImpl extends BaseServiceImpl<Chapter, Long> implement
     private RedisTemplate<String,Chapter> slaveRedisTemplate;
 
     @Override
-    public IBaseDao<Chapter> getBaseDao() {
+    public IChapterBaseDao<Chapter> getBaseDao() {
         return chapterDao;
     }
 
@@ -43,11 +44,11 @@ public class ChapterServiceImpl extends BaseServiceImpl<Chapter, Long> implement
             chapters = slaveRedisTemplate.opsForList().range(key,0,-1);
         }
         if(CollectionUtils.isEmpty(chapters)){
-            chapters = findListByParams("bookId",bookId,"num",num);
+            chapters = findListByParams("bookId",bookId,"shelfStatus",1,"num",num);
             if(CollectionUtils.isNotEmpty(chapters)){
                 for(int i = 0; i < chapters.size(); i++){
                     Chapter chapter = chapters.get(i);
-                    masterRedisTemplate.opsForList().set(key,i,chapter);
+                    masterRedisTemplate.opsForList().rightPush(key,chapter);
                 }
             }else{
                 return null;

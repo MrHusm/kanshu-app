@@ -62,6 +62,11 @@ public class User implements Serializable {
     private String imsi;
 
     /**
+     * 自动生成唯一标识
+     */
+    private String key;
+
+    /**
      * 来源 0:安卓 1：ios 2:h5
      */
     private Integer type;
@@ -186,5 +191,13 @@ public class User implements Serializable {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

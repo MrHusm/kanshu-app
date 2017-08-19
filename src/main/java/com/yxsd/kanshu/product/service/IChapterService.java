@@ -1,5 +1,6 @@
-package com.yxsd.chapter.base.service;
+package com.yxsd.kanshu.product.service;
 
+import com.yxsd.kanshu.base.service.IChapterBaseService;
 import com.yxsd.kanshu.product.model.Chapter;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * Created by lenovo on 2017/8/7.
  */
-public interface IChapterService extends IBaseService<Chapter,Long> {
+public interface IChapterService extends IChapterBaseService<Chapter,Long> {
     /**
      * 根据图书id获取章节
      * @param bookId

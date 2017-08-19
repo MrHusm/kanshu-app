@@ -1,7 +1,7 @@
 package com.yxsd.kanshu.job.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.yxsd.chapter.base.service.IChapterService;
+import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.*;
 import com.yxsd.kanshu.job.model.PullBook;
