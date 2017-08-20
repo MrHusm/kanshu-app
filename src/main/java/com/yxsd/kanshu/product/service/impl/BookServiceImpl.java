@@ -39,7 +39,7 @@ public class BookServiceImpl extends BaseServiceImpl<Book, Long> implements IBoo
 
     @Override
     public Book getBookById(Long bookId) {
-        String key = String.format(RedisKeyConstants.CACHE_BOOK_KEY,bookId);
+        String key = RedisKeyConstants.CACHE_BOOK_KEY+bookId;
         Book book = this.slaveRedisTemplate.opsForValue().get(key);
         if(book == null){
             book = this.findUniqueByParams("bookId",bookId,"shelfStatus",1);

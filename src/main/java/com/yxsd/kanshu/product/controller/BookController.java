@@ -14,6 +14,7 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.model.Chapter;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.IChapterService;
+import com.yxsd.kanshu.ucenter.model.User;
 import com.yxsd.kanshu.ucenter.model.UserAccount;
 import com.yxsd.kanshu.ucenter.model.UserPayBook;
 import com.yxsd.kanshu.ucenter.model.UserPayChapter;
@@ -114,6 +115,7 @@ public class BookController extends BaseController {
             return;
         }
         try{
+            User user = this.userService.getUserByUserId(Long.parseLong(userId));
             //获取图书所有章节
             List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
             //获取限免图书
@@ -154,8 +156,12 @@ public class BookController extends BaseController {
                     continue;
                 }
 
-                //用户有新手礼包
-                //TODO
+                if(user.isVip()){
+                    //用户有新手礼包VIP
+                    chapter.setLock(false);
+                    chapterMap.put("lock",false);
+                    continue;
+                }
 
                 if(CollectionUtils.isNotEmpty(userPayBooks)){
                     for(UserPayBook userPayBook : userPayBooks){
@@ -231,7 +237,11 @@ public class BookController extends BaseController {
 
             if(chapter.isLock()){
                 //用户有新手礼包
-                //TODO
+                User user = this.userService.getUserByUserId(Long.parseLong(userId));
+                if(user.isVip()){
+                    //用户有新手礼包VIP
+                    chapter.setLock(false);
+                }
             }
 
             if(chapter.isLock()){

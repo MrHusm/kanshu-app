@@ -1,0 +1,180 @@
+html{
+    background: #ffffff;
+}
+.sreach{
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 5% 10px;
+    border-bottom: 1px solid #e5e5e5;
+}
+.sreachImg{
+    height: 20px;
+    vertical-align: middle;
+    position: relative;
+    top: 6px;
+}
+.sreachInput{
+    height: 32px;
+    line-height: 30px;
+    padding: 0 0 0 12px;
+    border-radius: 4px;
+    margin: 0 10px;
+    background: #ededed;
+    outline: none;
+    flex-grow: 1;
+    flex-shrink: 0;
+    width: 50%;
+    appearance: normal;
+}
+.sreachBtn{
+    width: 50px;
+    height: 32px;
+    background: #ededed;
+    color: #8c8c8c;
+    border-radius: 4px;
+    outline: none;
+}
+.tag{
+    background: #fff;
+    display: flex;
+    padding: 6% 0 0;
+    flex-wrap: wrap;
+    color: #000000;
+    font-size: 16px;
+    justify-content: space-between;
+}
+.tagPub{
+    width: 33.3333%;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    margin-bottom: 5%;
+    box-sizing: border-box;
+}
+.tagCont{
+    width: 81%;
+    height: inherit;
+    display: inline-block;
+    margin: 0 auto;
+    box-sizing: inherit;
+}
+.tagPubStyle1{
+    border: 1px solid #03a9fc;
+    background: #e2f3fb;
+}
+.tagPubStyle2{
+    border: 1px solid #ffa85b;
+    background: #faf3ed;
+}
+.tagPubStyle3{
+    border: 1px solid #91c46a;
+    background: #f3f7e9;
+}
+.tagPubStyle4{
+    border: 1px solid #fc9da4;
+    background: #f9ebeb;
+}
+.h6{
+    font-size: 18px;
+    color: #000000;
+    line-height: 21px;
+    margin-bottom: 5%;
+}
+.h6Icon{
+    height: 21px;
+    width: 4px;
+    margin-right: 2%;
+    background: #0096ff;
+    display: inline-block;
+    vertical-align: bottom;
+}
+article{
+    padding: 20px 10px 0;
+}
+.bookListBox{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dbdbdb;
+}
+.bookList{
+    color: #999999;
+    font-size:14px;
+}
+.bookListImg{
+    height: 100px;
+    margin-right: 3%;
+}
+.bookName{
+    color: #000000;
+    font-size: 18px;
+    width: 73%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.bookInfo{
+    margin: 9px 0;
+}
+.authorNmae{
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.authorBox{
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+}
+.bookGenre > :last-child{
+    margin-left: 0;
+}
+.bookGenrePublic{
+    border: 1px solid #999999;
+    border-radius: 5px;
+    float: right;
+    padding: 3px;
+    margin-left: 10px;
+}
+.bookGenrePublicStyle{
+    border: 1px solid #82bce5;
+    color: #82bce5;
+}
+.bookLoad{
+    background: #eeeeee;
+    color: #8c8c8c;
+    text-align: center;
+    border-radius: 4px;
+    height: 30px;
+    line-height: 30px;
+    margin: 10px 10px;
+    font-size: 16px;
+}
+.hr{
+    height: 15px;
+    background: #f2f2f2;
+}
+.notResultBox{
+    text-align: center;
+}
+.notResultIcon{
+    margin: 5% auto;
+    display: block;
+    height: 65px;
+}
+.notResultTxt{
+    display: block;
+    color: #999999;
+    font-size: 15px;
+    text-align: center;
+}
+.notResult{
+    padding-bottom: 6%;
+}

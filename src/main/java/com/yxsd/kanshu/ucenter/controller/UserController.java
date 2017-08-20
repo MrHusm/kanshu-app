@@ -3,11 +3,10 @@ package com.yxsd.kanshu.ucenter.controller;
 import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.controller.BaseController;
-import com.yxsd.kanshu.base.utils.JsonResultSender;
-import com.yxsd.kanshu.base.utils.PageFinder;
-import com.yxsd.kanshu.base.utils.Query;
-import com.yxsd.kanshu.base.utils.ResultSender;
+import com.yxsd.kanshu.base.utils.*;
 import com.yxsd.kanshu.pay.service.IRechargeItemService;
+import com.yxsd.kanshu.product.model.Book;
+import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.ucenter.model.*;
 import com.yxsd.kanshu.ucenter.service.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,8 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author hushengmeng
@@ -64,6 +62,15 @@ public class UserController extends BaseController {
 
     @Resource(name="rechargeItemService")
     IRechargeItemService rechargeItemService;
+
+    @Resource(name="bookService")
+    IBookService bookService;
+
+    @Resource(name="userReceiveService")
+    IUserReceiveService userReceiveService;
+
+    @Resource(name="userVipService")
+    IUserVipService userVipService;
 
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate masterRedisTemplate;
@@ -391,15 +398,38 @@ public class UserController extends BaseController {
                     model.addAttribute("pageFinder",pageFinder);
                 }
             }else if("2".equals(type)){
-                UserAccountLog accountLog = new UserAccountLog();
-                accountLog.setUserId(Long.parseLong(userId));
-                accountLog.setFindType(Integer.parseInt(type));
-                List<UserAccountLog> accountLogs = this.userAccountLogService.findListByParams(accountLog);
+                UserAccountLog accountLogCondition = new UserAccountLog();
+                accountLogCondition.setUserId(Long.parseLong(userId));
+                accountLogCondition.setFindType(Integer.parseInt(type));
+                List<UserAccountLog> accountLogs = this.userAccountLogService.findListByParamsObjs(accountLogCondition);
                 if(CollectionUtils.isNotEmpty(accountLogs)){
-                    //TODO
+                    List<Map<String,Object>> result = new ArrayList<Map<String, Object>>();
+                    for (UserAccountLog accountLog : accountLogs) {
+                        Map<String,Object> map = new HashMap<String, Object>();
+                        map.put("charge",accountLog.getUnitMoney()+accountLog.getUnitVirtual());
+                        map.put("createDate", DateUtil.formatDateByFormat(accountLog.getCreateDate(),DateUtil.DATE_PATTERN));
+                        map.put("bookId",accountLog.getProductId());
+                        //是否存在标识
+                        int flag=0;
+                        for (Map<String,Object> map1 : result) {
+                            if(map1.get("bookId").equals(map.get("bookId"))){
+                                map1.put("charge",Integer.parseInt(map1.get("charge").toString())+Integer.parseInt(map.get("charge").toString()));
+                                map1.put("createDate", map.get("createDate"));
+                                flag=1;
+                                break;
+                            }
+                        }
+                        if(flag==0){
+                            Book book = this.bookService.getBookById(Long.parseLong(accountLog.getProductId()));
+                            if(book != null){
+                                map.put("title",book.getTitle());
+                                result.add(map);
+                            }
+                        }
+                    }
+                    model.addAttribute("records",result);
                 }
             }
-
         }catch (Exception e){
             logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
             e.printStackTrace();
@@ -415,4 +445,133 @@ public class UserController extends BaseController {
         }
         return "error";
     }
+
+    /**
+     * 查询用户某一本书的购买详情
+     * @param response
+     * @param request
+     */
+    @RequestMapping("findBookAccountLog")
+    public String findBookAccountLog(HttpServletResponse response,HttpServletRequest request,Model model) {
+        //入参
+        String userId = request.getParameter("userId");
+        String bookId = request.getParameter("bookId");
+
+        if(StringUtils.isBlank(userId) || StringUtils.isBlank(bookId)){
+            logger.error("UserController_findUserRechargeLog：userId或bookId为空");
+            return "error";
+        }
+        try{
+            UserAccountLog accountLogCondition = new UserAccountLog();
+            accountLogCondition.setUserId(Long.parseLong(userId));
+            accountLogCondition.setProductId(bookId);
+            List<UserAccountLog> accountLogs = this.userAccountLogService.findListByParamsObjs(accountLogCondition);
+            if(CollectionUtils.isNotEmpty(accountLogs)){
+                //查询章节相关信息
+                //TODO
+            }
+        }catch (Exception e){
+            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            e.printStackTrace();
+            return "error";
+        }
+
+        return "/ucenter/account_book_detail_log";
+    }
+
+    /**
+     * 获取新手礼包信息
+     * @param response
+     * @param request
+     */
+    @RequestMapping("getNewUserVipInfo")
+    public void getNewUserVipInfo(HttpServletResponse response,HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String userId = request.getParameter("userId");
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_getNewUserVipInfo：userId为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
+            if(userReceive != null && userReceive.getVipStatus() == 1){
+                sender.put("receiveStatus",1);
+            }else{
+                sender.put("receiveStatus",0);
+                //新手礼包天数3
+                sender.put("days",3);
+            }
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+    }
+
+    /**
+     * 领取新手礼包信息
+     * @param response
+     * @param request
+     */
+    @RequestMapping("receiveNewUserVip")
+    public void receiveNewUserVip(HttpServletResponse response,HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String userId = request.getParameter("userId");
+        String days = request.getParameter("days");
+        String channel = request.getParameter("channel");
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_getNewUserVipInfo：userId或days为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            UserVip userVip = this.userVipService.findUniqueByParams("userId",userId);
+            Calendar calendar = Calendar.getInstance();
+            if(userVip != null){
+                calendar.setTime(userVip.getEndDate());
+                calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(days));
+                userVip.setEndDate(calendar.getTime());
+                userVip.setUpdateDate(new Date());
+                this.userVipService.update(userVip);
+            }else{
+                userVip = new UserVip();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(days));
+                userVip.setEndDate(calendar.getTime());
+                userVip.setUserId(Long.parseLong(userId));
+                userVip.setUpdateDate(new Date());
+                userVip.setCreateDate(new Date());
+                if(StringUtils.isNotBlank(channel)){
+                    userVip.setChannel(Integer.parseInt(channel));
+                }
+                userVipService.save(userVip);
+            }
+
+            UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
+            if(userReceive != null){
+                userReceive.setVipStatus(1);
+                userReceive.setUpdateDate(new Date());
+                this.userReceiveService.update(userReceive);
+            }else{
+                userReceive = new UserReceive();
+                userReceive.setUserId(Long.parseLong(userId));
+                userReceive.setVipStatus(1);
+                userReceive.setUpdateDate(new Date());
+                userReceive.setCreateDate(new Date());
+                this.userReceiveService.save(userReceive);
+            }
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+    }
+
 }

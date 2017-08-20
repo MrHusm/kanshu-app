@@ -1,8 +1,8 @@
 package com.yxsd.kanshu.portal.model;
 
-import java.util.Date;
-
 import com.yxsd.kanshu.product.model.Book;
+
+import java.util.Date;
 
 public class DriveBook {
     private Long id;
@@ -20,7 +20,7 @@ public class DriveBook {
     /**
      * 类型 1：限免榜 2：搜索榜 3：畅销榜
      */
-    private Short type;
+    private Integer type;
 
     /**
      * 排序分数
@@ -62,11 +62,11 @@ public class DriveBook {
         this.createDate = createDate;
     }
 
-    public Short getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(Short type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 

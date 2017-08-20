@@ -39,5 +39,8 @@ public class RedisKeyConstants {
     //版本信息key
     public final static String CACHE_VERSION_INFO_CHANNEL_KEY = "version_info_channel_";
 
+    //父id获取子分类key
+    public final static String CACHE_CATEGORY_LIST_PID_KEY = "category_list_pid_";
+
 
 }

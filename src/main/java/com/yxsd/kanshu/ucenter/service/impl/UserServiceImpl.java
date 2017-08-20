@@ -30,6 +30,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
     @Resource(name="userAccountService")
     private IUserAccountService userAccountService;
 
+    @Resource(name="userVipService")
+    private IUserVipService userVipService;
+
     @Resource(name="userAccountLogService")
     private IUserAccountLogService userAccountLogService;
 
@@ -57,6 +60,13 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
         User user = slaveRedisTemplate.opsForValue().get(key);
         if(user == null){
             user = this.get(userId);
+            UserVip userVip = this.userVipService.findUniqueByParams("userId",userId);
+            if(userVip != null){
+                Date now = new Date();
+                if(userVip.getEndDate().getTime() > now.getTime()){
+                    user.setVip(true);
+                }
+            }
             if(user != null){
                 masterRedisTemplate.opsForValue().set(key, user, 2, TimeUnit.HOURS);
             }

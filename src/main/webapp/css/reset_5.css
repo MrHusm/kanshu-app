@@ -1,0 +1,145 @@
+/* 项目新添加的属性
+---------------------------------------------------------- */
+	@font-face {
+		font-family: 'pingfang';
+		src: url("../fonts/PingFang Medium.ttf");
+	}
+
+	.newClear:after {
+		content: '';
+		display: block;
+		clear: both;
+	}
+	.none {
+		display: none;
+}
+/*
+html5 css reset
+author:l_strive
+*/
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+::-ms-clear, ::-ms-reveal{display: none;}
+/* HTML5 display-role reset for older browsers */
+/*article, aside, details, figcaption, figure, footer, header, hgroup,
+	menu, nav, section {
+	display: block;
+}*/
+input[type=button], input[type=submit], input[type=file], button { cursor: pointer; -webkit-appearance: none; } 
+body {
+	line-height: 1;
+    min-width: 300px;
+    max-width: 640px;
+    margin: 0 auto;
+    background-color: #f2f2f2;
+}
+
+html{
+	background: #f2f2f2;
+}
+
+ol, ul {
+	list-style: none;
+	overflow: hidden;
+}
+
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+img {
+	border: 0;
+	-ms-interpolation-mode: bicubic;
+}
+
+input:not ([type] ), input[type="color"], input[type="email"], input[type="number"],
+	input[type="password"], input[type="tel"], input[type="url"], input[type="text"]
+	{
+	padding: 0px 0px;
+}
+input:-webkit-autofill {
+-webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+
+/* 基本属性
+---------------------------------------------------------------------------------------------------------------------- */
+body {
+	background: #fff;
+	color: #666;
+	font-size: 12px;
+	text-align: left;
+	font-family: pingfang, 'Microsoft YaHei UI', 'Microsoft YaHei', SimSun, 'Segoe UI',
+		Tahoma, Helvetica, Sans-Serif;
+}
+
+a {
+	text-decoration: none;
+	font-family: pingfang, 'Microsoft YaHei UI', 'Microsoft YaHei', SimSun, 'Segoe UI',
+		Tahoma, Helvetica, Sans-Serif;
+}
+
+a:link, a:visited {
+	color: #666;
+	text-decoration: none;
+}
+
+a:hover, a:active, a:focus {
+	/* color: #f00; */
+	text-decoration: none;
+}
+
+button, select, textarea {
+	font-size: 16px;
+	color: #444;
+	font-family: pingfang, 'Microsoft YaHei UI', 'Microsoft YaHei', SimSun, 'Segoe UI',
+		Tahoma, Helvetica, Sans-Serif;
+}
+
+input {
+	font-size: 14px;
+}
+
+.fB {
+	font-weight: bold;
+}
+
+/* 颜色属性*/
+.red, a.red:link, a.red:visited {
+	color: #c00;
+	text-decoration: none;
+}
+
+a.red:hover {
+	color: #f00;
+	text-decoration: none;
+}
+
+/* 清除浮动
+---------------------------------------------------------- */
+.cl:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+.cl {
+	zoom: 1;
+}

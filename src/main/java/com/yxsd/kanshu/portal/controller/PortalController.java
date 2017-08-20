@@ -3,11 +3,10 @@ package com.yxsd.kanshu.portal.controller;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
-import com.yxsd.kanshu.portal.service.IDriveBookService;
-import com.yxsd.kanshu.portal.service.IHistoryTodayImgService;
 import com.yxsd.kanshu.portal.model.DriveBook;
-import com.yxsd.kanshu.portal.service.IHistoryTodayService;
-
+import com.yxsd.kanshu.portal.service.IDriveBookService;
+import com.yxsd.kanshu.product.model.Category;
+import com.yxsd.kanshu.product.service.ICategoryService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @Scope("prototype")
@@ -28,13 +31,11 @@ public class PortalController extends BaseController{
     private static final Logger logger = LoggerFactory.getLogger(PortalController.class);
     
     @Resource(name="driveBookService")
-    IDriveBookService iDriveBookService;
+    IDriveBookService driveBookService;
 
-    @Resource(name="historyTodayService")
-    IHistoryTodayService historyTodayService;
+    @Resource(name="categoryService")
+    ICategoryService categoryService;
 
-    @Resource(name="historyTodayImgService")
-    IHistoryTodayImgService historyTodayImgService;
 
     /**
      * 精选页
@@ -44,8 +45,9 @@ public class PortalController extends BaseController{
      * @return
      */
     @RequestMapping("portalIndex")
-    public String portalIndex(HttpServletResponse response, HttpServletRequest request, Model model,Short type) {
+    public String portalIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
         String page = request.getParameter("page");
+        //String type = request.getParameter("type");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
         model.addAttribute("syn",syn);
         Query query = new Query();
@@ -54,51 +56,34 @@ public class PortalController extends BaseController{
         }else{
             query.setPage(1);
         }
-        query.setPageSize(5);
+        query.setPageSize(20);
         DriveBook driveBook = new DriveBook();
-        driveBook.setType(type);
-        
-        PageFinder<DriveBook> pageFinder = iDriveBookService.findPageFinderObjs(driveBook,query);
+        driveBook.setType(3);
+        PageFinder<DriveBook> pageFinder = driveBookService.findPageFinderObjs(driveBook,query);
         model.addAttribute("pageFinder",pageFinder);
 
         return "portal/portal_index";
     }
-    
-    
 
-//    /**
-//     * 精选页
-//     * @param model
-//     * @param response
-//     * @param request
-//     * @return
-//     */
-//    @RequestMapping("portalIndex")
-//    public String portalIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
-//        String page = request.getParameter("page");
-//        String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
-//        model.addAttribute("syn",syn);
-//        Query query = new Query();
-//        if(StringUtils.isNotBlank(page)){
-//            query.setPage(Integer.parseInt(page));
-//        }else{
-//            query.setPage(1);
-//        }
-//        query.setPageSize(5);
-//        HistoryToday historyToday = new HistoryToday();
-//        SimpleDateFormat df = new SimpleDateFormat("MMdd");//设置日期格式
-//        String day = df.format(new Date());
-//        historyToday.setDay(day);
-//        PageFinder<HistoryToday> pageFinder = historyTodayService.findPageFinderObjs(historyToday,query);
-//        if(CollectionUtils.isNotEmpty(pageFinder.getData())) {
-//            for (HistoryToday history : pageFinder.getData()) {
-//                List<HistoryTodayImg> imgs = this.historyTodayImgService.findListByParams("historyId", history.getId());
-//                history.setImgs(imgs);
-//            }
-//        }
-//        model.addAttribute("pageFinder",pageFinder);
-//
-//        return "portal/portal_index";
-//    }
+    /**
+     * 书库
+     * @param model
+     * @param response
+     * @param request
+     * @return
+     */
+    @RequestMapping("categoryIndex")
+    public String categoryIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
+        List<Category> parentCategorys = this.categoryService.getCategorysByPid(0L);
+        List<Map<String,List<Category>>> data = new ArrayList<Map<String,List<Category>>>();
+        for(Category parentCategory : parentCategorys){
+            Map<String,List<Category>> map = new HashMap<String, List<Category>>();
+            List<Category> categories = this.categoryService.getCategorysByPid(parentCategory.getCategoryId());
+            map.put(parentCategory.getName(),categories);
+            data.add(map);
+        }
+        model.addAttribute("data",data);
+        return "portal/category_index";
+    }
 
 }

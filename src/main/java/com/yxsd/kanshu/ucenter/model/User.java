@@ -72,6 +72,11 @@ public class User implements Serializable {
     private Integer type;
 
     /**
+     * 是否是vip
+     */
+    private boolean isVip = false;
+
+    /**
      * 创建时间
      */
     private Date createDate;
@@ -199,5 +204,13 @@ public class User implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public boolean isVip() {
+        return isVip;
+    }
+
+    public void setVip(boolean vip) {
+        isVip = vip;
     }
 }

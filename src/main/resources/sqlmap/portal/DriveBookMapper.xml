@@ -5,14 +5,13 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="book_id" property="bookId" jdbcType="BIGINT" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="type" property="type" jdbcType="SMALLINT" />
+    <result column="type" property="type" jdbcType="INTEGER" />
     <result column="score" property="score" jdbcType="INTEGER" />
   </resultMap>
   <resultMap id="withBookInfoMap" type="com.yxsd.kanshu.portal.model.DriveBook"  extends="BaseResultMap" >
    		<collection property="book" ofType="com.yxsd.kanshu.product.model.Book">
             <id column="book_id" property="bookId" jdbcType="BIGINT" />
             <result column="title" property="title" jdbcType="VARCHAR" />
-            <result column="word_count" property="wordCount" jdbcType="INTEGER" />
             <result column="cover_url" property="coverUrl" jdbcType="VARCHAR" />
             <result column="author_id" property="authorId" jdbcType="BIGINT" />
             <result column="author_name" property="authorName" jdbcType="VARCHAR" />
@@ -40,7 +39,7 @@
     id, book_id, create_date, type, score
   </sql>
   
-  <sql id="Base_Column_List2" >
+  <sql id="Column_With_Book_List" >
     d.id, d.create_date, d.type, d.score,d.book_id,
     b.title,b.word_count,b.cover_url,b.author_id,b.author_name,b.author_penname,b.intro,
     b.category_sec_id,b.category_sec_name,b.category_thr_id,b.category_thr_name,b.last_chapter_update_date,
@@ -81,7 +80,7 @@
         #{createDate,jdbcType=TIMESTAMP},
       </if>
       <if test="type != null" >
-        #{type,jdbcType=SMALLINT},
+        #{type,jdbcType=INTEGER},
       </if>
       <if test="score != null" >
         #{score,jdbcType=INTEGER},
@@ -98,7 +97,7 @@
         create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
       <if test="type != null" >
-        type = #{type,jdbcType=SMALLINT},
+        type = #{type,jdbcType=INTEGER},
       </if>
       <if test="score != null" >
         score = #{score,jdbcType=INTEGER},
@@ -110,14 +109,14 @@
     update drive_book
     set book_id = #{bookId,jdbcType=BIGINT},
       create_date = #{createDate,jdbcType=TIMESTAMP},
-      type = #{type,jdbcType=SMALLINT},
+      type = #{type,jdbcType=INTEGER},
       score = #{score,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
   
    <select id="getAll" resultMap="withBookInfoMap" parameterType="map">
         select
-        <include refid="Base_Column_List2" />
+        <include refid="Column_With_Book_List" />
          from drive_book d
 		LEFT JOIN book b 
 		ON d.book_id = b.book_id where 1=1
@@ -131,12 +130,11 @@
     </select>
     <select id="pageData" resultMap="withBookInfoMap" parameterType="map">
         select
-        <include refid="Base_Column_List2" />
+        <include refid="Column_With_Book_List" />
           from  drive_book d
 		LEFT JOIN book b 
 		ON d.book_id = b.book_id where 1=1
         <include refid="Base_Where" />
         order by d.score asc
     </select>
-  
 </mapper>

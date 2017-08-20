@@ -15,7 +15,7 @@ import javax.annotation.Resource;
  */
 @Controller
 @Scope("prototype")
-@RequestMapping("book")
+@RequestMapping("category")
 public class CategoryController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
