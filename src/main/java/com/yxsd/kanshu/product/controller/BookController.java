@@ -6,6 +6,7 @@ import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.JsonResultSender;
 import com.yxsd.kanshu.base.utils.ResultSender;
+import com.yxsd.kanshu.base.utils.ZipUtils;
 import com.yxsd.kanshu.pay.model.AlipayResponse;
 import com.yxsd.kanshu.pay.service.IAlipayResponseService;
 import com.yxsd.kanshu.portal.model.DriveBook;
@@ -278,16 +279,15 @@ public class BookController extends BaseController {
                     }
                 }
             }
-            if(chapter.isLock()){
-                if(chapter.getContent().length() > 100){
-                    chapter.setContent(chapter.getContent().substring(0,100));
-                }
-            }
 
             //收费章节显示用户账号信息
             if(chapter.isLock()){
                 UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
+
+                chapter.setContent("");
                 sender.put("userAccount",userAccount);
+            }else{
+                chapter.setContent(ZipUtils.gunzip(chapter.getContent()));
             }
 
             sender.put("chapter",chapter);
