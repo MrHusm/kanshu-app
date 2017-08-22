@@ -6,7 +6,6 @@ import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.JsonResultSender;
 import com.yxsd.kanshu.base.utils.ResultSender;
-import com.yxsd.kanshu.base.utils.ZipUtils;
 import com.yxsd.kanshu.pay.model.AlipayResponse;
 import com.yxsd.kanshu.pay.service.IAlipayResponseService;
 import com.yxsd.kanshu.portal.model.DriveBook;
@@ -286,10 +285,11 @@ public class BookController extends BaseController {
 
                 chapter.setContent("");
                 sender.put("userAccount",userAccount);
-            }else{
-                chapter.setContent(ZipUtils.gunzip(chapter.getContent()));
             }
-
+//            else{
+//                chapter.setContent(ZipUtils.gunzip(chapter.getContent()));
+//            }
+            //客户端需解压章节内容
             sender.put("chapter",chapter);
             sender.send(response);
         }catch(Exception e){
