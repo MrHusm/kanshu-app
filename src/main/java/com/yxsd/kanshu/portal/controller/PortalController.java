@@ -86,4 +86,33 @@ public class PortalController extends BaseController{
         return "portal/category_index";
     }
 
+    /**
+     * 榜单
+     * @param model
+     * @param response
+     * @param request
+     * @return
+     */
+    @RequestMapping("rankList")
+    public String rankList(HttpServletResponse response, HttpServletRequest request, Model model) {
+        String page = request.getParameter("page");
+        String type = request.getParameter("type");
+        String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+        model.addAttribute("syn",syn);
+        Query query = new Query();
+        if(StringUtils.isNotBlank(page)){
+            query.setPage(Integer.parseInt(page));
+        }else{
+            query.setPage(1);
+        }
+        query.setPageSize(20);
+        DriveBook driveBook = new DriveBook();
+        driveBook.setType(Integer.parseInt(type));
+        PageFinder<DriveBook> pageFinder = driveBookService.findPageFinderObjs(driveBook,query);
+        model.addAttribute("pageFinder",pageFinder);
+        model.addAttribute("type",type);
+
+        return "portal/rankList";
+    }
+
 }
