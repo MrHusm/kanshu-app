@@ -1,7 +1,6 @@
 package com.yxsd.kanshu.job.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.*;
 import com.yxsd.kanshu.job.model.PullBook;
@@ -12,10 +11,8 @@ import com.yxsd.kanshu.job.service.IPullChapterService;
 import com.yxsd.kanshu.job.service.IPullVolumeService;
 import com.yxsd.kanshu.job.vo.*;
 import com.yxsd.kanshu.product.model.*;
-import com.yxsd.kanshu.product.service.IAuthorService;
-import com.yxsd.kanshu.product.service.IBookService;
-import com.yxsd.kanshu.product.service.ICategoryService;
-import com.yxsd.kanshu.product.service.IVolumeService;
+import com.yxsd.kanshu.product.service.*;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -31,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
@@ -70,6 +68,9 @@ public class YuewenJobController extends BaseController {
 	private static final int COREPOOL_SIZE = 10;
 	private static final int THREAD_POOL_KEEP_ALIVE_TIME = 300;
 	private static final int THREAD_POOL_QUEUE_SIZE = 200;
+
+	//private static final String IMG_BASE_PATH = "/book/img/";
+	private static final String IMG_BASE_PATH = "E:\\book\\";
 
 	@Resource
 	private IBookService bookService;
@@ -989,6 +990,15 @@ public class YuewenJobController extends BaseController {
 		book.setTitle(bookInfoResp.getTitle());// 是	作品名称
 		book.setWordCount(bookInfoResp.getAllwords());// 否	作品字数
 		book.setCoverUrl(bookInfoResp.getCoverurl());
+		try {
+			//下载图书封面
+			String imgName = IMG_BASE_PATH + ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE) + File.separator + bookInfoResp.getcBID() % 100 + File.separator + bookInfoResp.getcBID()+".jpg";
+			File img = new File(imgName);
+			FileUtils.copyURLToFile(new URL(bookInfoResp.getCoverurl()),img);
+		} catch (IOException e) {
+			logger.error("图书封面下载失败:" + bookInfoResp.getcBID() + ":" + bookInfoResp.getCoverurl());
+			e.printStackTrace();
+		}
 		book.setAuthorName(bookInfoResp.getAuthorname());// 是	作者名称
 		book.setAuthorPenname(bookInfoResp.getAuthorname());
 		Author author = this.authorService.findUniqueByParams("name",book.getAuthorName());
@@ -1125,7 +1135,7 @@ public class YuewenJobController extends BaseController {
 		}
     	content = content.replaceAll("\r", "</p>");
     	content = content.replaceAll("\n", "<p>");
-		chapter.setContent(content);// 是	章节内容。章节中的各个段落请使用段落标签<p></p>表示
+		chapter.setContent(ZipUtils.gzip(content));// 是	章节内容。章节中的各个段落请使用段落标签<p></p>表示
 		chapter.setUpdateDate(DateUtil.parseStringToDate(chapterInfoResp.getUpdatetime()));
 		chapter.setCreateDate(new Date());
 		return chapter;
