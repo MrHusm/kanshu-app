@@ -1,12 +1,8 @@
 package com.yxsd.kanshu.portal.controller;
 
 import com.yxsd.kanshu.base.controller.BaseController;
-import com.yxsd.kanshu.portal.model.DriveBook;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
-import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.service.IBookService;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by lenovo on 2017/8/20.
@@ -41,10 +35,9 @@ public class RankClimbController extends BaseController {
 
     @RequestMapping("climbData")
     public void climbData() {
-        int p = 1;
         logger.info("开始爬虫畅销榜");
-        while (true){
-            String baseUrl = "http://dushu.qq.com/ranklist.html?rankid=ma_w_a_cr_10000_50_1&p=";
+        for(int p = 1; p< 26; p++){
+            String baseUrl = "http://r.qidian.com/yuepiao?style=1&page=";
             try {
                 logger.info("开始爬虫page："+p);
                 Document doc = Jsoup.connect(baseUrl+p)
@@ -53,7 +46,7 @@ public class RankClimbController extends BaseController {
                         .timeout(10000)           // 设置连接超时时间
                         .get();                 // 使用 POST 方法访问 URL
 
-                Elements eleBooks = doc.select(".book");
+                Elements eleBooks = doc.select(".book-mid-info");
 
                 if(eleBooks == null || eleBooks.size() == 0){
                     break;
@@ -61,27 +54,26 @@ public class RankClimbController extends BaseController {
                     int i = 0;
                     for(Element eleBook : eleBooks){
                         i++;
-                        Element eleTitle =  eleBook.child(0);
-                        String title = eleTitle.attr("title");
+                        Element eleTitle =  eleBook.child(0).child(0);
+                        String title = eleTitle.text();
                         logger.info("title:"+title);
-                        if(StringUtils.isNotBlank(title)){
-                            List<Book> books = this.bookService.findListByParams("title",eleTitle.attr("title"));
-                            if(CollectionUtils.isNotEmpty(books)){
-                                Book book = books.get(0);
-                                if(book != null){
-                                    DriveBook driveBook = new DriveBook();
-                                    driveBook.setBookId(book.getBookId());
-                                    driveBook.setType(3);
-                                    driveBook.setScore((p-1)*50+i);
-                                    driveBook.setCreateDate(new Date());
-                                    driveBookService.save(driveBook);
-                                }
-
-                            }
-                        }
+//                        if(StringUtils.isNotBlank(title)){
+//                            List<Book> books = this.bookService.findListByParams("title",eleTitle.attr("title"));
+//                            if(CollectionUtils.isNotEmpty(books)){
+//                                Book book = books.get(0);
+//                                if(book != null){
+//                                    DriveBook driveBook = new DriveBook();
+//                                    driveBook.setBookId(book.getBookId());
+//                                    driveBook.setType(3);
+//                                    driveBook.setScore((p-1)*50+i);
+//                                    driveBook.setCreateDate(new Date());
+//                                    driveBookService.save(driveBook);
+//                                }
+//
+//                            }
+//                        }
                     }
                 }
-                p++;
             } catch (IOException e) {
                 e.printStackTrace();
             }
