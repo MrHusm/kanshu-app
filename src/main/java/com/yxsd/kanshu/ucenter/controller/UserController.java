@@ -134,6 +134,7 @@ public class UserController extends BaseController {
                 }
                 if(StringUtils.isNotBlank(channel)){
                     user.setChannel(Integer.parseInt(channel));
+                    user.setChannelNow(Integer.parseInt(channel));
                 }
                 user.setCreateDate(new Date());
                 user.setUpdateDate(new Date());
@@ -167,6 +168,7 @@ public class UserController extends BaseController {
         //入参
         String userId = request.getParameter("userId");
         String nickName = request.getParameter("nickName");
+        String channel = request.getParameter("channel");
 
         if(StringUtils.isBlank(userId) && StringUtils.isBlank(nickName)){
             logger.error("UserController_findUserByCondition:userId和nickName为空");
@@ -183,6 +185,11 @@ public class UserController extends BaseController {
                 user = userService.findUniqueByParams("nickName",nickName);
             }
             if(user != null){
+                if(StringUtils.isNotBlank(channel) && !channel.equals(user.getChannelNow())){
+                    //如果传入的渠道和用户表中当前渠道不一致，修改用户当前渠道
+                    user.setChannelNow(Integer.parseInt(channel));
+                    userService.update(user);
+                }
                 UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",user.getUserId());
                 sender.put("user",user);
                 sender.put("userAccount",userAccount);

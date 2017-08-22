@@ -42,9 +42,14 @@ public class User implements Serializable {
     private String tel;
 
     /**
-     * 渠道号
+     * 注册时渠道号
      */
     private Integer channel;
+
+    /**
+     * 当前渠道号
+     */
+    private Integer channelNow;
 
     /**
      * 邮箱
@@ -212,5 +217,13 @@ public class User implements Serializable {
 
     public void setVip(boolean vip) {
         isVip = vip;
+    }
+
+    public Integer getChannelNow() {
+        return channelNow;
+    }
+
+    public void setChannelNow(Integer channelNow) {
+        this.channelNow = channelNow;
     }
 }
