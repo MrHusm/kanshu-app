@@ -1,6 +1,7 @@
 package com.yxsd.kanshu.job.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.*;
 import com.yxsd.kanshu.job.model.PullBook;
@@ -491,6 +492,7 @@ public class YuewenJobController extends BaseController {
 					volume.setBookId(book.getBookId());
 					volumeService.save(volume);
 				}else{
+					volume.setBookId(book.getBookId());
 					volume.setVolumeId(beforeVolume.getVolumeId());
 					volumeService.update(volume);
 				}
@@ -518,10 +520,10 @@ public class YuewenJobController extends BaseController {
 										ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 										"copyrightChapterId", chapterInfoResp.getcCID().toString());
 								if(beforeChapter == null){
-									chapterService.saveChapter(chapter,book.getBookId().intValue() % 10);
+									chapterService.saveChapter(chapter,book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 								}else{
 									chapter.setChapterId(beforeChapter.getChapterId());
-									chapterService.updateChapter(chapter,book.getBookId().intValue() % 10);
+									chapterService.updateChapter(chapter,book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 								}
 								int chapterPullStatus = 1;
 								String chapterPullFailureCause = "";
@@ -558,8 +560,8 @@ public class YuewenJobController extends BaseController {
 			Map<String, Object> pullChapterMap = new HashMap<String, Object>();
 			pullChapterMap.put("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));
 			pullChapterMap.put("pullStatus", 0);
-			pullChapterMap.put("pullFailureCause1", "章节已存在");
-			pullChapterMap.put("pullFailureCause2", "章节不存在");
+			//pullChapterMap.put("pullFailureCause1", "章节已存在");
+			//pullChapterMap.put("pullFailureCause2", "章节不存在");
 			Query query = new Query(Integer.parseInt(pageSizeStr));
 			PageFinder<PullChapter> pullChaptersPage = pullChapterService.findPageFinderObjs(pullChapterMap, query);
 			pullChapters = pullChaptersPage.getData();
@@ -589,11 +591,13 @@ public class YuewenJobController extends BaseController {
 			//调用获取章节内容接口
 			ChapterContentResp chapterContentResp = getChapterContentFromYuewenByChapterId(cbid, ccid, cvid);
 			if(chapterInfoResp != null && chapterContentResp != null && volumeIndex > 0){
+				Book book = bookService.findMasterUniqueByParams("copyrightCode",
+						ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid);
 				Volume volume = volumeService.findMasterUniqueByParams("copyrightCode",
 						ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 						"copyrightVolumeId", cvid);
 				//调用分销平台增加或者更新章节接口
-				Chapter chapter = setChapter(chapterInfoResp, volume.getBookId(), volume.getVolumeId(),
+				Chapter chapter = setChapter(chapterInfoResp, book.getBookId(), volume == null ? null : volume.getVolumeId(),
 						chapterContentResp.getContent(), volumeIndex);
 				//查询是否拉取过该章节
 				logger.info("beforeChapter params:copyrightBookId={},copyrightChapterId={}", cbid, ccid);
@@ -601,10 +605,10 @@ public class YuewenJobController extends BaseController {
 						ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 						"copyrightChapterId", ccid);
 				if(beforeChapter == null){
-					chapterService.saveChapter(chapter,volume.getBookId().intValue() % 10);
+					chapterService.saveChapter(chapter,volume.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 				}else{
 					chapter.setChapterId(beforeChapter.getChapterId());
-					chapterService.updateChapter(chapter,volume.getBookId().intValue() % 10);
+					chapterService.updateChapter(chapter,volume.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 				}
 				int chapterPullStatus = 1;
 				String chapterPullFailureCause = "";
@@ -992,7 +996,8 @@ public class YuewenJobController extends BaseController {
 		book.setCoverUrl(bookInfoResp.getCoverurl());
 		try {
 			//下载图书封面
-			String imgName = IMG_BASE_PATH + ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE) + File.separator + bookInfoResp.getcBID() % 100 + File.separator + bookInfoResp.getcBID()+".jpg";
+			String ext = bookInfoResp.getCoverurl().substring(bookInfoResp.getCoverurl().lastIndexOf("."));
+			String imgName = IMG_BASE_PATH + ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE) + File.separator + bookInfoResp.getcBID() % 100 + File.separator + bookInfoResp.getcBID()+ext;
 			File img = new File(imgName);
 			FileUtils.copyURLToFile(new URL(bookInfoResp.getCoverurl()),img);
 		} catch (IOException e) {
@@ -1108,7 +1113,19 @@ public class YuewenJobController extends BaseController {
 		chapter.setVolumeId(volumeId);// 否	保存的卷id
 		chapter.setBookId(bookId);// 否	保存的作品id
 		chapter.setTitle(chapterInfoResp.getChaptertitle());// 是	章节名称
-		chapter.setIdx(chapterInfoResp.getChaptersort().intValue());// 是
+		String chapterSort = chapterInfoResp.getChaptersort().toString();
+		if(index != null){
+			logger.info("setChapter index={},chapterSort={}", index, chapterSort);
+			String sort = "";
+			if(chapterSort.length() > 7){
+				sort = StringUtils.substring(chapterSort, chapterSort.length() - 7);
+			}else{
+				sort = StringUtils.leftPad(chapterSort, 7, "0");
+			}
+			chapterSort = String.valueOf(index) + sort;
+			logger.info("setChapter chapterSort={}", chapterSort);
+		}
+		chapter.setIdx(Integer.parseInt(chapterSort));// 是	章节序号从0开始按章节顺序递增
 		chapter.setPrice(chapterInfoResp.getAmount());// 设置价格
 		chapter.setWordCount(chapterInfoResp.getOriginalwords());// 否	章节字数
 		chapter.setShelfStatus(1);
@@ -1178,7 +1195,7 @@ public class YuewenJobController extends BaseController {
 							Chapter chapter = setChapter(chapterInfoResp, bookId, volume.getVolumeId(),
 									chapterContentResp.getContent(), volumeIndex-1);
 							//保存章节信息
-							chapterService.saveChapter(chapter,bookId.intValue() % 10);
+							chapterService.saveChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 //							int chapterPullStatus = 1;
 //							String chapterPullFailureCause = "";
 //							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
@@ -1218,7 +1235,7 @@ public class YuewenJobController extends BaseController {
 						//调用分销平台增加章节接口
 						Chapter chapter = setChapter(chapterInfoResp, bookId, null, chapterContentResp.getContent(), null);
 						//保存章节信息
-						chapterService.saveChapter(chapter,bookId.intValue() % 10);
+						chapterService.saveChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 					}
 				}
 				chapterPage++;
@@ -1283,10 +1300,10 @@ public class YuewenJobController extends BaseController {
 							int chapterPullStatus = 1;
 							String chapterPullFailureCause = "";
 							if(beforeChapter == null){
-								chapterService.saveChapter(chapter,bookId.intValue() % 10);
+								chapterService.saveChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 							}else{
 								chapter.setChapterId(beforeChapter.getChapterId());
-								chapterService.updateChapter(chapter,bookId.intValue() % 10);
+								chapterService.updateChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 							}
 							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
 									chapterInfoResp.getcCID().toString(), chapterPullStatus, chapterPullFailureCause);
@@ -1330,10 +1347,10 @@ public class YuewenJobController extends BaseController {
 								ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 								"copyrightChapterId", chapterInfoResp.getcCID().toString());
 						if(beforeChapter == null){
-							chapterService.saveChapter(chapter,bookId.intValue() % 10);
+							chapterService.saveChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 						}else{
 							chapter.setChapterId(beforeChapter.getChapterId());
-							chapterService.updateChapter(chapter,bookId.intValue() % 10);
+							chapterService.updateChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 						}
 					}
 				}
