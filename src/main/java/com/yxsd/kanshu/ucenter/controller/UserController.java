@@ -90,30 +90,21 @@ public class UserController extends BaseController {
     public void register(HttpServletResponse response,HttpServletRequest request) {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String imsi = request.getParameter("imsi");
-        String imei = request.getParameter("imei");
         String channel = request.getParameter("channel");
-        String key = request.getParameter("key");
+        //imei->android_id->serialNunber ->UUID生成的
+        String deviceSerialNo = request.getParameter("deviceSerialNo");
         //0:安卓 1：ios 2:h5
-        String type = request.getParameter("type");
-        if(StringUtils.isBlank(type)){
-            logger.error("UserController_register:type为空");
+        String deviceType = request.getParameter("deviceType");
+        if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)){
+            logger.error("UserController_register:deviceType或deviceSerialNo为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
         }
         try{
-            User user = null;
-            //根据用户的imei号和imsi号和key查询用户
-            if(StringUtils.isNotBlank(imei)){
-                user = userService.findUniqueByParams("imei",imei.toLowerCase());
-            }
-            if(StringUtils.isNotBlank(imsi) && user == null){
-                user = userService.findUniqueByParams("imsi",imsi.toLowerCase());
-            }
-            if(StringUtils.isNotBlank(key) && user == null){
-                user = userService.findUniqueByParams("key",key.toLowerCase());
-            }
+            //根据用户imei->android_id->serialNunber ->UUID生成的查询用户
+            User user =  userService.findUniqueByParams("deviceSerialNo",deviceSerialNo.toLowerCase());
+
             if(user == null){
                 UserUuid userUuid = new UserUuid();
                 userUuid.setCreateDate(new Date());
@@ -122,16 +113,8 @@ public class UserController extends BaseController {
                 user.setName("v"+userUuid.getId());
                 user.setNickName("v"+userUuid.getId());
                 user.setPassword("v"+Long.toHexString(System.currentTimeMillis()));
-                user.setType(Integer.parseInt(type));
-                if(StringUtils.isNotBlank(imei)){
-                    user.setImei(imei.toLowerCase());
-                }
-                if(StringUtils.isNotBlank(imsi)){
-                    user.setImsi(imsi.toLowerCase());
-                }
-                if(StringUtils.isNotBlank(key)){
-                    user.setKey(key.toLowerCase());
-                }
+                user.setDeviceType(deviceType);
+                user.setDeviceSerialNo(deviceSerialNo);
                 if(StringUtils.isNotBlank(channel)){
                     user.setChannel(Integer.parseInt(channel));
                     user.setChannelNow(Integer.parseInt(channel));

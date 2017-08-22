@@ -12,10 +12,8 @@
         <result column="channel_now" property="channelNow" jdbcType="INTEGER" />
         <result column="email" property="email" jdbcType="VARCHAR" />
         <result column="tel" property="tel" jdbcType="VARCHAR" />
-        <result column="imsi" property="imsi" jdbcType="VARCHAR" />
-        <result column="imei" property="imei" jdbcType="VARCHAR" />
-        <result column="key" property="key" jdbcType="VARCHAR" />
-        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="device_serial_no" property="deviceSerialNo" jdbcType="VARCHAR" />
+        <result column="device_type" property="deviceType" jdbcType="VARCHAR" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -29,13 +27,11 @@
         <if test="channelNow != null"> and channel_now= #{channelNow}</if>
         <if test="email != null and email !=''"> and email= #{email}</if>
         <if test="tel != null and tel !=''"> and tel= #{tel}</if>
-        <if test="imsi != null and imsi !=''"> and `imsi`= #{imsi}</if>
-        <if test="imei != null and imei !=''"> and `imei`= #{imei}</if>
-        <if test="key != null and key !=''"> and `key`= #{key}</if>
-        <if test="type != null"> and `type`= #{type}</if>
+        <if test="deviceSerialNo != null and deviceSerialNo !=''"> and device_serial_no= #{deviceSerialNo}</if>
+        <if test="deviceType != null and deviceType !=''"> and device_type= #{deviceType}</if>
     </sql>
     <sql id="Base_Column_List">
-        user_id ,`name`,nick_name,password,logo,sex,channel,channel_now,email,tel,imsi,imei,`key`,`type`,create_date,update_date
+        user_id ,`name`,nick_name,password,logo,sex,channel,channel_now,email,tel,device_serial_no,device_type,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -61,10 +57,8 @@
             <if test="channelNow != null">channel_now,</if>
             <if test="email != null and email !=''">email,</if>
             <if test="tel != null and tel !=''">tel,</if>
-            <if test="imsi != null and imsi !=''">imsi,</if>
-            <if test="imei != null and imei !=''">imei,</if>
-            <if test="key != null and key !=''">key,</if>
-            <if test="type != null">`type`,</if>
+            <if test="deviceSerialNo != null and deviceSerialNo !=''">device_serial_no,</if>
+            <if test="deviceType != null and deviceType !=''">device_type,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
@@ -99,17 +93,11 @@
             <if test="tel != null and tel !=''">
                 #{tel,jdbcType=VARCHAR},
             </if>
-            <if test="imsi != null and imsi !=''">
-                #{imsi,jdbcType=VARCHAR},
+            <if test="deviceSerialNo != null and deviceSerialNo !=''">
+                #{deviceSerialNo,jdbcType=VARCHAR},
             </if>
-            <if test="imei != null and imei !=''">
-                #{imei,jdbcType=VARCHAR},
-            </if>
-            <if test="key != null and key !=''">
-                #{key,jdbcType=VARCHAR},
-            </if>
-            <if test="type != null">
-                #{type,jdbcType=INTEGER},
+            <if test="deviceType != null and deviceType !=''">
+                #{deviceType,jdbcType=VARCHAR},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
@@ -150,17 +138,11 @@
             <if test="tel != null and tel !=''">
                 tel= #{tel,jdbcType=VARCHAR},
             </if>
-            <if test="imsi != null and imsi !=''">
-                imsi= #{imsi,jdbcType=VARCHAR},
+            <if test="deviceSerialNo != null and deviceSerialNo !=''">
+                device_serial_no = #{deviceSerialNo,jdbcType=VARCHAR},
             </if>
-            <if test="imei != null and imei !=''">
-                imei= #{imei,jdbcType=VARCHAR},
-            </if>
-            <if test="key != null and key !=''">
-                `key` = #{key,jdbcType=VARCHAR},
-            </if>
-            <if test="type != null">
-                `type` = #{type,jdbcType=INTEGER},
+            <if test="deviceType != null and deviceType !=''">
+                device_type = #{deviceType,jdbcType=VARCHAR},
             </if>
             <if test="createDate != null">
                 create_date= #{createDate,jdbcType=TIMESTAMP},

@@ -57,24 +57,15 @@ public class User implements Serializable {
     private String email;
 
     /**
-     * 手机imsi号
+     * imei->android_id->serialNunber ->UUID生成的
      */
-    private String imei;
+    private String deviceSerialNo;
+
 
     /**
-     * 手机imei号
+     * Android或IOS或H5
      */
-    private String imsi;
-
-    /**
-     * 自动生成唯一标识
-     */
-    private String key;
-
-    /**
-     * 来源 0:安卓 1：ios 2:h5
-     */
-    private Integer type;
+    private String deviceType;
 
     /**
      * 是否是vip
@@ -163,29 +154,6 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
-    }
-
-    public String getImsi() {
-        return imsi;
-    }
-
-    public void setImsi(String imsi) {
-        this.imsi = imsi;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
 
     public Date getCreateDate() {
         return createDate;
@@ -203,14 +171,6 @@ public class User implements Serializable {
         this.updateDate = updateDate;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
     public boolean isVip() {
         return isVip;
     }
@@ -225,5 +185,21 @@ public class User implements Serializable {
 
     public void setChannelNow(Integer channelNow) {
         this.channelNow = channelNow;
+    }
+
+    public String getDeviceSerialNo() {
+        return deviceSerialNo;
+    }
+
+    public void setDeviceSerialNo(String deviceSerialNo) {
+        this.deviceSerialNo = deviceSerialNo;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
     }
 }

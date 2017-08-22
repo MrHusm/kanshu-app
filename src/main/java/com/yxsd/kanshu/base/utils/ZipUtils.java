@@ -12,16 +12,11 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
- * 压缩解压工具类
  * @author qiong.wang
  *
  */
 public class ZipUtils {
 
-	/**
-	 * 
-	 * 使用gzip进行压缩
-	 */
 	public static String gzip(String primStr) {
 		if (primStr == null || primStr.length() == 0) {
 			return primStr;
@@ -50,9 +45,6 @@ public class ZipUtils {
 
 	/**
 	 *
-	 * <p>
-	 * Description:使用gzip进行解压缩
-	 * </p>
 	 * 
 	 * @param compressedStr
 	 * @return
@@ -105,11 +97,8 @@ public class ZipUtils {
 	}
 
 	/**
-	 * 使用zip进行压缩
 	 * 
 	 * @param str
-	 *            压缩前的文本
-	 * @return 返回压缩后的文本
 	 */
 	public static final String zip(String str) {
 		if (str == null)
@@ -146,11 +135,9 @@ public class ZipUtils {
 	}
 
 	/**
-	 * 使用zip进行解压缩
 	 * 
 	 * @param compressed
-	 *            压缩后的文本
-	 * @return 解压后的字符串
+	 * @return
 	 */
 	public static final String unzip(String compressedStr) {
 		if (compressedStr == null) {
