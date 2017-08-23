@@ -1,0 +1,40 @@
+html{
+    background: #ffffff;
+}
+#nameForm{
+    padding: 0 15px;
+}
+.newNameBox{
+    position: relative;
+    margin: 8% 0 4%;
+}
+.newNameInput{
+    height: 32px;
+    background: #f3f3f3;
+    color: #000000;
+    border-radius: 4px;
+    border: 1px solid #e5e5e5;
+    width: 100%;
+    padding-left: 2%;
+    box-sizing: border-box;
+    outline: none;
+}
+.error{
+    color: #f33228;
+    font-size: 1.1em;
+}
+.newNameBoxImg{
+    position: absolute;
+    right: 10px;
+    bottom: 8px;
+    width: 15px;
+}
+.newNameSub{
+    height: 32px;
+    background: #0c9ef2;
+    color: #ffffff;
+    width: 100%;
+    border: 1px solid #007ec6;
+    margin: 5% 0;
+    border-radius: 4px;
+}

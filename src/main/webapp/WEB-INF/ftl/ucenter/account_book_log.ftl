@@ -2,20 +2,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>精选</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="/css/index.css">
+    <title>消费记录</title>
     <link rel="stylesheet" href="/css/reset_5.css">
-    <script src="/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/rechargeRecord.css">
 </head>
 <body>
 <#if records??>
-  <#list records as record>
-    ${record.title}-${record.charge}-${record.createDate}-${record.bookId}
-
-
-  </#list>
+    <div class="pageLoad">
+        <#list records as consume>
+            <div class="rechargeList">
+                <div>${consume.title}</div>
+                <div class="rechargeTime">${consume.charge}钻&nbsp;|&nbsp;<time>${consume.createDate}</time></div>
+            </div>
+        </#list>
+    </div>
 </#if>
+<script type="text/javascript" src="/js/base.js"></script>
+<script type="text/javascript" src="/js/autopage.js"></script>
+<script>
+
+</script>
 </body>
 </html>

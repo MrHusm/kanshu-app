@@ -1,5 +1,7 @@
 package com.yxsd.kanshu.product.service.impl;
 
+import com.yxsd.kanshu.base.utils.PageFinder;
+import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.dao.IBaseDao;
@@ -48,5 +50,11 @@ public class BookServiceImpl extends BaseServiceImpl<Book, Long> implements IBoo
             }
         }
         return book;
+    }
+
+    @Override
+    public PageFinder<Book> findPageFinderWithExpandObjs(Object params, Query query) {
+        params = convertBeanToMap(params);
+        return getBaseDao().getPageFinderObjs(params, query, getPrefix()+"pageCount", getPrefix()+"pageWithExpandData");
     }
 }

@@ -143,3 +143,137 @@ a.red:hover {
 .cl {
 	zoom: 1;
 }
+
+/* 公共的基础头部样式1 */
+.bookHeader{
+	padding: 12px 0;
+	box-shadow: 0 2px 6px 0 rgba(224, 224, 224, 0.75);
+	position: relative;
+	text-align: center;
+	color: #333333;
+	font-size: 18px;
+	font-weight: 900;
+	background: #ffffff;
+}
+.bookHeaderImg{
+	height: 1em;
+	left: 15px;
+	position: absolute;
+
+}
+/* 公共的基础头部样式2 */
+header{
+	padding: 15px 10px 18px;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-wrap: nowrap;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+}
+.userLogin{
+	height: 35px;
+	margin: 0 10px 0 4px;
+	position: relative;
+}
+.userLoginImg{
+	height: 35px;
+	border-radius: 50px;
+	border: 1px solid #cccccc;
+}
+.userLoginIcon{
+	display: block;
+	width:10px;
+	height: 10px;
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	border-radius: 10px;
+	background: #f70000;
+}
+.sreach{
+	height: 35px;
+	background: #ededed;
+	border-radius: 8px;
+	-webkit-flex-grow: 1;
+	-ms-flex-positive: 1;
+	flex-grow: 1;
+}
+.sreachIcon{
+	width: 20px;
+	vertical-align: middle;
+	margin: 0 2%;
+}
+.sreachInput{
+	width: 85%;
+	height: 100%;
+	border: none;
+	background: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+/* 公共的底部导航 */
+footer{
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #fff;
+	padding: 8px 0;
+	border-top: 1px solid #b2b2b2;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-wrap: nowrap;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	-webkit-justify-content: space-around;
+	-ms-flex-pack: distribute;
+	justify-content: space-around;
+}
+.footerNavText{
+	color: #969696;
+	text-align: center;
+	margin-top: 4px;
+}
+.footerNav{
+	text-align: center;
+}
+.footerNavImg{
+	height: 20px;
+}
+.footerBg{
+	height: 55px;
+}
+/* 公共的加载 */
+.bookLoad{
+	background: #eeeeee;
+	color: #8c8c8c;
+	text-align: center;
+	border-radius: 4px;
+	height: 30px;
+	line-height: 30px;
+	margin: 10px 10px;
+	font-size: 16px;
+}
+/* 公共其他类 */
+.newBg{
+	background: #ffffff;
+}
+.notBh{
+	box-shadow: none;
+}
+.notBd{
+	border: none;
+}
+.addBxsh {
+	box-shadow: 0 2px 6px 0 rgba(224, 224, 224, 0.75);
+}
+.addBxsh1 {
+	box-shadow: 2px 0 6px 0 rgba(224, 224, 224, 0.75);
+}
+.hr{
+	height: 14px;
+	background: #f2f2f2;
+}

@@ -1,12 +1,18 @@
 package com.yxsd.kanshu.ucenter.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.*;
 import com.yxsd.kanshu.pay.service.IRechargeItemService;
 import com.yxsd.kanshu.product.model.Book;
+import com.yxsd.kanshu.product.model.BookExpand;
+import com.yxsd.kanshu.product.model.Chapter;
+import com.yxsd.kanshu.product.service.IBookExpandService;
 import com.yxsd.kanshu.product.service.IBookService;
+import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.ucenter.model.*;
 import com.yxsd.kanshu.ucenter.service.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -65,6 +71,12 @@ public class UserController extends BaseController {
 
     @Resource(name="bookService")
     IBookService bookService;
+
+    @Resource(name="chapterService")
+    IChapterService chapterService;
+
+    @Resource(name="bookExpandService")
+    IBookExpandService bookExpandService;
 
     @Resource(name="userReceiveService")
     IUserReceiveService userReceiveService;
@@ -241,6 +253,11 @@ public class UserController extends BaseController {
                     sender.put("versionStatus",1);
                 }
             }
+            BookExpand bookExpand = this.bookExpandService.getMaxClickBook();
+            if(bookExpand != null){
+                sender.put("searchBook",bookExpand.getBookName());
+            }
+
            sender.put("user",user);
            sender.put("userAccount",userAccount);
            sender.success(response);
@@ -338,13 +355,18 @@ public class UserController extends BaseController {
             return;
         }
         try{
-            User user = userService.findUniqueByParams("userId",userId);
-            user.setNickName(nickName);
-            userService.update(user);
-            //清除用户缓存
-            masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
-            sender.put("user", user);
-            sender.send(response);
+            User user = userService.findUniqueByParams("nickName",nickName);
+            if(user != null && user.getUserId() != Long.parseLong(userId)){
+                sender.fail(-1, "昵称已存在", response);
+            }else{
+                user = userService.getUserByUserId(Long.parseLong(userId));
+                user.setNickName(nickName);
+                userService.update(user);
+                //清除用户缓存
+                masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
+                sender.put("user", user);
+                sender.send(response);
+            }
         }catch (Exception e){
             logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
             e.printStackTrace();
@@ -365,16 +387,15 @@ public class UserController extends BaseController {
         //1：查询收入  2：查询书籍消费  3：查询其他消费（例如:购买VIP） 4:查询所有消费
         String type = request.getParameter("type");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
-        model.addAttribute("syn",syn);
 
-        if(StringUtils.isBlank(userId)){
-            logger.error("UserController_findUserRechargeLog：userId为空");
+
+        if(StringUtils.isBlank(userId) || StringUtils.isBlank(type)){
+            logger.error("UserController_findUserRechargeLog：userId或type为空");
             return "error";
         }
-        if(StringUtils.isBlank(type)){
-            logger.error("UserController_findUserRechargeLog：type为空");
-            return "error";
-        }
+        model.addAttribute("type",type);
+        model.addAttribute("syn",syn);
+        model.addAttribute("userId",userId);
         try{
             if("1".equals(type) || "3".equals(type)){
                 Query query = new Query();
@@ -446,27 +467,57 @@ public class UserController extends BaseController {
         //入参
         String userId = request.getParameter("userId");
         String bookId = request.getParameter("bookId");
+        String page = request.getParameter("page");
+        String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
 
         if(StringUtils.isBlank(userId) || StringUtils.isBlank(bookId)){
             logger.error("UserController_findUserRechargeLog：userId或bookId为空");
             return "error";
         }
+        model.addAttribute("syn",syn);
+        model.addAttribute("userId",userId);
+        model.addAttribute("bookId",bookId);
         try{
+            Query query = new Query();
+            query.setPage(StringUtils.isNotBlank(page) ? Integer.parseInt(page) : 1);
+            query.setPageSize(20);
             UserAccountLog accountLogCondition = new UserAccountLog();
             accountLogCondition.setUserId(Long.parseLong(userId));
             accountLogCondition.setProductId(bookId);
-            List<UserAccountLog> accountLogs = this.userAccountLogService.findListByParamsObjs(accountLogCondition);
-            if(CollectionUtils.isNotEmpty(accountLogs)){
-                //查询章节相关信息
-                //TODO
+            PageFinder<UserAccountLog> pageFinder = this.userAccountLogService.findPageFinderObjs(accountLogCondition,query);
+
+            List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+            int num = 0;
+            for(UserAccountLog userAccountLog : pageFinder.getData()){
+                Map<String,Object> data = new HashMap<String, Object>();
+                Map<String,Object> comment = JSON.parseObject(userAccountLog.getComment());
+                if(userAccountLog.getType() == -1){
+                    Long chapterId = Long.parseLong(comment.get("chapterId").toString());
+                    new Long(bookId).intValue();
+                    Chapter chapter = this.chapterService.getChapterById(chapterId,0,(int)Long.parseLong(bookId) % Constants.CHAPTR_TABLE_NUM);
+                    data.put("name",chapter.getTitle());
+                    num = num+1;
+                }else if(userAccountLog.getType() == -2){
+                    int count = Integer.parseInt(comment.get("num").toString());
+                    num = num + count;
+                    data.put("name","批量订购"+count+"章");
+
+                }
+                data.put("charge",userAccountLog.getUnitMoney() + userAccountLog.getUnitVirtual());
+                data.put("createDate",userAccountLog.getCreateDate());
+                result.add(data);
             }
+
+            model.addAttribute("num",num);
+            model.addAttribute("data",result);
+            model.addAttribute("pageNo",pageFinder.getPageNo());
+            model.addAttribute("pageCount",pageFinder.getPageCount());
         }catch (Exception e){
             logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
             e.printStackTrace();
             return "error";
         }
-
-        return "/ucenter/account_book_detail_log";
+        return "/ucenter/account_book_detail";
     }
 
     /**

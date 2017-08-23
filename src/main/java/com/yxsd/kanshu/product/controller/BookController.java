@@ -486,6 +486,7 @@ public class BookController extends BaseController {
             map.put("endChapterId",notBuyChapters.get(size-1).getChapterId());
             map.put("endChapterIdx",notBuyChapters.get(size-1).getIdx());
             map.put("channel",channel);
+            map.put("num",size);
             //购买
             int code = this.userService.charge(Long.parseLong(userId),price,Constants.CONSUME_TYPE_S2,map);
             if(code == 0){

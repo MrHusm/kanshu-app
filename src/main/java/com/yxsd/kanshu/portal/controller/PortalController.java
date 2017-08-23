@@ -5,7 +5,9 @@ import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.model.DriveBook;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
+import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.model.Category;
+import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.ICategoryService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -35,6 +37,9 @@ public class PortalController extends BaseController{
 
     @Resource(name="categoryService")
     ICategoryService categoryService;
+
+    @Resource(name="bookService")
+    IBookService bookService;
 
 
     /**
@@ -84,6 +89,52 @@ public class PortalController extends BaseController{
         }
         model.addAttribute("data",data);
         return "portal/category_index";
+    }
+
+    /**
+     * 分类下面的书籍
+     * @param model
+     * @param response
+     * @param request
+     * @return
+     */
+    @RequestMapping("categoryBooks")
+    public String categoryBooks(HttpServletResponse response, HttpServletRequest request, Model model) {
+        //入参
+        String categoryId = request.getParameter("categoryId");
+        String childCategoryId = request.getParameter("childCategoryId");
+        String isFull = request.getParameter("isFull");
+        String page = request.getParameter("page");
+        String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+
+        Category category = this.categoryService.findUniqueByParams("categoryId",categoryId);
+        List<Category> childCategorys = this.categoryService.getCategorysByPid(Long.parseLong(categoryId));
+
+
+        Query query = new Query();
+        if(StringUtils.isNotBlank(page)){
+            query.setPage(Integer.parseInt(page));
+        }else{
+            query.setPage(1);
+        }
+        query.setPageSize(20);
+        Book condition = new Book();
+        condition.setCategorySecId(Long.parseLong(categoryId));
+        condition.setCategoryThrId(childCategoryId == null ? null : Long.parseLong(childCategoryId));
+        condition.setIsFull(isFull == null ? null : Integer.parseInt(isFull));
+
+        PageFinder<Book> pageFinder = this.bookService.findPageFinderWithExpandObjs(condition, query);
+
+        model.addAttribute("category",category);
+        model.addAttribute("childCategorys",childCategorys);
+        model.addAttribute("pageFinder",pageFinder);
+        model.addAttribute("categoryId",categoryId);
+        model.addAttribute("childCategoryId",childCategoryId);
+        model.addAttribute("isFull",isFull);
+        model.addAttribute("page",page);
+        model.addAttribute("syn",syn);
+
+        return "portal/category_books";
     }
 
     /**

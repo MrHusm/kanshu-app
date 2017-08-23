@@ -1,0 +1,91 @@
+html,body{
+    background: #fcfcfc;
+}
+.notBdsh{
+    box-shadow: none;
+}
+article{
+    padding: 20px 10px 0;
+}
+.bookListBox{
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dbdbdb;
+}
+.bookList{
+    color: #999999;
+    font-size:14px;
+}
+.bookListImg{
+    width: 75px;
+    height: 100px;
+    margin-right: 3%;
+}
+.bookName{
+    color: #000000;
+    font-size: 18px;
+    width: 73%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.bookInfo{
+    margin: 9px 0;
+}
+.authorNmae{
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.authorBox{
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+.bookGenre > :last-child{
+    margin-left: 0;
+}
+.bookGenrePublic{
+    border: 1px solid #999999;
+    border-radius: 5px;
+    float: right;
+    padding: 3px;
+    margin-left: 10px;
+}
+.bookGenrePublicStyle{
+    border: 1px solid #82bce5;
+    color: #82bce5;
+}
+.notResultBox{
+    text-align: center;
+}
+.notResultIcon{
+    margin: 5% auto;
+    display: block;
+    height: 65px;
+}
+.notResultTxt{
+    display: block;
+    color: #999999;
+    font-size: 15px;
+    text-align: center;
+}
+.notResult{
+    padding-bottom: 6%;
+}
+.bookListBox:last-of-type{
+    border-bottom: 0;
+}

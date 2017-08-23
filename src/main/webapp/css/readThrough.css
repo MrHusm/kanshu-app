@@ -1,0 +1,92 @@
+html,
+body{
+    background: #fcfcfc;
+}
+.h6{
+    font-size: 18px;
+    color: #000000;
+    line-height: 21px;
+    margin-bottom: 5%;
+}
+.h6Icon{
+    height: 21px;
+    width: 4px;
+    margin-right: 2%;
+    background: #0096ff;
+    display: inline-block;
+    vertical-align: bottom;
+}
+.bookListBox{
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dbdbdb;
+}
+.bookList{
+    color: #999999;
+    font-size:14px;
+}
+.bookListImg{
+    width: 75px;
+    height: 100px;
+    margin-right: 3%;
+}
+.bookName{
+    color: #000000;
+    font-size: 18px;
+    width: 73%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.bookInfo{
+    margin: 9px 0;
+}
+.authorNmae{
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.authorBox{
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+.bookGenre > :last-child{
+    margin-left: 0;
+}
+.bookGenrePublic{
+    border: 1px solid #999999;
+    border-radius: 5px;
+    float: right;
+    padding: 3px;
+    margin-left: 10px;
+}
+.bookGenrePublicStyle{
+    border: 1px solid #82bce5;
+    color: #82bce5;
+}
+.pd1Box{
+    padding: 5% 15px;
+    background: #fcfcfc;
+}
+.pd1Box > .bookListBox:last-of-type{
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.bookLoad{
+    margin: 10px 10px;
+}

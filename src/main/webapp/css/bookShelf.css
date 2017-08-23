@@ -1,0 +1,133 @@
+html{
+    background: #ffffff;
+}
+header{
+    padding: 15px 10px 18px;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    border-bottom: 1px solid #d9d9d9;
+    box-shadow: 0 1px 10px 0 rgba(223, 223, 223, 0.75);
+}
+.userLogin{
+    height: 35px;
+    margin: 0 10px 0 4px;
+    position: relative;
+}
+.userLoginImg{
+    height: 35px;
+    border-radius: 50px;
+    border: 1px solid #cccccc;
+}
+.userLoginIcon{
+    display: block;
+    width:10px;
+    height: 10px;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    border-radius: 10px;
+    background: #f70000;
+}
+.sreach{
+    height: 35px;
+    background: #ededed;
+    border-radius: 8px;
+    -webkit-flex-grow: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+}
+.sreachIcon{
+    width: 20px;
+    vertical-align: middle;
+    margin: 0 2%;
+}
+.sreachInput{
+    width: 85%;
+    height: 100%;
+    border: none;
+    background: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.bookShelf{
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    text-align: center;
+    margin-top: 5%;
+}
+.bookShelf > div{
+    width: 33.3333%;
+    margin-bottom: 5%;
+}
+.shelfImg{
+    width: 82%;
+}
+.shelfName{
+    font-size: 1.15em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 82%;
+    margin: 5% auto 0;
+}
+.newUserBox{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background:rgba(0,0,0,.65);
+    z-index: 10;
+    padding: 10px 0 15px;
+}
+.newUserCont{
+    background: #ffffff;
+    width: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -100px;
+    margin-top: -90.5px;
+    padding: 10px 0 12px;
+    border-radius: 8px;
+}
+.newUserImg{
+    height: 50px;
+    display: block;
+    margin: 0 auto;
+}
+.newUserName{
+    font-size: 14px;
+    text-align: center;
+    margin: 8%;
+}
+.newUserInfo{
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 8%;
+}
+.newUserBtn{
+    background-image: -ms-linear-gradient( 0deg, rgb(255,142,0) 0%, rgb(255,83,0) 100%);
+    display: block;
+    height: 30px;
+    width: 82%;
+    margin: 0 auto;
+    border-radius: 15px;
+    color: #ffffff;
+    outline: none;
+}
+.addBook{
+    width: 82%;
+    background: #f5f5f5 url(../images/icon/addIcon.png) center/35% no-repeat;
+    margin: 0 auto;
+    box-shadow: 0.5px 0.866px 6px 0px rgba(179, 179, 179, 0.75);
+}

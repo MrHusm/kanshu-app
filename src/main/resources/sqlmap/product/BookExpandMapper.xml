@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="BookExpandMapper">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.product.model.BookExpand">
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="book_id" property="bookId" jdbcType="BIGINT" />
+        <result column="book_name" property="bookName" jdbcType="VARCHAR" />
+        <result column="click_num" property="clickNum" jdbcType="BIGINT" />
+        <result column="sale_num" property="saleNum" jdbcType="BIGINT" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="bookId != null"> and book_id= #{bookId}</if>
+        <if test="bookName != null and bookName != ''"> and book_name= #{bookName}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        id,`book_id`,book_name,click_num,`sale_num`,create_date,update_date
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" /> from book_expand where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from book_expand where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yxsd.kanshu.product.model.BookExpand">
+        insert into book_expand
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="bookId != null">book_id,</if>
+            <if test="bookName != null and bookName != ''">book_name,</if>
+            <if test="clickNum != null">click_num,</if>
+            <if test="saleNum != null">sale_num,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="bookId != null">
+                #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="bookName != null and bookName != ''">
+                #{bookName,jdbcType=VARCHAR},
+            </if>
+            <if test="clickNum != null">
+                #{clickNum,jdbcType=BIGINT},
+            </if>
+            <if test="saleNum != null">
+                #{saleNum,jdbcType=BIGINT},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.product.model.BookExpand">
+        update book_expand
+        <set>
+            <if test="bookId != null">
+             book_id = #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="bookName != null and bookName != ''">
+              book_name = #{bookName,jdbcType=VARCHAR},
+            </if>
+            <if test="clickNum != null">
+                click_num =  #{clickNum,jdbcType=BIGINT},
+            </if>
+            <if test="saleNum != null">
+                sale_num = #{saleNum,jdbcType=BIGINT},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from book_expand where 1=1
+        <include refid="Base_Where" />
+        order by id
+    </select>
+
+    <select id="getMaxClickBook" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from book_expand where click_num = (select max(click_num) from book_expand)
+    </select>
+
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from book_expand where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from book_expand where 1=1
+        <include refid="Base_Where" />
+        order by id desc
+    </select>
+</mapper>
