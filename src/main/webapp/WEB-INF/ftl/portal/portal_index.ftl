@@ -6,9 +6,6 @@
     <title>精选</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="/css/animate.min.css">
-    <link rel="stylesheet" href="/css/amazeui.min.css">
-    <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/reset_5.css">
     <script src="/js/jquery.min.js"></script>
@@ -36,8 +33,8 @@
 </#if>
         <#if pageFinder.data??>
             <#list pageFinder.data as driveBook>
-                <section class="bookListBox">
-                    <img class="bookListImg" src="${driveBook.book.coverUrl}">
+                <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId})">
+                    <img class="bookListImg" src="${driveBook.book.coverUrl}" onerror="javascript:this.src='/img/other/book7.jpg';">
                     <div class="bookList">
                         <div class="bookName">${driveBook.book.title}</div>
                         <div class="bookInfo">
@@ -61,15 +58,13 @@
 <#if syn=='0'>
     </article>
     <div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/portalIndex.go?&page=${pageFinder.pageNo+1}&syn=1" style="display:none;"></div>
-
-<script type="text/javascript" src="/js/amazeui.lazyload.min.js"></script>
-<script type="text/javascript" src="/js/amazeui.min.js"></script>
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
 <script>
-    $(document).on('page:fetch',   function() { $.AMUI.progress.start(); });
-    $(document).on('page:change',  function() { $.AMUI.progress.done(); });
-    $(document).on('page:restore', function() { $.AMUI.progress.remove(); });
+    function bookInfo(bookId) {
+        var url = "/book/bookDetail.go?bookId="+bookId;
+        window.JSHandle.goToHtml(url,"图书详情页");
+    }
 </script>
 </body>
 </html>

@@ -74,7 +74,7 @@ public class BookController extends BaseController {
     IUserPayBookService userPayBookService;
 
     /**
-     * 获取章节目录
+     * 获取图书详情
      * @param response
      * @param request
      */
@@ -83,14 +83,45 @@ public class BookController extends BaseController {
         //入参
         String bookId = request.getParameter("bookId");
         String channel = request.getParameter("channel");
+        String userId = request.getParameter("userId");
 
         if(StringUtils.isBlank(bookId)){
             logger.error("BookController_bookDetail:bookId为空");
             return "error";
         }
+
+        //阅读按钮标识 0：免费试读 1：阅读
+        int readBtn = 0;
+        User user = this.userService.getUserByUserId(Long.parseLong(userId));
+        if(user.isVip()){
+            //VIP用户
+            readBtn = 1;
+        }else{
+            DriveBook driveBook = driveBookService.getDriveBookByCondition(1,Long.parseLong(bookId));
+            if(driveBook != null){
+                //限免图书
+                readBtn = 1;
+            }else{
+                UserPayBook userPayBook = this.userPayBookService.findUniqueByParams("userId",userId,"bookId",bookId,"type",2);
+                if(userPayBook != null){
+                    //全本购买过
+                    readBtn = 1;
+                }
+            }
+        }
         Book book = this.bookService.getBookById(Long.parseLong(bookId));
+        //作者写的其他书
+        List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
 
+        //用户还看了其他书
+        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(3);
+        if(CollectionUtils.isNotEmpty(driveBooks) && driveBooks.size() > 10){
+            driveBooks = driveBooks.subList(0,10);
+        }
 
+        model.addAttribute("authorBooks",authorBooks);
+        model.addAttribute("driveBooks",driveBooks);
+        model.addAttribute("readBtn",readBtn);
         model.addAttribute("book",book);
         return "/product/book_detail";
     }

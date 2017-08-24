@@ -42,7 +42,7 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
             driveBooks = this.findListByParams("type",type);
             if(CollectionUtils.isNotEmpty(driveBooks)){
                 for(int i = 0; i < driveBooks.size(); i++){
-                    masterRedisTemplate.opsForList().set(key,i,driveBooks.get(i));
+                    masterRedisTemplate.opsForList().rightPush(key,driveBooks.get(i));
                 }
                 masterRedisTemplate.expire(key,1, TimeUnit.DAYS);
             }else{
@@ -61,8 +61,6 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
             driveBook = this.findUniqueByParams("type",type,"bookId",bookId);
             if(driveBook != null){
                 masterRedisTemplate.opsForValue().set(key,driveBook,1,TimeUnit.DAYS);
-            }else{
-                return null;
             }
         }
         return driveBook;

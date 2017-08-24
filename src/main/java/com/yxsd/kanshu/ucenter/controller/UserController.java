@@ -355,17 +355,21 @@ public class UserController extends BaseController {
             return;
         }
         try{
-            User user = userService.findUniqueByParams("nickName",nickName);
-            if(user != null && user.getUserId() != Long.parseLong(userId)){
-                sender.fail(-1, "昵称已存在", response);
+            if(nickName.length() > 8){
+                sender.fail(-1, "昵称不能超过8个字", response);
             }else{
-                user = userService.getUserByUserId(Long.parseLong(userId));
-                user.setNickName(nickName);
-                userService.update(user);
-                //清除用户缓存
-                masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
-                sender.put("user", user);
-                sender.send(response);
+                User user = userService.findUniqueByParams("nickName",nickName);
+                if(user != null && user.getUserId() != Long.parseLong(userId)){
+
+                }else{
+                    user = userService.getUserByUserId(Long.parseLong(userId));
+                    user.setNickName(nickName);
+                    userService.update(user);
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
+                    sender.put("user", user);
+                    sender.send(response);
+                }
             }
         }catch (Exception e){
             logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());

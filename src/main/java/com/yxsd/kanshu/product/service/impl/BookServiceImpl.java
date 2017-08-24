@@ -44,7 +44,7 @@ public class BookServiceImpl extends BaseServiceImpl<Book, Long> implements IBoo
         String key = RedisKeyConstants.CACHE_BOOK_KEY+bookId;
         Book book = this.slaveRedisTemplate.opsForValue().get(key);
         if(book == null){
-            book = this.findUniqueByParams("bookId",bookId,"shelfStatus",1);
+            book = this.findUniqueByParams("bookId",bookId);
             if(book != null){
                 this.masterRedisTemplate.opsForValue().set(key,book,5, TimeUnit.HOURS);
             }

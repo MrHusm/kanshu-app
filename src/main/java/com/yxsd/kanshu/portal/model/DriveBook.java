@@ -2,9 +2,10 @@ package com.yxsd.kanshu.portal.model;
 
 import com.yxsd.kanshu.product.model.Book;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class DriveBook {
+public class DriveBook implements Serializable{
     private Long id;
 
     /**
