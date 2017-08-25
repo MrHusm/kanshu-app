@@ -409,8 +409,10 @@ public class UserController extends BaseController {
                 accountLog.setUserId(Long.parseLong(userId));
                 accountLog.setFindType(Integer.parseInt(type));
                 PageFinder<UserAccountLog> pageFinder = this.userAccountLogService.findPageFinderObjs(accountLog,query);
-                if(pageFinder != null){
+                if(pageFinder != null && CollectionUtils.isNotEmpty(pageFinder.getData())){
                     model.addAttribute("pageFinder",pageFinder);
+                }else{
+                    return "/ucenter/account_no_log";
                 }
             }else if("2".equals(type)){
                 UserAccountLog accountLogCondition = new UserAccountLog();
@@ -443,6 +445,8 @@ public class UserController extends BaseController {
                         }
                     }
                     model.addAttribute("records",result);
+                }else{
+                    return "/ucenter/account_no_log";
                 }
             }
         }catch (Exception e){

@@ -12,17 +12,17 @@
 </head>
 <body>
     <aside class="newBookBox">
-        <ul class="bookPopular">
+        <ul class="bookPopular" onclick="rankList(1)">
             <li class="newbook">重磅新书</li>
             <li class="newInfo">最新大神著作</li>
             <li class="newbookBox"><img class="newbookImg" src="/img/other/book1.jpg"></li>
         </ul>
-        <ul class="bookPopular">
+        <ul class="bookPopular" onclick="rankList(2)">
             <li class="newbook">男生最爱</li>
             <li class="newInfo">都市玄幻万本爽文</li>
             <li class="newImg"><img class="newbookImg" src="/img/other/book2.jpg"></li>
         </ul>
-        <ul class="bookPopular">
+        <ul class="bookPopular" onclick="rankList(3)">
             <li class="newbook">女生最爱</li>
             <li class="newInfo">言情后宫跌宕起伏</li>
             <li class="newImg"><img class="newbookImg" src="/img/other/book3.jpg"></li>
@@ -63,7 +63,12 @@
 <script>
     function bookInfo(bookId) {
         var url = "/book/bookDetail.go?bookId="+bookId;
-        window.JSHandle.goToHtml(url,"图书详情页");
+        window.JSHandle.goToHtml(url,"图书详情页"，1,1);
+    }
+
+    function rankList(type){
+        var url = "/portal/rankList.go?type="+type;
+        window.JSHandle.goToHtml(url,"重磅"，0,0);
     }
 </script>
 </body>
