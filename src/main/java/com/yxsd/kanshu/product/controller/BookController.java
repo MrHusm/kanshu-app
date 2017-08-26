@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.controller.BaseController;
+import com.yxsd.kanshu.base.utils.DateUtil;
 import com.yxsd.kanshu.base.utils.JsonResultSender;
 import com.yxsd.kanshu.base.utils.ResultSender;
 import com.yxsd.kanshu.pay.model.AlipayResponse;
@@ -31,10 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lenovo on 2017/8/12.
@@ -110,6 +108,66 @@ public class BookController extends BaseController {
             }
         }
         Book book = this.bookService.getBookById(Long.parseLong(bookId));
+        String tag = book.getTag();
+        List<String> tags = new ArrayList<String>();
+        if(StringUtils.isNotBlank(tag)){
+            tag = tag.replaceAll("\\d+","");
+            tag = tag.replace(":","");
+            if(StringUtils.isNotBlank(tag)){
+                tags = Arrays.asList(tag.split(","));
+            }
+        }
+        if(book.getWordCount() < 9999){
+            model.addAttribute("wordCount",book.getWordCount());
+        }else{
+            model.addAttribute("wordCount",book.getWordCount() / 10000.0 +"万+");
+        }
+
+        int diffDay = DateUtil.diffDate(new Date(),book.getLastChapterUpdateDate());
+        if(diffDay <= 0){
+            model.addAttribute("updateDay","刚刚");
+        }else if(diffDay > 30){
+            model.addAttribute("updateDay","1月前");
+        }else{
+            model.addAttribute("updateDay",diffDay+"天前");
+        }
+
+        //作者写的其他书
+        List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
+
+        //用户还看了其他书
+        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(3);
+        if(CollectionUtils.isNotEmpty(driveBooks) && driveBooks.size() > 10){
+            driveBooks = driveBooks.subList(0,10);
+        }
+        List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
+
+        model.addAttribute("tags",tags);
+        model.addAttribute("maxChapterIndex",chapters.get(chapters.size()-1).getIdx());
+        model.addAttribute("authorBooks",authorBooks);
+        model.addAttribute("driveBooks",driveBooks);
+        model.addAttribute("readBtn",readBtn);
+        model.addAttribute("book",book);
+        return "/product/book_detail";
+    }
+
+    /**
+     * 读完一本书页面跳转
+     * @param response
+     * @param request
+     */
+    @RequestMapping("readThrough")
+    public String readThrough(HttpServletResponse response, HttpServletRequest request, Model model) {
+        //入参
+        String bookId = request.getParameter("bookId");
+
+        if(StringUtils.isBlank(bookId)){
+            logger.error("BookController_readOverBook:bookId为空");
+            return "error";
+        }
+
+        Book book = this.bookService.getBookById(Long.parseLong(bookId));
+
         //作者写的其他书
         List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
 
@@ -121,11 +179,9 @@ public class BookController extends BaseController {
 
         model.addAttribute("authorBooks",authorBooks);
         model.addAttribute("driveBooks",driveBooks);
-        model.addAttribute("readBtn",readBtn);
-        model.addAttribute("book",book);
-        return "/product/book_detail";
+        //model.addAttribute("book",book.getIsFull());
+        return "/product/read_through";
     }
-
 
     /**
      * 获取章节目录
@@ -315,13 +371,21 @@ public class BookController extends BaseController {
                 UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
 
                 chapter.setContent("");
-                sender.put("userAccount",userAccount);
+                sender.put("money",userAccount.getMoney()+userAccount.getVirtualMoney());
             }
 //            else{
 //                chapter.setContent(ZipUtils.gunzip(chapter.getContent()));
 //            }
             //客户端需解压章节内容
-            sender.put("chapter",chapter);
+            Map<String,Object> chapterMap = new HashMap<String, Object>();
+            chapterMap.put("bookId",chapter.getBookId());
+            chapterMap.put("chapterId",chapter.getChapterId());
+            chapterMap.put("content",chapter.getContent());
+            chapterMap.put("lock",chapter.isLock());
+            chapterMap.put("price",chapter.getPrice());
+            chapterMap.put("title",chapter.getTitle());
+            chapterMap.put("volumeId",chapter.getVolumeId());
+            sender.put("chapter",chapterMap);
             sender.send(response);
         }catch(Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
@@ -360,12 +424,16 @@ public class BookController extends BaseController {
             //购买
             int code = this.userService.charge(Long.parseLong(userId),chapter.getPrice(),Constants.CONSUME_TYPE_S1,map);
             if(code == 0){
-                sender.success(response);
+                sender.put("code",0);
+                sender.put("message","购买成功");
             }else if(code == -1){
                 //余额不足
                 //跳转到充值首页
-                response.sendRedirect("/pay/index.go?userId"+userId);
+                //response.sendRedirect("/pay/index.go?userId="+userId);
+                sender.put("code",-1);
+                sender.put("message","余额不足");
             }
+            sender.success(response);
         }catch (Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
@@ -417,40 +485,40 @@ public class BookController extends BaseController {
                 sender.put("price10",price10);
                 sender.put("yh50","9折");
                 sender.put("price50",price50);
-                sender.put("yhPrice50",price50 * 0.9);
+                sender.put("yhPrice50",(int)(price50 * 0.9));
                 sender.put("yh100","8折");
                 sender.put("price100",price100);
-                sender.put("yhPrice100",price100 * 0.8);
+                sender.put("yhPrice100",(int)(price100 * 0.8));
                 sender.put("yhAll","7折");
                 sender.put("priceAll",priceAll);
-                sender.put("yhPriceAll",price100 * 0.7);
+                sender.put("yhPriceAll",(int)(price100 * 0.7));
             }else if(notBuyChapters.size() == 100){
                 sender.put("price10",price10);
                 sender.put("yh50","9折");
                 sender.put("price50",price50);
-                sender.put("yhPrice50",price50 * 0.9);
+                sender.put("yhPrice50",(int)(price50 * 0.9));
                 sender.put("yh100","8折");
                 sender.put("price100",price100);
-                sender.put("yhPrice100",price100 * 0.8);
+                sender.put("yhPrice100",(int)(price100 * 0.8));
                 sender.put("yhAll","8折");
                 sender.put("priceAll",priceAll);
-                sender.put("yhPriceAll",price100 * 0.8);
+                sender.put("yhPriceAll",(int)(price100 * 0.8));
             }else if(notBuyChapters.size() < 100 && notBuyChapters.size() > 50){
                 sender.put("price10",price10);
                 sender.put("yh50","9折");
                 sender.put("price50",price50);
-                sender.put("yhPrice50",price50 * 0.9);
+                sender.put("yhPrice50",(int)(price50 * 0.9));
                 sender.put("yhAll","8折");
                 sender.put("priceAll",priceAll);
-                sender.put("yhPriceAll",price100 * 0.8);
+                sender.put("yhPriceAll",(int)(price100 * 0.8));
             }else if(notBuyChapters.size() == 50){
                 sender.put("price10",price10);
                 sender.put("yh50","9折");
                 sender.put("price50",price50);
-                sender.put("yhPrice50",price50 * 0.9);
+                sender.put("yhPrice50",(int)(price50 * 0.9));
                 sender.put("yhAll","9折");
                 sender.put("priceAll",priceAll);
-                sender.put("yhPriceAll",price100 * 0.9);
+                sender.put("yhPriceAll",(int)(price100 * 0.9));
             }else if(notBuyChapters.size() < 50 && notBuyChapters.size() > 10){
                 sender.put("price10",price10);
                 sender.put("priceAll",priceAll);
@@ -458,8 +526,14 @@ public class BookController extends BaseController {
                 sender.put("priceAll",priceAll);
             }
             UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
-            sender.put("userAccount",userAccount);
-            sender.put("chapter",chapter);
+            sender.put("money",userAccount.getMoney()+userAccount.getVirtualMoney());
+
+            Map<String,Object> chapterMap = new HashMap<String, Object>();
+            chapterMap.put("bookId",chapter.getBookId());
+            chapterMap.put("chapterId",chapter.getChapterId());
+            chapterMap.put("title",chapter.getTitle());
+            chapterMap.put("volumeId",chapter.getVolumeId());
+            sender.put("chapter",chapterMap);
             sender.success(response);
         }catch(Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
@@ -521,12 +595,16 @@ public class BookController extends BaseController {
             //购买
             int code = this.userService.charge(Long.parseLong(userId),price,Constants.CONSUME_TYPE_S2,map);
             if(code == 0){
-                sender.success(response);
+                sender.put("code",0);
+                sender.put("message","购买成功");
             }else if(code == -1){
                 //余额不足
                 //跳转到充值首页
-                response.sendRedirect("/pay/index.go?userId"+userId);
+                //response.sendRedirect("/pay/index.go?userId="+userId);
+                sender.put("code",-1);
+                sender.put("message","余额不足");
             }
+            sender.success(response);
         }catch (Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
@@ -563,12 +641,16 @@ public class BookController extends BaseController {
             //购买
             int code = this.userService.charge(Long.parseLong(userId),book.getPrice(),Constants.CONSUME_TYPE_S3,map);
             if(code == 0){
-                sender.success(response);
+                sender.put("code",0);
+                sender.put("message","购买成功");
             }else if(code == -1){
                 //余额不足
                 //跳转到充值首页
-                response.sendRedirect("/pay/index.go?userId"+userId);
+                //response.sendRedirect("/pay/index.go?userId="+userId);
+                sender.put("code",-1);
+                sender.put("message","余额不足");
             }
+            sender.success(response);
         }catch (Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
@@ -699,6 +781,37 @@ public class BookController extends BaseController {
         }else{
             //充值还未到账
             return -2;
+        }
+    }
+
+    /**
+     * 获取更新章节数据
+     * @param response
+     * @param request
+     */
+    @RequestMapping("getUpdatedChapterCount")
+    public void getUpdatedChapterCount(HttpServletResponse response, HttpServletRequest request) {
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String bookId = request.getParameter("bookId");
+        String index = request.getParameter("index");
+
+        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(index)){
+            logger.error("BookController_getUpdateChapterCount:bookId或index为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            int num = (int)(Long.parseLong(bookId) % Constants.CHAPTR_TABLE_NUM);
+            int count = this.chapterService.updatedChapterCount(Long.parseLong(bookId),num,Integer.parseInt(index));
+
+            sender.put("count",count);
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
     }
 

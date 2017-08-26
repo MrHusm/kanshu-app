@@ -155,6 +155,13 @@ a.red:hover {
 	font-weight: 900;
 	background: #ffffff;
 }
+.bookHeader > div{
+	width: 70%;
+	margin: 0 auto;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 .bookHeaderImg{
 	height: 1em;
 	left: 15px;

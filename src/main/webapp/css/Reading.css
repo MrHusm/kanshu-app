@@ -26,6 +26,9 @@
 .bookList{
     color: #999999;
     font-size:14px;
+    -webkit-flex-grow: 1;
+    -ms-flex-grow: 1;
+    flex-grow: 1;
 }
 .bookListImg{
     width: 75px;
@@ -48,6 +51,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 30%;
 }
 .authorBox{
     display: -webkit-flex;
@@ -117,6 +121,9 @@ small{
 .readingBoxsize,
 .readingBoxType{
     margin-bottom: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .readingBtn{
     display: -webkit-flex;

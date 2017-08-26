@@ -1,7 +1,10 @@
 package com.yxsd.kanshu.portal.service;
 
 import com.yxsd.kanshu.base.service.IBaseService;
+import com.yxsd.kanshu.base.utils.PageFinder;
+import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.model.DriveBook;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.util.List;
 
@@ -24,4 +27,14 @@ public interface IDriveBookService extends IBaseService<DriveBook,Long> {
      * @return
      */
     public DriveBook getDriveBookByCondition(Integer type,Long bookId);
+
+    /**
+     *
+     * Description: 分页查询
+     * @Version1.0
+     * @param params
+     * @param query
+     * @return
+     */
+    public PageFinder<T> findPage(Object params, Query query);
 }

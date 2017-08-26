@@ -3,10 +3,13 @@ package com.yxsd.kanshu.portal.service.impl;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
+import com.yxsd.kanshu.base.utils.PageFinder;
+import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
 import com.yxsd.kanshu.portal.dao.IDriveBookDao;
 import com.yxsd.kanshu.portal.model.DriveBook;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +67,10 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
             }
         }
         return driveBook;
+    }
+
+    @Override
+    public PageFinder<T> findPage(Object params, Query query) {
+        return null;
     }
 }

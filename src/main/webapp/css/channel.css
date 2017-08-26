@@ -21,6 +21,9 @@ article{
 .bookList{
     color: #999999;
     font-size:14px;
+    -webkit-flex-grow: 1;
+    -ms-flex-grow: 1;
+    flex-grow: 1;
 }
 .bookListImg{
     width: 75px;
@@ -43,6 +46,7 @@ article{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 30%;
 }
 .authorBox{
     display: -webkit-flex;

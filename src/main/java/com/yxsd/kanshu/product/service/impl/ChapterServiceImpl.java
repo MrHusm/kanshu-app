@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -86,5 +87,16 @@ public class ChapterServiceImpl extends ChapterBaseServiceImpl<Chapter, Long> im
         Map<String,Object> map = BeanUtils.convertBeanToMap(chapter);
         map.put("num",num);
         return this.getBaseDao().update("ChapterMapper.updateByMap",map);
+    }
+
+    @Override
+    public Integer updatedChapterCount(Long bookId, Integer num, Integer index) {
+        Map<String,Object> params = new HashMap<String, Object>();
+        params.put("bookId",bookId);
+        params.put("num",num);
+        params.put("index",index);
+        return this.chapterDao.updatedChapterCount(params);
+
+
     }
 }

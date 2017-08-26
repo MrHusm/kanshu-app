@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +69,7 @@ public class PortalController extends BaseController{
         PageFinder<DriveBook> pageFinder = driveBookService.findPageFinderObjs(driveBook,query);
         model.addAttribute("pageFinder",pageFinder);
 
-        return "portal/portal_index";
+        return "/portal/portal_index";
     }
 
     /**
@@ -88,7 +90,7 @@ public class PortalController extends BaseController{
             data.add(map);
         }
         model.addAttribute("data",data);
-        return "portal/category_index";
+        return "/portal/category_index";
     }
 
     /**
@@ -110,7 +112,6 @@ public class PortalController extends BaseController{
         Category category = this.categoryService.findUniqueByParams("categoryId",categoryId);
         List<Category> childCategorys = this.categoryService.getCategorysByPid(Long.parseLong(categoryId));
 
-
         Query query = new Query();
         if(StringUtils.isNotBlank(page)){
             query.setPage(Integer.parseInt(page));
@@ -120,8 +121,8 @@ public class PortalController extends BaseController{
         query.setPageSize(20);
         Book condition = new Book();
         condition.setCategorySecId(Long.parseLong(categoryId));
-        condition.setCategoryThrId(childCategoryId == null ? null : Long.parseLong(childCategoryId));
-        condition.setIsFull(isFull == null ? null : Integer.parseInt(isFull));
+        condition.setCategoryThrId(StringUtils.isBlank(childCategoryId) ? null : Long.parseLong(childCategoryId));
+        condition.setIsFull(StringUtils.isBlank(isFull) ? null : Integer.parseInt(isFull));
 
         PageFinder<Book> pageFinder = this.bookService.findPageFinderWithExpandObjs(condition, query);
 
@@ -129,12 +130,54 @@ public class PortalController extends BaseController{
         model.addAttribute("childCategorys",childCategorys);
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("categoryId",categoryId);
-        model.addAttribute("childCategoryId",childCategoryId);
-        model.addAttribute("isFull",isFull);
+        if(StringUtils.isNotBlank(childCategoryId)){
+            model.addAttribute("childCategoryId",childCategoryId);
+        }
+        if(StringUtils.isNotBlank(isFull)){
+            model.addAttribute("isFull",isFull);
+        }
         model.addAttribute("page",page);
         model.addAttribute("syn",syn);
 
-        return "portal/category_books";
+        return "/portal/category_books";
+    }
+
+    /**
+     * 标签下面的书籍
+     * @param model
+     * @param response
+     * @param request
+     * @return
+     */
+    @RequestMapping("tagBooks")
+    public String tagBooks(HttpServletResponse response, HttpServletRequest request, Model model) {
+        //入参
+        String tag = null;
+        try {
+            tag = URLDecoder.decode(request.getParameter("tag"),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        logger.info("tag:"+tag);
+        String page = request.getParameter("page");
+        String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+
+        Query query = new Query();
+        if(StringUtils.isNotBlank(page)){
+            query.setPage(Integer.parseInt(page));
+        }else{
+            query.setPage(1);
+        }
+        query.setPageSize(20);
+        Book condition = new Book();
+        condition.setTag("%"+tag+"%");
+        PageFinder<Book> pageFinder = this.bookService.findPageFinderWithExpandObjs(condition, query);
+
+        model.addAttribute("pageFinder",pageFinder);
+        model.addAttribute("page",page);
+        model.addAttribute("syn",syn);
+        model.addAttribute("tag",tag);
+        return "/portal/tag_books";
     }
 
     /**
@@ -159,11 +202,16 @@ public class PortalController extends BaseController{
         query.setPageSize(20);
         DriveBook driveBook = new DriveBook();
         driveBook.setType(Integer.parseInt(type));
-        PageFinder<DriveBook> pageFinder = driveBookService.findPageFinderObjs(driveBook,query);
+
+        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(Integer.parseInt(type));
+
+        int end = (query.getOffset() + query.getPageSize()) > driveBooks.size() ? driveBooks.size() : (query.getOffset() + query.getPageSize());
+        List<DriveBook> datas = driveBooks.subList(query.getOffset(), end);
+        PageFinder<DriveBook> pageFinder = new PageFinder<DriveBook>(query.getPage(),query.getPageSize(), driveBooks.size(), datas);
+
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("type",type);
-
-        return "portal/rankList";
+        return "/portal/rankList";
     }
 
 }

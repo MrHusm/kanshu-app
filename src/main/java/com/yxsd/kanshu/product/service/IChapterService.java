@@ -40,4 +40,13 @@ public interface IChapterService extends IChapterBaseService<Chapter,Long> {
      */
     public int updateChapter(Chapter chapter,Integer num);
 
+    /**
+     * 获取章节更新的数量
+     * @param bookId
+     * @param num
+     * @param index
+     * @param num
+     */
+    public Integer updatedChapterCount(Long bookId,Integer num,Integer index);
+
 }

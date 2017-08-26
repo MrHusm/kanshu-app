@@ -13,7 +13,10 @@ aside{
 aside > :nth-child(2){
     border-left: 2px solid #e5e5e5;
     border-right: 2px solid #e5e5e5;
-    width: 30%;
+}
+.bookPopular{
+    width: 33%;
+    padding-bottom: 1.5%;
 }
 .newbook{
     color: #000000;
@@ -21,11 +24,11 @@ aside > :nth-child(2){
 }
 .newInfo{
     color: #666666;
-    width: 90%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 6% 0;
+    padding: 8px 8%;
+    box-sizing: border-box;
 }
 .newbookImg{
     height: 120px;
@@ -45,6 +48,10 @@ article{
 .bookList{
     color: #999999;
     font-size:14px;
+    -webkit-flex-grow: 1;
+    -ms-flex-grow: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
 }
 .bookListImg{
     width: 75px;
@@ -67,6 +74,7 @@ article{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 30%;
 }
 .authorBox{
     display: -webkit-flex;

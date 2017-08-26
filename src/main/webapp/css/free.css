@@ -12,6 +12,10 @@
 .bookList{
     color: #999999;
     font-size:14px;
+    -webkit-flex-grow: 1;
+    -ms-flex-grow: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
 }
 .bookListImg{
     width: 75px;
@@ -34,6 +38,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 30%;
 }
 .authorBox{
     display: -webkit-flex;
@@ -99,7 +104,10 @@ aside{
 aside > :nth-child(2){
     border-left: 2px solid #e5e5e5;
     border-right: 2px solid #e5e5e5;
-    width: 30%;
+}
+.bookPopular{
+    width: 33%;
+    padding-bottom: 1.5%;
 }
 .newbook{
     color: #000000;
@@ -107,11 +115,11 @@ aside > :nth-child(2){
 }
 .newInfo{
     color: #666666;
-    width: 90%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 6% 0;
+    padding: 8px 8%;
+    box-sizing: border-box;
 }
 .bookPopular{
     padding: 10px 6px;
@@ -124,171 +132,10 @@ aside > :nth-child(2){
     margin-left: 3%;
     padding: 5% 0 0;
 }
-.tag{
-    background: #fff;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    padding: 6% 0 0;
-    -webkit-flex-wrap: wrap;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    color: #000000;
-    font-size: 14px;
-}
-.tagPub{
-    width: 33.3333%;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-    margin-bottom: 5%;
-    box-sizing: border-box;
-}
-.tagCont{
-    width: 81%;
-    height: inherit;
-    display: inline-block;
-    margin: 0 auto;
-    box-sizing: inherit;
-}
-.tagPubStyle1{
-    border: 1px solid #03a9fc;
-    background: #e2f3fb;
-}
-.tagPubStyle2{
-    border: 1px solid #ffa85b;
-    background: #faf3ed;
-}
-.tagPubStyle3{
-    border: 1px solid #91c46a;
-    background: #f3f7e9;
-}
-.tagPubStyle4{
-    border: 1px solid #fc9da4;
-    background: #f9ebeb;
-}
-.freeDivisionNmaeIcon{
-    display: inline-block;
-    width: 4px;
-    height: 18px;
-    vertical-align: bottom;
-    margin-right: 2%;
-}
-.freeDivisionNmaeColor1{
-    background: #0096ff;
-}
-.freeDivisionNmaeColor2{
-    background: #fa799e;
-}
-.freeDivisionNmaeColor3{
-    background: #79be45;
-}
-.article{
+article{
     padding: 20px 10px 0;
 }
-.bookListBox{
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    margin-bottom: 20px;
-}
-.bookList{
-    color: #999999;
-    font-size:14px;
-}
-.bookListImg{
-    height: 100px;
-    margin-right: 3%;
-}
-.bookName{
-    color: #000000;
-    font-size: 18px;
-    width: 73%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.bookInfo{
-    margin: 9px 0;
-}
-.authorNmae{
-    line-height: 1.5;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.authorBox{
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap;
-    -webkit-justify-content: space-between;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-}
-.bookGenre > :last-child{
-    margin-left: 0;
-}
-.bookGenrePublic{
-    border: 1px solid #999999;
-    border-radius: 5px;
-    float: right;
-    padding: 3px;
-    margin-left: 10px;
-}
-.bookGenrePublicStyle{
-    border: 1px solid #82bce5;
-    color: #82bce5;
-}
-.classifyBoxImg{
-    height: 6px;
-    margin-left: 2.5%;
-}
-.classifyBox{
-    text-align: center;
-    font-size:16px;
-    padding: 4% 0;
-    color: #ed0202;
-    border-top: 1px solid #dbdbdb;
-}
-.classifyBox2 li,
-.classifyBoxTit{
-    float: left;
-}
-.classifyBox2{
-    line-height: 1.8;
-    font-size:16px;
-    padding: 4% 0;
-    color: #ed0202;
-    border-top: 1px solid #dbdbdb;
-}
-.classifyBox2 > div:first-of-type{
-    padding: 0 15px 5%;
-}
-.classifyBox2 > div:last-of-type{
-    padding: 5% 15px 0;
-    border-top: 1px solid #d9d9d9;
-}
-.classifyBoxTit{
-    text-align: left;
-    max-width: 25%;
-    margin-right: 4%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.classifyBox2 li{
-    max-width: 45%;
-    margin-left: 2.5%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.classifyBoxUl{
-    color: #666666;
+footer{
+    border-top: none;
+    box-shadow: 0px -2px 6px 0px rgba(224, 224, 224, 0.75);
 }
