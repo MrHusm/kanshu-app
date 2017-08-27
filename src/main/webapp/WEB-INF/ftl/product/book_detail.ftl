@@ -16,7 +16,7 @@
                 <li class="readingBoxName">${book.title}</li>
                 <li class="readingBoxAuthor">${book.authorPenname}</li>
                 <li class="readingBoxType">${book.categoryThrName}</li>
-                <li class="readingBoxsize">${wordCount}</li>
+                <li class="readingBoxsize">字数：${wordCount}</li>
             </ul>
         </div>
         <div class="readingBtn">
@@ -55,7 +55,7 @@
     <div class="h6"><i class="h6Icon"></i>本书作者还写了</div>
     <#list authorBooks as authorBook >
         <section class="bookListBox" onclick="bookInfo(${authorBook.bookId},'${authorBook.title}')">
-            <img class="bookListImg" src="${authorBook.coverUrl}">
+            <img class="bookListImg" data-echo="${authorBook.coverUrl}" src="/img/other/book7.jpg">
             <div class="bookList">
                 <div class="bookName">${authorBook.title}</div>
                 <div class="bookInfo">
@@ -84,7 +84,7 @@
     <div class="h6"><i class="h6Icon"></i>看了本书的用户还看了</div>
     <#list driveBooks as driveBook>
         <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
-            <img class="bookListImg" src="${driveBook.book.coverUrl}">
+            <img class="bookListImg" data-echo="${driveBook.book.coverUrl}" src="/img/other/book7.jpg">
             <div class="bookList">
                 <div class="bookName">${driveBook.book.title}</div>
                 <div class="bookInfo">
@@ -110,6 +110,7 @@
 <small>
     版权来源：阅文集团QQ阅读
 </small>
+<script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
     function bookTag(tag){
         var url = "/portal/tagBooks.go?tag="+encodeURI(encodeURI(tag));
@@ -120,6 +121,11 @@
         var url = "/book/bookDetail.go?bookId="+bookId;
         window.JSHandle.goToHtml(url,title,1,1);
     }
+
+    Echo.init({
+        offset: 0,
+        throttle: 0
+    });
 </script>
 </body>
 </html>

@@ -19,7 +19,7 @@
                     <div class="bookName">${book.title}</div>
                     <div class="bookInfo">
                         <#if book.intro?length gt 40>
-                            ${book.intro?substring(0,50)}...
+                            ${book.intro?substring(0,40)}...
                         <#else>
                             ${book.intro}
                         </#if>

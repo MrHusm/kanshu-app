@@ -34,12 +34,12 @@
         <#if pageFinder.data??>
             <#list pageFinder.data as driveBook>
                 <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
-                    <img class="bookListImg" src="${driveBook.book.coverUrl}" onerror="javascript:this.src='/img/other/book7.jpg';">
+                    <img class="bookListImg" data-echo="${driveBook.book.coverUrl}" src="/img/other/book7.jpg" onerror="javascript:this.src='/img/other/book7.jpg';">
                     <div class="bookList">
                         <div class="bookName">${driveBook.book.title}</div>
                         <div class="bookInfo">
-                            <#if driveBook.book.intro?length gt 50>
-                                ${driveBook.book.intro?substring(0,50)}...
+                            <#if driveBook.book.intro?length gt 40>
+                                ${driveBook.book.intro?substring(0,40)}...
                             <#else>
                                 ${driveBook.book.intro}
                             </#if>
@@ -60,6 +60,7 @@
     <div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/portalIndex.go?page=${pageFinder.pageNo+1}&syn=1" style="display:none;"></div>
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
+<script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
     function bookInfo(bookId,title) {
         var url = "/book/bookDetail.go?bookId="+bookId;
@@ -70,7 +71,17 @@
         var url = "/portal/rankList.go?type="+type;
         window.JSHandle.goToHtml(url,title,0,0);
     }
+
+
 </script>
+</#if>
+<script type="application/javascript">
+    Echo.init({
+        offset: 0,
+        throttle: 0
+    });
+</script>
+<#if syn=='0'>
 </body>
 </html>
 </#if>

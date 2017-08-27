@@ -214,6 +214,24 @@ public class BookInfoResp implements Serializable{
 		this.canclemonthlytime = canclemonthlytime;
 	}
 
+	public String getSiteInfo(int site){
+		String siteInfo = "阅文集团";
+		if(site == 1){
+			siteInfo = "阅文集团-创世";
+		}else if(site == 2){
+			siteInfo = "阅文集团-云起";
+		}else if(site == 3){
+			siteInfo = "阅文集团-起点女生";
+		}else if(site == 5){
+			siteInfo = "阅文集团-起点男生";
+		}else if(site == 6){
+			siteInfo = "阅文集团";
+		}else if(site == 9){
+			siteInfo = "阅文集团-起点文学网";
+		}
+		return siteInfo;
+	}
+
 	@Override
 	public String toString() {
 		return "BookInfoResp{" +

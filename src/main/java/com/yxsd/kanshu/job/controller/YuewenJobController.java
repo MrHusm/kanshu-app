@@ -62,6 +62,7 @@ public class YuewenJobController extends BaseController {
     private static final String YUEWEN_URL_CHAPTERINFO = "yuewen_url_chapterInfo";
     private static final String YUEWEN_URL_CHAPTERCONTENTINFO = "yuewen_url_chapterContentInfo";
     private static final String YUEWEN_URL_UPDATE_BOOKS = "yuewen_url_update_books";
+	private static final String YUEWEN_IMG_BASEPATH = "yuewen_img_basePath";
 
     private static ThreadPoolExecutor pullBookPool;
     private static ThreadPoolExecutor handleFailureBooksPool;
@@ -70,8 +71,7 @@ public class YuewenJobController extends BaseController {
 	private static final int THREAD_POOL_KEEP_ALIVE_TIME = 300;
 	private static final int THREAD_POOL_QUEUE_SIZE = 200;
 
-	//private static final String IMG_BASE_PATH = "/book/img/";
-	private static final String IMG_BASE_PATH = "E:\\book\\";
+
 
 	@Resource
 	private IBookService bookService;
@@ -191,7 +191,7 @@ public class YuewenJobController extends BaseController {
 				if(cbids != null && cbids.length > 0){
 					if(pullBookPool == null){
 						//创建线程池
-						pullBookPool = new ThreadPoolExecutor(COREPOOL_SIZE, COREPOOL_SIZE, THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS,
+						pullBookPool = new ThreadPoolExecutor(COREPOOL_SIZE+20, COREPOOL_SIZE+20, THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS,
 								new LinkedBlockingQueue<Runnable>(THREAD_POOL_QUEUE_SIZE + 100), new CallerRunsPolicy());
 					}
 					List<String> tempList = new ArrayList<String>();
@@ -249,6 +249,18 @@ public class YuewenJobController extends BaseController {
 							}
 						});
 					}
+//					pullBookPool.shutdown();
+//					while (true) {
+//						if (pullBookPool.isTerminated()) {
+//							logger.info("拉取图书结束，结束时间为："+DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+//							break;
+//						}
+//						try {
+//							Thread.sleep(30000);
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
+//					}
 				}
 			}else{
 				logger.error("yuewen booklist result error!");
@@ -640,14 +652,23 @@ public class YuewenJobController extends BaseController {
 			bookInfoUrl = MessageFormat.format(bookInfoUrl, cbid, appKey, token);
 			logger.info("yuewen bookinfo url={}", bookInfoUrl);
 			String result="";
-			try {
-				result = HttpUtils.getContent(bookInfoUrl, "UTF-8");
-				logger.info("yuewen bookinfo result={}", result);
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("yuewen bookinfo interface error!", ExceptionUtils.getFullStackTrace(e));
-				pullStatus = 0;
-				pullFailureCause = "调用阅文获取图书接口异常";
+			//调用三次阅文接口，防止网络异常
+			boolean flag = true;
+			int i = 0;
+			while(flag && i < 3){
+				i++;
+				try {
+					result = HttpUtils.getContent(bookInfoUrl, "UTF-8");
+					flag = false;
+					logger.info("yuewen bookinfo result"+cbid+"={}", result);
+				} catch (Exception e) {
+					if(i == 3){
+						e.printStackTrace();
+						logger.error("yuewen bookinfo interface error!", ExceptionUtils.getFullStackTrace(e));
+						pullStatus = 0;
+						pullFailureCause = "调用阅文获取图书接口异常";
+					}
+				}
 			}
 			if(StringUtils.isNotBlank(result)){
 				String returnCode = JSON.parseObject(result).getString("returnCode");
@@ -664,6 +685,8 @@ public class YuewenJobController extends BaseController {
 					}
 					pullFailureCause = "调用阅文获取图书接口：" + returnMsg;
 				}
+			}else{
+				pullFailureCause = "调用阅文获取图书返回空";
 			}
 			pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, pullStatus, pullFailureCause);
 		}
@@ -691,14 +714,23 @@ public class YuewenJobController extends BaseController {
         volumesInfoUrl = MessageFormat.format(volumesInfoUrl, cbid, appKey, token);
         logger.info("yuewen BookVolumesInfos url={}", volumesInfoUrl);
         String result = "";
-        try {
-			result = HttpUtils.getContent(volumesInfoUrl, "UTF-8");
-			logger.info("yuewen BookVolumesInfos result={}", result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("yuewen BookVolumesInfos interface error!", ExceptionUtils.getFullStackTrace(e));
-			pullStatus = 0;
-			pullFailureCause = "调用阅文获取书藉卷列表接口异常";
+		//调用三次阅文接口，防止网络异常
+		boolean flag = true;
+		int i = 0;
+		while(flag && i < 3) {
+			i++;
+			try {
+				result = HttpUtils.getContent(volumesInfoUrl, "UTF-8");
+				flag = false;
+				logger.info("yuewen BookVolumesInfos result={}", result);
+			} catch (Exception e) {
+				if(i == 3){
+					e.printStackTrace();
+					logger.error("yuewen BookVolumesInfos interface error!", ExceptionUtils.getFullStackTrace(e));
+					pullStatus = 0;
+					pullFailureCause = "调用阅文获取书藉卷列表接口异常";
+				}
+			}
 		}
         if(StringUtils.isNotBlank(result)){
         	 String returnCode = JSON.parseObject(result).getString("returnCode");
@@ -745,14 +777,23 @@ public class YuewenJobController extends BaseController {
         volumeInfoUrl = MessageFormat.format(volumeInfoUrl, cbid, cvid,appKey, token);
         logger.info("yuewen VolumeInfo url={}", volumeInfoUrl);
         String result = "";
-        try {
-			result = HttpUtils.getContent(volumeInfoUrl, "UTF-8");
-			logger.info("yuewen VolumeInfo result={}", result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("yuewen VolumeInfo interface error!", ExceptionUtils.getFullStackTrace(e));
-			pullStatus = 0;
-			pullFailureCause = "调用阅文获取卷信息接口异常";
+		//调用三次阅文接口，防止网络异常
+		boolean flag = true;
+		int i = 0;
+		while(flag && i < 3) {
+			i++;
+			try {
+				result = HttpUtils.getContent(volumeInfoUrl, "UTF-8");
+				flag = false;
+				logger.info("yuewen VolumeInfo result={}", result);
+			} catch (Exception e) {
+				if(i == 3){
+					e.printStackTrace();
+					logger.error("yuewen VolumeInfo interface error!", ExceptionUtils.getFullStackTrace(e));
+					pullStatus = 0;
+					pullFailureCause = "调用阅文获取卷信息接口异常";
+				}
+			}
 		}
         String returnCode = JSON.parseObject(result).getString("returnCode");
         if("0".equals(returnCode)){
@@ -793,14 +834,23 @@ public class YuewenJobController extends BaseController {
         chaptersInfoUrl = MessageFormat.format(chaptersInfoUrl, cbid,cvid, appKey, token,pageNo, pageSize);
         logger.info("yuewen VolumeChaptersInfo url={}", chaptersInfoUrl);
         String result = "";
-        try {
-			result = HttpUtils.getContent(chaptersInfoUrl, "UTF-8");
-			logger.info("yuewen VolumeChaptersInfo result={}", result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("yuewen VolumeChaptersInfo interface error!", ExceptionUtils.getFullStackTrace(e));
-			volumePullStatus = 0;
-			volumePullFailureCause = "调用阅文获取卷的章节列表接口异常";
+		//调用三次阅文接口，防止网络异常
+		boolean flag = true;
+		int i = 0;
+		while(flag && i < 3) {
+			i++;
+			try {
+				result = HttpUtils.getContent(chaptersInfoUrl, "UTF-8");
+				flag = false;
+				logger.info("yuewen VolumeChaptersInfo result={}", result);
+			} catch (Exception e) {
+				if(i == 3){
+					e.printStackTrace();
+					logger.error("yuewen VolumeChaptersInfo interface error!", ExceptionUtils.getFullStackTrace(e));
+					volumePullStatus = 0;
+					volumePullFailureCause = "调用阅文获取卷的章节列表接口异常";
+				}
+			}
 		}
         if(StringUtils.isNotBlank(result)){
         	String returnCode = JSON.parseObject(result).getString("returnCode");
@@ -839,14 +889,23 @@ public class YuewenJobController extends BaseController {
         bookChaptersInfoUrl = MessageFormat.format(bookChaptersInfoUrl, cbid, appKey, token,pageNo, pageSize);
         logger.info("yuewen BookChaptersInfo url={}", bookChaptersInfoUrl);
         String result = "";
-        try {
-			result = HttpUtils.getContent(bookChaptersInfoUrl, "UTF-8");
-			logger.info("yuewen BookChaptersInfo result={}", result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("yuewen BookChaptersInfo interface error!", ExceptionUtils.getFullStackTrace(e));
-			pullStatus = 0;
-			pullFailureCause = "调用阅文获取书的章节列表接口异常";
+		//调用三次阅文接口，防止网络异常
+		boolean flag = true;
+		int i = 0;
+		while(flag && i < 3) {
+			i++;
+			try {
+				result = HttpUtils.getContent(bookChaptersInfoUrl, "UTF-8");
+				flag = false;
+				logger.info("yuewen BookChaptersInfo result={}", result);
+			} catch (Exception e) {
+				if(i == 3){
+					e.printStackTrace();
+					logger.error("yuewen BookChaptersInfo interface error!", ExceptionUtils.getFullStackTrace(e));
+					pullStatus = 0;
+					pullFailureCause = "调用阅文获取书的章节列表接口异常";
+				}
+			}
 		}
         if(StringUtils.isNotBlank(result)){
         	String returnCode = JSON.parseObject(result).getString("returnCode");
@@ -888,14 +947,23 @@ public class YuewenJobController extends BaseController {
         chapterInfoUrl = MessageFormat.format(chapterInfoUrl, cbid,ccid ,appKey, token);
         logger.info("yuewen ChapterInfo url={}", chapterInfoUrl);
         String result = "";
-        try {
-			result = HttpUtils.getContent(chapterInfoUrl, "UTF-8");
-			logger.info("yuewen ChapterInfo result={}", result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("yuewen ChapterInfo interface error!", ExceptionUtils.getFullStackTrace(e));
-			pullStatus = 0;
-			pullFailureCause = "调用阅文获取章节基本信息接口异常";
+		//调用三次阅文接口，防止网络异常
+		boolean flag = true;
+		int i = 0;
+		while(flag && i < 3) {
+			i++;
+			try {
+				result = HttpUtils.getContent(chapterInfoUrl, "UTF-8");
+				flag = false;
+				logger.info("yuewen ChapterInfo result={}", result);
+			} catch (Exception e) {
+				if(i == 3){
+					e.printStackTrace();
+					logger.error("yuewen ChapterInfo interface error!", ExceptionUtils.getFullStackTrace(e));
+					pullStatus = 0;
+					pullFailureCause = "调用阅文获取章节基本信息接口异常";
+				}
+			}
 		}
         String returnCode = JSON.parseObject(result).getString("returnCode");
         if("0".equals(returnCode)){
@@ -937,14 +1005,23 @@ public class YuewenJobController extends BaseController {
         chapterInfoUrl = MessageFormat.format(chapterInfoUrl, cbid,ccid ,appKey, token);
         logger.info("yuewen ChapterContentInfo url={}", chapterInfoUrl);
         String result = "";
-        try {
-			result = HttpUtils.getContent(chapterInfoUrl, "UTF-8");
-			logger.info("yuewen ChapterContentInfo result={}", JSON.parseObject(result).getString("returnCode"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("yuewen ChapterContentInfo interface error!", ExceptionUtils.getFullStackTrace(e));
-			pullStatus = 0;
-			pullFailureCause = "调用阅文获取书的章节内容接口异常";
+		//调用三次阅文接口，防止网络异常
+		boolean flag = true;
+		int i = 0;
+		while(flag && i < 3) {
+			i++;
+			try {
+				result = HttpUtils.getContent(chapterInfoUrl, "UTF-8");
+				flag = false;
+				logger.info("yuewen ChapterContentInfo result={}", JSON.parseObject(result).getString("returnCode"));
+			} catch (Exception e) {
+				if(i == 3){
+					e.printStackTrace();
+					logger.error("yuewen ChapterContentInfo interface error!", ExceptionUtils.getFullStackTrace(e));
+					pullStatus = 0;
+					pullFailureCause = "调用阅文获取书的章节内容接口异常";
+				}
+			}
 		}
         if(StringUtils.isNotBlank(result)){
         	String returnCode = JSON.parseObject(result).getString("returnCode");
@@ -997,7 +1074,7 @@ public class YuewenJobController extends BaseController {
 		try {
 			//下载图书封面
 			String ext = bookInfoResp.getCoverurl().substring(bookInfoResp.getCoverurl().lastIndexOf("."));
-			String imgName = IMG_BASE_PATH + ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE) + File.separator + bookInfoResp.getcBID() % 100 + File.separator + bookInfoResp.getcBID()+ext;
+			String imgName = ConfigPropertieUtils.getString(YUEWEN_IMG_BASEPATH) + ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE) + File.separator + bookInfoResp.getcBID() % 100 + File.separator + bookInfoResp.getcBID()+ext;
 			File img = new File(imgName);
 			FileUtils.copyURLToFile(new URL(bookInfoResp.getCoverurl()),img);
 		} catch (IOException e) {
@@ -1044,7 +1121,7 @@ public class YuewenJobController extends BaseController {
 		book.setTag(bookInfoResp.getTag());
 		book.setLastChapterUpdateDate(DateUtil.parseStringToDate(bookInfoResp.getUpdatetime()));
 		book.setCopyrightCode(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE));// 是	供应商编码
-		book.setCopyright("阅文集团");// 是 供应商名称
+		book.setCopyright(bookInfoResp.getSiteInfo(bookInfoResp.getSite()));// 是 供应商名称
 		book.setCopyrightBookId(bookInfoResp.getcBID());// 是	供应商作品id
 		if(bookInfoResp.getForm() == -1){
 			book.setType(1);
@@ -1139,19 +1216,19 @@ public class YuewenJobController extends BaseController {
 		chapter.setCopyrightBookId(chapterInfoResp.getcBID());// 否	供应商作品id
 		chapter.setCopyrightVolumeId(chapterInfoResp.getcVID());// 否	供应商卷id
 		chapter.setCopyrightChapterId(chapterInfoResp.getcCID());// 是	供应商章节id
-		content = "<p>" + content + "</p>";
-		if(content.contains("\r") && content.contains("\n")){
-			content = content.replaceAll("\r", "</p>");
-	    	content = content.replaceAll("\n", "<p>");
-		}else{
-			if(content.contains("\r")){
-				content = content.replaceAll("\r", "</p><p>");
-			}else{
-				content = content.replaceAll("\n", "</p><p>");
-			}
-		}
-    	content = content.replaceAll("\r", "</p>");
-    	content = content.replaceAll("\n", "<p>");
+//		content = "<p>" + content + "</p>";
+//		if(content.contains("\r") && content.contains("\n")){
+//			content = content.replaceAll("\r", "</p>");
+//	    	content = content.replaceAll("\n", "<p>");
+//		}else{
+//			if(content.contains("\r")){
+//				content = content.replaceAll("\r", "</p><p>");
+//			}else{
+//				content = content.replaceAll("\n", "</p><p>");
+//			}
+//		}
+//    	content = content.replaceAll("\r", "</p>");
+//    	content = content.replaceAll("\n", "<p>");
 		chapter.setContent(ZipUtils.gzip(content));// 是	章节内容。章节中的各个段落请使用段落标签<p></p>表示
 		chapter.setUpdateDate(DateUtil.parseStringToDate(chapterInfoResp.getUpdatetime()));
 		chapter.setCreateDate(new Date());
