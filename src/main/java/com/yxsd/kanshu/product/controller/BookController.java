@@ -369,8 +369,11 @@ public class BookController extends BaseController {
             //收费章节显示用户账号信息
             if(chapter.isLock()){
                 UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
+                Book book = this.bookService.getBookById(Long.parseLong(bookId));
 
                 chapter.setContent("");
+                //计费方式 1:按章 2:按本
+                sender.put("chargeType",book.getChargeType());
                 sender.put("money",userAccount.getMoney()+userAccount.getVirtualMoney());
             }
 //            else{
