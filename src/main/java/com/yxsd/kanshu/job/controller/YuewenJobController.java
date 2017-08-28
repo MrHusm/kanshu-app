@@ -63,6 +63,7 @@ public class YuewenJobController extends BaseController {
     private static final String YUEWEN_URL_CHAPTERINFO = "yuewen_url_chapterInfo";
     private static final String YUEWEN_URL_CHAPTERCONTENTINFO = "yuewen_url_chapterContentInfo";
     private static final String YUEWEN_URL_UPDATE_BOOKS = "yuewen_url_update_books";
+	private static final String YUEWEN_URL_UNSHELFBOOKS = "yuewen_url_unshelfBooks";
 	private static final String YUEWEN_IMG_BASEPATH = "yuewen_img_basePath";
 
     private static ThreadPoolExecutor pullBookPool;
@@ -354,6 +355,58 @@ public class YuewenJobController extends BaseController {
 		}
 		logger.info("yuewen updateBooks end!");
 	}
+
+
+
+	/**
+	 *
+	 * @Title: unshelfBooks
+	 * @Description: 下架图书
+	 * @author hushengmeng
+	 * @throws UnsupportedEncodingException
+	 */
+	@RequestMapping(value = "unshelfBooks")
+	@ResponseBody
+	public void unshelfBooks(HttpServletRequest request) throws UnsupportedEncodingException{
+		logger.info("yuewen unshelfBooks begin!");
+		String timeInterval = request.getParameter("timeInterval");
+		String endTime = DateUtil.getCurrentDateTimeToStr2();
+		String beginTime = DateUtil.getDateTime(DateUtil.addMinute(DateUtil.parseStringToDate(endTime), Integer.parseInt(timeInterval)));
+		String appKey = ConfigPropertieUtils.getString(YUEWEN_APPKEY);
+		String token = getYueWenToken();
+		String url = ConfigPropertieUtils.getString(YUEWEN_URL_UNSHELFBOOKS);
+		url = MessageFormat.format(url, StringUtils.replace(beginTime, " ", "%20"), StringUtils.replace(endTime, " ", "%20"), appKey, token);
+		logger.info("yuewen unshelfBooks url={}", url);
+		String result = HttpUtils.getContent(url, "UTF-8");
+		logger.info("yuewen unshelfBooks result={}", result);
+		if(StringUtils.isBlank(result)){
+			logger.info("yuewen unshelfBooks result empty!");
+		}else{
+			String returnCode = JSON.parseObject(result).getString("returnCode");
+			if("0".equals(returnCode)){
+				Object[] cbids = JSON.parseObject(result).getJSONObject("result").getJSONArray("cbids").toArray();
+				if(cbids != null && cbids.length > 0){
+
+					//判断图书是否存在
+					for(Object cbid : cbids){
+						Book book = this.bookService.findUniqueByParams("copyrightCode",ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),"copyrightBookId",cbid);
+						if(book != null){
+							book.setShelfStatus(0);
+							bookService.update(book);
+							logger.info("unshelfBooks 图书下架成功："+cbid);
+						}else{
+							logger.info("unshelfBooks 图书不存在："+cbid);
+						}
+					}
+				}
+			}else{
+				logger.error("yuewen unshelfBooks result error!");
+			}
+		}
+		logger.info("yuewen unshelfBooks end!");
+	}
+
+
 
 	/**
 	 *
