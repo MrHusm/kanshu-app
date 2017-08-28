@@ -78,7 +78,7 @@ public abstract class HttpUtils {
 	public static final String GBK = "GBK";
 
 	/** httpclient对应CONNECTION_TIMEOUT对应的值 */
-	private static final Integer CONNECTION_TIMEOUT = ConfigPropertieUtils.getInteger("httpclient.connection.timeout", 1000);
+	private static final Integer CONNECTION_TIMEOUT = ConfigPropertieUtils.getInteger("httpclient.connection.timeout", 5000);
 
 	/** httpclient对应SO_TIMEOUT对应的值 */
 	private static final Integer SO_TIMEOUT = ConfigPropertieUtils.getInteger("httpclient.so.timeout", 20000);
