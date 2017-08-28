@@ -11,30 +11,70 @@
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
 	default-lazy-init="true">
 
-	<bean id="springQtzJob" class="com.yxsd.kanshu.search.task.HeatSearchTask" />
-	<bean id="springQtzJobMethod"
-		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject">
-			<ref bean="springQtzJob" />
-		</property>
-		<property name="targetMethod">  <!-- 要执行的方法名称 -->
-			<value>execute</value>
-		</property>
-	</bean>
-
-	<!-- ======================== 调度触发器 ======================== -->
-	<bean id="cronTriggerBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
-		<property name="jobDetail" ref="springQtzJobMethod"></property>
-		<property name="cronExpression" value="0/5 * * * * ?"></property>
-	</bean>
+	
 
 	<!-- ======================== 调度工厂 ======================== -->
 	<bean id="springJobSchedulerFactoryBean"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-		<property name="triggers">
+	</bean>
+
+
+	<bean id="taskFactory" class="com.yxsd.kanshu.task.TaskFactory"
+		init-method="init">
+		<property name="jobList">
 			<list>
-				<ref bean="cronTriggerBean" />
+				<ref bean="job1" />
+				<ref bean="job2" />
+				<ref bean="job3" />
+				<ref bean="job4" />
+				<ref bean="job5" />
+				<ref bean="job6" />
 			</list>
 		</property>
+		<property name="schedulerFactoryBean" ref="springJobSchedulerFactoryBean"></property>
 	</bean>
+
+
+	<bean id="job1" class="com.yxsd.kanshu.task.ScheduleJob">
+		<property name="jobName" value="job1"></property>
+		<property name="cronExpression" value="0 0/10 * * * ? *"></property>
+		<property name="url"
+			value="http://10.4.37.40:8080/ywjtJob/pullBooks.go?pageSize=10"></property>
+	</bean>
+
+	<bean id="job2" class="com.yxsd.kanshu.task.ScheduleJob">
+		<property name="jobName" value="job2"></property>
+		<property name="cronExpression" value="0 0 0/2 * * ? *"></property>
+		<property name="url"
+			value="http://10.4.37.40:8080/ywjtJob/handle/failbooks.go?pageSize=100"></property>
+	</bean>
+
+	<bean id="job3" class="com.yxsd.kanshu.task.ScheduleJob">
+		<property name="jobName" value="job3"></property>
+		<property name="cronExpression" value="0 0 0/1 * * ? *"></property>
+		<property name="url"
+			value="http://10.4.37.40:8080/ywjtJob/handle/failvolumes.go?pageSize=100"></property>
+	</bean>
+
+	<bean id="job4" class="com.yxsd.kanshu.task.ScheduleJob">
+		<property name="jobName" value="job4"></property>
+		<property name="cronExpression" value="0 0/5 * * * ? *"></property>
+		<property name="url"
+			value="http://10.4.37.40:8080/ywjtJob/handle/failchapters.go?pageSize=100"></property>
+	</bean>
+
+	<bean id="job5" class="com.yxsd.kanshu.task.ScheduleJob">
+		<property name="jobName" value="job5"></property>
+		<property name="cronExpression" value="0 0/10 * * * ?"></property>
+		<property name="url"
+			value="http://10.4.37.40:8080/ywjtJob/updateBooks.go?timeInterval=-30"></property>
+	</bean>
+
+	<bean id="job6" class="com.yxsd.kanshu.task.ScheduleJob">
+		<property name="jobName" value="job6"></property>
+		<property name="cronExpression" value="0 30 0/1 * * ? *"></property>
+		<property name="url"
+			value="http://10.4.37.40:8080/ywjtJob/updateBooks.go?timeInterval=-240"></property>
+	</bean>
+
 </beans>
