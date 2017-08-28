@@ -39,42 +39,42 @@
 		<property name="jobName" value="job1"></property>
 		<property name="cronExpression" value="0 0/10 * * * ? *"></property>
 		<property name="url"
-			value="http://10.4.37.40:8080/ywjtJob/pullBooks.go?pageSize=10"></property>
+			value="http://47.94.130.58:8083/ywjtJob/pullBooks.go?pageSize=10"></property>
 	</bean>
 
 	<bean id="job2" class="com.yxsd.kanshu.task.ScheduleJob">
 		<property name="jobName" value="job2"></property>
 		<property name="cronExpression" value="0 0 0/2 * * ? *"></property>
 		<property name="url"
-			value="http://10.4.37.40:8080/ywjtJob/handle/failbooks.go?pageSize=100"></property>
+			value="http://47.94.130.58:8083/ywjtJob/handle/failbooks.go?pageSize=100"></property>
 	</bean>
 
 	<bean id="job3" class="com.yxsd.kanshu.task.ScheduleJob">
 		<property name="jobName" value="job3"></property>
 		<property name="cronExpression" value="0 0 0/1 * * ? *"></property>
 		<property name="url"
-			value="http://10.4.37.40:8080/ywjtJob/handle/failvolumes.go?pageSize=100"></property>
+			value="http://47.94.130.58:8083/ywjtJob/handle/failvolumes.go?pageSize=100"></property>
 	</bean>
 
 	<bean id="job4" class="com.yxsd.kanshu.task.ScheduleJob">
 		<property name="jobName" value="job4"></property>
 		<property name="cronExpression" value="0 0/5 * * * ? *"></property>
 		<property name="url"
-			value="http://10.4.37.40:8080/ywjtJob/handle/failchapters.go?pageSize=100"></property>
+			value="http://47.94.130.58:8083/ywjtJob/handle/failchapters.go?pageSize=100"></property>
 	</bean>
 
 	<bean id="job5" class="com.yxsd.kanshu.task.ScheduleJob">
 		<property name="jobName" value="job5"></property>
 		<property name="cronExpression" value="0 0/10 * * * ?"></property>
 		<property name="url"
-			value="http://10.4.37.40:8080/ywjtJob/updateBooks.go?timeInterval=-30"></property>
+			value="http://47.94.130.58:8083/ywjtJob/updateBooks.go?timeInterval=-30"></property>
 	</bean>
 
 	<bean id="job6" class="com.yxsd.kanshu.task.ScheduleJob">
 		<property name="jobName" value="job6"></property>
 		<property name="cronExpression" value="0 30 0/1 * * ? *"></property>
 		<property name="url"
-			value="http://10.4.37.40:8080/ywjtJob/updateBooks.go?timeInterval=-240"></property>
+			value="http://47.94.130.58:8083/ywjtJob/updateBooks.go?timeInterval=-240"></property>
 	</bean>
 
 </beans>
