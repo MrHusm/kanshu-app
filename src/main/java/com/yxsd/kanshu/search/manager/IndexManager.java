@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yxsd.kanshu.base.contants.SearchContants;
+import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
 
 /**
  * @author qiong.wang
@@ -62,7 +63,7 @@ public class IndexManager {
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
-				INDEX_DIR = "/Users/bangpei/search";
+				INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
