@@ -360,7 +360,7 @@ public class UserController extends BaseController {
             }else{
                 User user = userService.findUniqueByParams("nickName",nickName);
                 if(user != null && user.getUserId() != Long.parseLong(userId)){
-
+                    sender.fail(-1, "昵称已存在", response);
                 }else{
                     user = userService.getUserByUserId(Long.parseLong(userId));
                     user.setNickName(nickName);
