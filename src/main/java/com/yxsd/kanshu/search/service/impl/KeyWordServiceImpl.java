@@ -11,7 +11,7 @@ import com.yxsd.kanshu.search.model.KeyWord;
 import com.yxsd.kanshu.search.service.KeyWordService;
 
 
-@Service(value = "searchHeatService")
+@Service(value = "keyWordService")
 public class KeyWordServiceImpl extends BaseServiceImpl<KeyWord, Long> implements KeyWordService {
 
 	@Resource(name = "keyWordDao")
