@@ -50,7 +50,7 @@ public class SearchController {
 
 		// 查询为空直接返回
 		if (StringUtils.isBlank(searchText)) {
-			return "searchNotResult";
+			return "/search/searchNotResult";
 		}
 
 		logger.info("search被调用，条件为：" + searchText);
@@ -91,17 +91,18 @@ public class SearchController {
 					}
 
 				}
+				model.addAttribute("searchBooks", books);
 
-				return "searchResult";
+				return "/search/searchResult";
 
 			} else {
-				return "searchNotResult";
+				return "/search/searchNotResult";
 			}
 		} catch (Exception e) {
 			logger.error("search出错，条件为：" + searchText, e);
 		}
 		// 返回为空界面
-		return "searchNotResult";
+		return "/search/searchNotResult";
 
 	}
 }

@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>春光免费小说-搜索书籍</title>
-    <link rel="stylesheet" href="css/reset_5.css">
-    <link rel="stylesheet" href="css/sreach.css">
-    <script src="js/jquery-1.11.1.min.js"></script>
-    <script src="js/common.js"></script>
+    <link rel="stylesheet" href="/css/reset_5.css">
+    <link rel="stylesheet" href="/css/sreach.css">
+    <script src="/js/jquery-1.11.1.min.js"></script>
+    <script src="/js/common.js"></script>
 </head>
 <body>
-    <div class="sreach1">
-        <img class="sreachImg1" src="images/icon/return.png" alt="" onclick="javascript:history.go(-1)" />
-        <input type="text" value="" name="" id="" class="sreachInput1" autocomplete="off" placeholder="请输入书名、作者、关键词">
-        <input type="button" value="搜索" class="sreachBtn1">
-    </div>
+   
     <div class="notResult">
-        <img src="images/icon/notIcon.png" alt=""  class="notResultIcon"/>
+        <img src="/images/icon/notIcon.png" alt=""  class="notResultIcon"/>
         <span class="notResultTxt">很遗憾，没有相关的搜索结果</span>
     </div>
     <div class="hr"></div>

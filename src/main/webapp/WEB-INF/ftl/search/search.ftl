@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>春光免费小说-搜索书籍</title>
-    <link rel="stylesheet" href="css/reset_5.css">
-    <link rel="stylesheet" href="css/sreach.css">
-    <script src="js/jquery-1.11.1.min.js"></script>
-    <script src="js/common.js"></script>
+    <link rel="stylesheet" href="/css/reset_5.css">
+    <link rel="stylesheet" href="/css/sreach.css">
+    <script src="/js/jquery-1.11.1.min.js"></script>
+    <script src="/js/common.js"></script>
 </head>
 <body>
     <div class="sreach1">
-        <img class="sreachImg1" src="images/icon/return.png" alt="" onclick="javascript:history.go(-1)" />
-        <input type="text" value="" name="" id="" class="sreachInput1" autocomplete="off" placeholder="请输入书名、作者、关键词">
-        <input type="button" value="搜索" class="sreachBtn1">
+        <img class="sreachImg1" src="/images/icon/return.png" alt="" onclick="" />
+        <input type="text" value="" name="searchText" id="searchText" class="sreachInput1" autocomplete="off" placeholder="请输入书名、作者、关键词">
+        <input type="button" value="搜索" class="sreachBtn1" onclick="search()">
     </div>
     <div class="tag newClear">
         <div class="tagPub"><span class="tagCont tagPubStyle1">都市</span></div>
@@ -71,4 +71,17 @@
     </article>
     <div class="bookLoad">正努力加载更多...</div>
 </body>
+<script type="text/javascript" src="/js/echo.min.js"></script>
+<script>
+    function search(){
+    	var st =  $("#searchText").val();
+    
+    	if(st == null||st== undefined||st== ''){
+    		return;
+    	}
+        var url = "/search/search.go?searchText="+st;
+        window.JSHandle.goToHtml(url,st,1,1);
+    }
+
+</script>
 </html>
