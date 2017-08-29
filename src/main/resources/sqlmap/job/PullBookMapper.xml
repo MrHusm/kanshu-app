@@ -6,7 +6,7 @@
 		<result column="copyright_code" property="copyrightCode" jdbcType="VARCHAR" />
 		<result column="copyright_book_id" property="copyrightBookId" jdbcType="BIGINT" />
 		<result column="pull_status" property="pullStatus" jdbcType="INTEGER" />
-		<result column="pull_failure_cause" property="pullFailureCause" jdbcType="VARCHAR" />
+		<result column="pull_failure_cause" property="pullFailureCause" jdbcType="LONGVARCHAR" />
 		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
 		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
 	</resultMap>
@@ -59,7 +59,7 @@
 				#{pullStatus,jdbcType=INTEGER},
 			</if>
 			<if test="pullFailureCause != null and pullFailureCause !=''">
-				#{pullFailureCause,jdbcType=VARCHAR},
+				#{pullFailureCause,jdbcType=LONGVARCHAR},
 			</if>
 			<if test="createDate != null">
 				#{createDate,jdbcType=TIMESTAMP},
@@ -84,7 +84,7 @@
 				pull_status= #{pullStatus,jdbcType=INTEGER},
 			</if>
 			<if test="pullFailureCause != null">
-				pull_failure_cause= #{pullFailureCause,jdbcType=VARCHAR},
+				pull_failure_cause= #{pullFailureCause,jdbcType=LONGVARCHAR},
 			</if>
 			<if test="createDate != null">
 				create_date= #{createDate,jdbcType=TIMESTAMP},

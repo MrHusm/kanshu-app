@@ -217,6 +217,8 @@ public class YuewenJobController extends BaseController {
 					}
 
 					for (final String cbid : cbids) {
+						//设置图书正在拉取状态
+						pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbid, 3, null);
 						pullBookPool.execute(new Runnable() {
 
 							@Override
@@ -248,7 +250,8 @@ public class YuewenJobController extends BaseController {
 								} catch (Exception e) {
 									e.printStackTrace();
 									int pullStatus = 0;
-									String pullFailureCause = "拉取异常：" + ExceptionUtils.getRootCauseMessage(e);
+
+									String pullFailureCause = "拉取异常：" + ExceptionUtils.getFullStackTrace(e);
 									pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
 											cbid, pullStatus, pullFailureCause);
 								}
@@ -337,7 +340,7 @@ public class YuewenJobController extends BaseController {
 												updateChapterByVolume(volumeInfoResps, book.getBookId(), cbid, ddVolumeCount);
 											}else{
 												// 没有卷的信息：调用获取书的所有章节列表，章节内容
-												updateChapterByBook(book.getBookId(), cbid);
+												updateChapterByBook(book.getBookId(), 	cbid);
 											}
 										}
 										int pullStatus = 2;
@@ -902,7 +905,7 @@ public class YuewenJobController extends BaseController {
                 resultChapterInfoResps = JSON.parseArray(resultData, ChapterInfoResp.class);
             }else{
             	volumePullStatus = 0;
-    			volumePullFailureCause = "调用阅文获取卷的章节列表接口：" + JSON.parseObject(result).getString("returnMsg");
+    			volumePullFailureCause = "调用阅文获取卷的章节列表接口返回错误：" + JSON.parseObject(result).getString("returnMsg");
             }
         }
 
@@ -956,7 +959,7 @@ public class YuewenJobController extends BaseController {
                 resultChapterInfoResps = JSON.parseArray(resultData, ChapterInfoResp.class);
             }else{
             	pullStatus = 0;
-    			pullFailureCause = "调用阅文获取书藉章节列表接口：" + JSON.parseObject(result).getString("returnMsg");
+    			pullFailureCause = "调用阅文获取书藉章节列表接口返回错误：" + JSON.parseObject(result).getString("returnMsg");
             }
         }
         pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, pullStatus, pullFailureCause);
@@ -1073,7 +1076,7 @@ public class YuewenJobController extends BaseController {
                 chapterContentResp = JSON.parseObject(resultData, ChapterContentResp.class);
             }else{
             	pullStatus = 0;
-    			pullFailureCause = "调用阅文获取书藉章节内容接口：" + JSON.parseObject(result).getString("returnMsg");
+    			pullFailureCause = "调用阅文获取书藉章节内容接口返回错误：" + JSON.parseObject(result).getString("returnMsg");
             }
         }
         //保存失败的记录

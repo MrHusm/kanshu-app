@@ -142,8 +142,10 @@ public class BookController extends BaseController {
         }
         List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
 
+        if(CollectionUtils.isNotEmpty(chapters)){
+            model.addAttribute("maxChapterIndex",chapters.get(chapters.size()-1).getIdx());
+        }
         model.addAttribute("tags",tags);
-        model.addAttribute("maxChapterIndex",chapters.get(chapters.size()-1).getIdx());
         model.addAttribute("authorBooks",authorBooks);
         model.addAttribute("driveBooks",driveBooks);
         model.addAttribute("readBtn",readBtn);
