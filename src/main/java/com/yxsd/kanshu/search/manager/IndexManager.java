@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yxsd.kanshu.base.contants.SearchContants;
-import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
 
 /**
  * @author qiong.wang
@@ -52,25 +51,43 @@ public class IndexManager {
 	public static IndexManager getManager() {
 		if (indexManager == null) {
 			indexManager = new IndexManager();
+		} else {
+			return indexManager;
 		}
 
-		if (StringUtils.isBlank(INDEX_DIR)) {
-			INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
+		synchronized (indexManager) {
+
+			if (!StringUtils.isBlank(INDEX_DIR)) {
+				return indexManager;
+			}
+
+			if (StringUtils.isBlank(INDEX_DIR)) {
+				INDEX_DIR = "/Users/bangpei/search";
+			}
+
+			if (StringUtils.isBlank(INDEX_DIR)) {
+				logger.error("没有设置搜索的文件目录，search.folder＝null");
+				throw new RuntimeException("没有设置搜索的文件目录，search.folder＝null");
+			}
+
+			try {
+				directory = FSDirectory.open(new File(INDEX_DIR).toPath());
+			} catch (IOException e) {
+				logger.error("创建索引文件目录失败", e);
+				throw new RuntimeException("创建索引文件目录失败", e);
+			}
+
+			// try {
+			// IndexWriterConfig config = new IndexWriterConfig(analyzer);
+			//
+			// indexWriter = new IndexWriter(directory, config);
+			// } catch (IOException e) {
+			// logger.error("打开索引文件目录失败", e);
+			// throw new RuntimeException("打开索引文件目录失败", e);
+			// }
+			return indexManager;
 		}
 
-		if (StringUtils.isBlank(INDEX_DIR)) {
-			logger.error("没有设置搜索的文件目录，search.folder＝null");
-			throw new RuntimeException("没有设置搜索的文件目录，search.folder＝null");
-		}
-
-		try {
-			directory = FSDirectory.open(new File(INDEX_DIR).toPath());
-		} catch (IOException e) {
-			logger.error("创建索引文件目录失败", e);
-			throw new RuntimeException("创建索引文件目录失败", e);
-		}
-
-		return indexManager;
 	}
 
 	/**
@@ -84,7 +101,7 @@ public class IndexManager {
 	 *            需要建索引的字段，key为字段名称（列名称），value为值
 	 * @return true表示建索引成功，false表示建索引失败
 	 */
-	public boolean createIndex(String id, String tableName, Map<String, String> fieldMap) {
+	public synchronized boolean createIndex(String id, String tableName, Map<String, String> fieldMap) {
 		IndexWriter indexWriter = null;
 		try {
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
@@ -106,6 +123,7 @@ public class IndexManager {
 		} finally {
 			if (indexWriter != null) {
 				try {
+					indexWriter.rollback();
 					indexWriter.close();
 				} catch (IOException e) {
 					logger.error("创建索引失败", e);
@@ -130,6 +148,7 @@ public class IndexManager {
 		DirectoryReader ireader = null;
 
 		try {
+
 			ireader = DirectoryReader.open(directory);
 			IndexSearcher isearcher = new IndexSearcher(ireader);
 
@@ -172,9 +191,10 @@ public class IndexManager {
 	 *            删除条件：一般要放表名称、id
 	 * @return true表示删除索引成功，false表示删除索引失败
 	 */
-	public boolean deleteIndex(Map<String, String> fields) {
+	public synchronized boolean deleteIndex(Map<String, String> fields) {
 		IndexWriter indexWriter = null;
 		try {
+
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			indexWriter = new IndexWriter(directory, config);
 			Term[] terms = new Term[fields.size()];
@@ -193,6 +213,7 @@ public class IndexManager {
 		} finally {
 			if (indexWriter != null) {
 				try {
+					indexWriter.rollback();
 					indexWriter.close();
 				} catch (IOException e) {
 					logger.error("删除索引失败", e);
@@ -213,9 +234,10 @@ public class IndexManager {
 	 *            新内容
 	 * @return true表示更新索引成功，false表示更新索引失败
 	 */
-	public boolean updateIndex(String id, String tableName, Map<String, String> fieldMap) {
+	public synchronized boolean updateIndex(String id, String tableName, Map<String, String> fieldMap) {
 		IndexWriter indexWriter = null;
 		try {
+
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			indexWriter = new IndexWriter(directory, config);
 
@@ -236,6 +258,7 @@ public class IndexManager {
 		} finally {
 			if (indexWriter != null) {
 				try {
+					indexWriter.rollback();
 					indexWriter.close();
 				} catch (IOException e) {
 					logger.error("更新索引失败", e);
@@ -244,5 +267,67 @@ public class IndexManager {
 			}
 		}
 	}
+
+	// public static void main(String[] args) {
+	//
+	// Thread thread = new Thread(new Runnable() {
+	//
+	// @Override
+	// public void run() {
+	// for (int i = 0; i < 100; i++) {
+	// Map<String, String> fieldMap = new HashMap<String, String>();
+	// fieldMap.put("wqwq" + i, "ynynyn" + i);
+	// IndexManager.getManager().createIndex("sdfas" + i, "book", fieldMap);
+	//
+	// Map<String, String> fieldMap1 = new HashMap<String, String>();
+	// fieldMap.put("ynynyn" + i, "wqwq" + i);
+	// IndexManager.getManager().createIndex("ddddd" + i, "book", fieldMap1);
+	// }
+	// }
+	// });
+	//
+	// Thread thread1 = new Thread(new Runnable() {
+	//
+	// @Override
+	// public void run() {
+	// for (int i = 0; i < 100; i++) {
+	// Map<String, String> fieldMap = new HashMap<String, String>();
+	// fieldMap.put("wqwq" + i, "ynynyn" + i);
+	// IndexManager.getManager().createIndex("sdfas" + i, "book", fieldMap);
+	//
+	// Map<String, String> fieldMap1 = new HashMap<String, String>();
+	// fieldMap.put("ynynyn" + i, "wqwq" + i);
+	// IndexManager.getManager().createIndex("ddddd" + i, "book", fieldMap1);
+	// }
+	// }
+	// });
+	//
+	// Thread thread2 = new Thread(new Runnable() {
+	//
+	// @Override
+	// public void run() {
+	// for (int i = 0; i < 100; i++) {
+	// Map<String, String> fieldMap = new HashMap<String, String>();
+	// fieldMap.put("wqwq" + i, "ynynyn" + i);
+	// long start = System.currentTimeMillis();
+	// IndexManager.getManager().createIndex("sdfas" + i, "book", fieldMap);
+	// System.out.println(System.currentTimeMillis() - start);
+	//
+	// }
+	// }
+	// });
+	// thread.start();
+	// thread1.start();
+	// //
+	// thread2.start();
+	// List<Map<String, String>> list =
+	// IndexManager.getManager().searchIndex("ynynyn1",
+	// new String[] { "wqwq", "ynynyn" });
+	// // // for (Map<String, String> map : list) {
+	// // // System.out.println(map.keySet());
+	// // // }
+	// //
+	// System.out.println(list.size());
+	// }
 
 }

@@ -1,8 +1,10 @@
 package com.yxsd.kanshu.search.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
+import com.yxsd.kanshu.product.model.Book;
+import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.search.manager.IndexManager;
 
 /**
@@ -28,12 +32,15 @@ public class SearchController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 
+	@Resource(name = "bookService")
+	IBookService bookService;
+
 	@RequestMapping("searchIndex")
 	public String searchIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
-		
+
 		return "search";
 	}
-	
+
 	@RequestMapping("search")
 	public String search(HttpServletResponse response, HttpServletRequest request, Model model) {
 
@@ -65,11 +72,22 @@ public class SearchController {
 
 			if (maps != null && maps.size() > 0) {
 
+				List<Book> books = new ArrayList<Book>();
 				for (Map<String, String> map : maps) {
 					String tableName = map.get(SearchContants.TABLENAME);
+					String id = map.get(SearchContants.ID);
+
+					if (StringUtils.isBlank(id)) {
+						continue;
+					}
 
 					if (StringUtils.isBlank(tableName)) {
 						tableName = SearchContants.BOOK;
+					}
+
+					Book book = this.bookService.get(Long.parseLong(id));
+					if (book != null) {
+						books.add(book);
 					}
 
 				}
@@ -82,7 +100,7 @@ public class SearchController {
 		} catch (Exception e) {
 			logger.error("search出错，条件为：" + searchText, e);
 		}
-		//返回为空界面
+		// 返回为空界面
 		return "searchNotResult";
 
 	}
