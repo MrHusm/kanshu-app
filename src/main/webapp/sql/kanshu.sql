@@ -1,6 +1,6 @@
-/*
+﻿/*
 SQLyog Ultimate v11.24 (32 bit)
-MySQL - 5.5.56-log : Database - kanshu
+MySQL - 5.5.40 : Database - kanshu
 *********************************************************************
 */
 
@@ -33,7 +33,11 @@ CREATE TABLE `alipay_order` (
   `comment` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '备注',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`alipay_order_id`)
+  PRIMARY KEY (`alipay_order_id`),
+  UNIQUE KEY `idx_out_trade_no` (`WIDout_trade_no`),
+  KEY `idx_uid` (`user_id`),
+  KEY `idx_product_id` (`product_id`),
+  KEY `idx_type` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `alipay_response` */
@@ -50,7 +54,8 @@ CREATE TABLE `alipay_response` (
   `status` smallint(1) DEFAULT '0' COMMENT '0：未处理 1：已处理',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`alipay_response_id`)
+  PRIMARY KEY (`alipay_response_id`),
+  UNIQUE KEY `idx_out_trade_no` (`out_trade_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `author` */
@@ -67,7 +72,7 @@ CREATE TABLE `author` (
   PRIMARY KEY (`author_id`),
   KEY `idx_name` (`name`),
   KEY `idx_penname` (`penname`)
-) ENGINE=InnoDB AUTO_INCREMENT=233 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=7163 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `book` */
 
@@ -88,7 +93,7 @@ CREATE TABLE `book` (
   `category_thr_id` varchar(60) COLLATE utf8_bin DEFAULT NULL COMMENT '三级分类',
   `category_thr_name` varchar(30) COLLATE utf8_bin DEFAULT NULL,
   `keyword` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '关键字',
-  `charge_type` smallint(1) NOT NULL DEFAULT '1' COMMENT '???????? 0???? 1???',
+  `charge_type` smallint(1) NOT NULL DEFAULT '1' COMMENT '计费方式 1:按章 2:按本',
   `is_full` smallint(1) NOT NULL COMMENT '是否完结 0：连载 1：完结',
   `price` int(8) DEFAULT NULL COMMENT '全本购买价格',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
@@ -106,15 +111,16 @@ CREATE TABLE `book` (
   `update_date` datetime NOT NULL,
   `create_date` datetime NOT NULL,
   PRIMARY KEY (`book_id`),
-  UNIQUE KEY `idx_cp_bookid` (`copyright_book_id`),
+  UNIQUE KEY `idx_cpCode_cpBookId` (`copyright_book_id`,`copyright_code`),
   KEY `idx_title` (`title`(255)),
   KEY `idx_a_name` (`author_name`),
   KEY `idx_a_penname` (`author_penname`),
   KEY `idx_shelf_status` (`shelf_status`),
   KEY `idx_category_sec` (`category_sec_id`),
   KEY `idx_category_thr` (`category_thr_id`),
-  KEY `idx_is_full` (`is_full`)
-) ENGINE=InnoDB AUTO_INCREMENT=280 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  KEY `idx_is_full` (`is_full`),
+  KEY `idx_author_id` (`author_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `book_expand` */
 
@@ -128,8 +134,9 @@ CREATE TABLE `book_expand` (
   `sale_num` bigint(11) DEFAULT NULL COMMENT '销售额',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`id`),
+  KEY `idx_book_id` (`book_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `category` */
 
@@ -145,8 +152,9 @@ CREATE TABLE `category` (
   `update_date` datetime NOT NULL,
   `create_date` datetime NOT NULL,
   PRIMARY KEY (`category_id`),
-  UNIQUE KEY `idx_cp_id` (`copyright_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8997 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  UNIQUE KEY `idx_cpCode_cpId` (`copyright_category_id`,`copyright_code`),
+  KEY `idx_pid` (`pid`)
+) ENGINE=InnoDB AUTO_INCREMENT=10093 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `copyright` */
 
@@ -159,7 +167,8 @@ CREATE TABLE `copyright` (
   `desc` varchar(500) COLLATE utf8_bin DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_code` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `drive_book` */
@@ -172,8 +181,10 @@ CREATE TABLE `drive_book` (
   `create_date` datetime NOT NULL COMMENT '创建时间',
   `type` smallint(1) NOT NULL COMMENT '类型 1：限免榜 2：搜索榜 3：畅销榜',
   `score` int(8) NOT NULL COMMENT '排序分数',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=864 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_type` (`type`)
+) ENGINE=InnoDB AUTO_INCREMENT=837 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `key_word` */
 
@@ -199,7 +210,8 @@ CREATE TABLE `pay_before` (
   `param` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   `return_url` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '回跳地址',
   `create_date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_uid` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `pull_book` */
@@ -208,14 +220,16 @@ DROP TABLE IF EXISTS `pull_book`;
 
 CREATE TABLE `pull_book` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
-  `copyright_code` varchar(20) COLLATE utf8_bin NOT NULL COMMENT 'ç‰ˆæƒæ–¹code',
-  `copyright_book_id` bigint(20) NOT NULL COMMENT 'ç‰ˆæƒæ–¹å›¾ä¹¦id',
-  `pull_status` smallint(1) NOT NULL COMMENT 'æ‹‰å–çŠ¶æ€ 1ï¼šæˆåŠŸ 0ï¼šå¤±è´¥',
-  `pull_failure_cause` varchar(300) COLLATE utf8_bin DEFAULT NULL COMMENT 'å¤±è´¥åŽŸå› ',
+  `copyright_code` varchar(20) COLLATE utf8_bin NOT NULL COMMENT '版权方code',
+  `copyright_book_id` bigint(20) NOT NULL COMMENT '版权方图书id',
+  `pull_status` smallint(1) NOT NULL COMMENT '拉取状态 1：拉取成功 0：拉取失败',
+  `pull_failure_cause` varchar(300) COLLATE utf8_bin DEFAULT NULL COMMENT '失败原因',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=430 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_cpCode_cpBookId` (`copyright_code`,`copyright_book_id`),
+  KEY `idx_cpBookId` (`copyright_book_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `pull_chapter` */
 
@@ -223,16 +237,19 @@ DROP TABLE IF EXISTS `pull_chapter`;
 
 CREATE TABLE `pull_chapter` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
-  `copyright_code` varchar(20) COLLATE utf8_bin NOT NULL COMMENT 'ç‰ˆæƒæ–¹code',
-  `copyright_book_id` bigint(20) NOT NULL COMMENT 'ç‰ˆæƒæ–¹å›¾ä¹¦id',
-  `copyright_volume_id` bigint(20) NOT NULL COMMENT 'ç‰ˆæƒæ–¹å·id',
-  `copyright_chapter_id` bigint(20) NOT NULL COMMENT 'ç‰ˆæƒæ–¹ç« èŠ‚id',
-  `pull_status` smallint(1) NOT NULL COMMENT 'æ‹‰å–çŠ¶æ€ 1ï¼šæˆåŠŸ 0ï¼šå¤±è´¥',
-  `pull_failure_cause` varchar(300) COLLATE utf8_bin DEFAULT NULL COMMENT 'å¤±è´¥åŽŸå› ',
+  `copyright_code` varchar(20) COLLATE utf8_bin NOT NULL COMMENT '版权方code',
+  `copyright_book_id` bigint(20) NOT NULL COMMENT '版权方图书id',
+  `copyright_volume_id` bigint(20) NOT NULL COMMENT '版权方卷id',
+  `copyright_chapter_id` bigint(20) NOT NULL COMMENT '版权方章节id',
+  `pull_status` smallint(1) NOT NULL COMMENT '拉取状态 1：拉取成功 0：拉取失败',
+  `pull_failure_cause` varchar(300) COLLATE utf8_bin DEFAULT NULL COMMENT '失败原因',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_cpBookId` (`copyright_book_id`),
+  KEY `idx_cpChpaterId` (`copyright_chapter_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `pull_volume` */
 
@@ -240,15 +257,18 @@ DROP TABLE IF EXISTS `pull_volume`;
 
 CREATE TABLE `pull_volume` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
-  `copyright_code` varchar(20) COLLATE utf8_bin NOT NULL COMMENT 'ç‰ˆæƒæ–¹code',
-  `copyright_book_id` bigint(20) NOT NULL COMMENT 'ç‰ˆæƒæ–¹å›¾ä¹¦id',
-  `copyright_volume_id` bigint(20) NOT NULL COMMENT 'ç‰ˆæƒæ–¹å·id',
-  `pull_status` smallint(1) NOT NULL COMMENT 'æ‹‰å–çŠ¶æ€ 1ï¼šæˆåŠŸ 0ï¼šå¤±è´¥',
+  `copyright_code` varchar(20) COLLATE utf8_bin NOT NULL COMMENT '版权方code',
+  `copyright_book_id` bigint(20) NOT NULL COMMENT '版权方图书id',
+  `copyright_volume_id` bigint(20) NOT NULL COMMENT '版权方卷id',
+  `pull_status` smallint(1) NOT NULL COMMENT '拉取状态 1：拉取成功 0：拉取失败',
   `pull_failure_cause` varchar(300) COLLATE utf8_bin DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=590 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_cpCode_cpVolumeId` (`copyright_code`,`copyright_volume_id`),
+  KEY `idx_cpBookId` (`copyright_book_id`),
+  KEY `idx_cpVolumeId` (`copyright_volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `recharge_item` */
 
@@ -297,8 +317,11 @@ CREATE TABLE `user` (
   `device_type` varchar(50) COLLATE utf8_bin DEFAULT NULL COMMENT 'Android或IOS或H5',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`user_id`),
+  KEY `idx_name` (`name`),
+  KEY `idx_nick_name` (`nick_name`),
+  KEY `idx_tel` (`tel`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `user_account` */
 
@@ -311,8 +334,9 @@ CREATE TABLE `user_account` (
   `virtual_money` bigint(11) NOT NULL COMMENT '虚拟币金额',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`account_id`),
+  UNIQUE KEY `idx_uid` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `user_account_log` */
 
@@ -329,7 +353,11 @@ CREATE TABLE `user_account_log` (
   `comment` varchar(300) COLLATE utf8_bin DEFAULT NULL COMMENT '备注',
   `channel` bigint(10) DEFAULT NULL,
   `create_date` datetime NOT NULL,
-  PRIMARY KEY (`account_log_id`)
+  PRIMARY KEY (`account_log_id`),
+  UNIQUE KEY `idx_orderNo` (`order_no`),
+  KEY `idx_uid` (`user_id`),
+  KEY `idx_type` (`type`),
+  KEY `idx_productId` (`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `user_pay_book` */
@@ -394,8 +422,9 @@ CREATE TABLE `user_receive` (
   `vip_status` smallint(1) NOT NULL COMMENT '新手礼包vip领取状态 0:未领取 1：已领取',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_uid` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `user_uuid` */
 
@@ -405,7 +434,7 @@ CREATE TABLE `user_uuid` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `create_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `user_vip` */
 
@@ -418,8 +447,9 @@ CREATE TABLE `user_vip` (
   `end_date` datetime NOT NULL COMMENT '到期日期',
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`user_vip_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`user_vip_id`),
+  UNIQUE KEY `idx_uid` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `user_weibo` */
 
@@ -456,7 +486,8 @@ CREATE TABLE `version_info` (
   `type` smallint(1) NOT NULL COMMENT '1:强制升级 0:手动升级',
   `update_date` datetime DEFAULT NULL,
   `create_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_channel` (`channel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `vip` */
@@ -490,8 +521,10 @@ CREATE TABLE `volume` (
   `shelf_status` smallint(1) DEFAULT NULL,
   `update_date` datetime NOT NULL,
   `create_date` datetime NOT NULL,
-  PRIMARY KEY (`volume_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=590 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`volume_id`),
+  UNIQUE KEY `idx_cpCode_cpVolumeId` (`copyright_code`,`copyright_volume_id`),
+  KEY `idx_bookId` (`book_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

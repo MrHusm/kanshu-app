@@ -225,7 +225,7 @@ public class BookInfoResp implements Serializable{
 		}else if(site == 5){
 			siteInfo = "阅文集团-起点男生";
 		}else if(site == 6){
-			siteInfo = "阅文集团";
+			siteInfo = "阅文集团-阅文集团";
 		}else if(site == 9){
 			siteInfo = "阅文集团-起点文学网";
 		}

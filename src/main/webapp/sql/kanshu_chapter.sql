@@ -1,6 +1,6 @@
-/*
+﻿/*
 SQLyog Ultimate v11.24 (32 bit)
-MySQL - 5.5.56-log : Database - kanshu_chapter
+MySQL - 5.5.40 : Database - kanshu_chapter
 *********************************************************************
 */
 
@@ -38,8 +38,11 @@ CREATE TABLE `chapter0` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3311 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter1` */
 
@@ -53,7 +56,7 @@ CREATE TABLE `chapter1` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -63,8 +66,11 @@ CREATE TABLE `chapter1` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7573 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter2` */
 
@@ -78,7 +84,7 @@ CREATE TABLE `chapter2` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -88,8 +94,11 @@ CREATE TABLE `chapter2` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6801 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter3` */
 
@@ -103,7 +112,7 @@ CREATE TABLE `chapter3` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -113,8 +122,11 @@ CREATE TABLE `chapter3` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5027 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter4` */
 
@@ -128,7 +140,7 @@ CREATE TABLE `chapter4` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -138,8 +150,11 @@ CREATE TABLE `chapter4` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4596 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter5` */
 
@@ -153,7 +168,7 @@ CREATE TABLE `chapter5` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -163,8 +178,11 @@ CREATE TABLE `chapter5` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5098 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter6` */
 
@@ -178,7 +196,7 @@ CREATE TABLE `chapter6` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -188,8 +206,11 @@ CREATE TABLE `chapter6` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6844 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter7` */
 
@@ -203,7 +224,7 @@ CREATE TABLE `chapter7` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -213,8 +234,11 @@ CREATE TABLE `chapter7` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3477 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter8` */
 
@@ -228,7 +252,7 @@ CREATE TABLE `chapter8` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -238,8 +262,11 @@ CREATE TABLE `chapter8` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4338 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*Table structure for table `chapter9` */
 
@@ -253,7 +280,7 @@ CREATE TABLE `chapter9` (
   `idx` int(11) NOT NULL COMMENT '排序',
   `price` int(5) NOT NULL COMMENT '以5 分/千字计算出的本章售价',
   `word_count` int(8) NOT NULL COMMENT '字数',
-  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 1：下架',
+  `shelf_status` smallint(1) NOT NULL DEFAULT '1' COMMENT '1：上架 0：下架',
   `is_free` smallint(1) NOT NULL DEFAULT '1' COMMENT '是否免费 1：收费 0：免费',
   `content` longtext COLLATE utf8_bin NOT NULL,
   `content_md5` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '用于对章节内容的一致性进',
@@ -263,8 +290,11 @@ CREATE TABLE `chapter9` (
   `copyright_chapter_id` bigint(20) DEFAULT NULL,
   `create_date` datetime NOT NULL,
   `update_date` datetime NOT NULL,
-  PRIMARY KEY (`chapter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4981 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  PRIMARY KEY (`chapter_id`),
+  UNIQUE KEY `idx_cpCode_cpChapterId` (`copyright_code`,`copyright_chapter_id`),
+  KEY `idx_bookId` (`book_id`),
+  KEY `idx_volumeId` (`volume_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

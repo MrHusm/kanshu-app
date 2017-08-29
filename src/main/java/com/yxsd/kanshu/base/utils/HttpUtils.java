@@ -35,6 +35,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -78,7 +79,7 @@ public abstract class HttpUtils {
 	public static final String GBK = "GBK";
 
 	/** httpclient对应CONNECTION_TIMEOUT对应的值 */
-	private static final Integer CONNECTION_TIMEOUT = ConfigPropertieUtils.getInteger("httpclient.connection.timeout", 1000);
+	private static final Integer CONNECTION_TIMEOUT = ConfigPropertieUtils.getInteger("httpclient.connection.timeout", 5000);
 
 	/** httpclient对应SO_TIMEOUT对应的值 */
 	private static final Integer SO_TIMEOUT = ConfigPropertieUtils.getInteger("httpclient.so.timeout", 20000);
@@ -840,6 +841,49 @@ public abstract class HttpUtils {
 			}
 		}
 		return responseMsg;
+	}
+
+	/**
+	 * 得到请求的IP地址
+	 *
+	 * @param request
+	 * @return
+	 */
+	public static String getIp(HttpServletRequest request) {
+		String ip = request.getHeader("X-Real-IP");
+		if (StringUtils.isBlank(ip)) {
+			ip = request.getHeader("Host");
+		}
+		if (StringUtils.isBlank(ip)) {
+			ip = request.getHeader("X-Forwarded-For");
+		}
+		if (StringUtils.isBlank(ip)) {
+			ip = "0.0.0.0";
+		}
+		return ip;
+	}
+
+	/**
+	 * 得到请求的根目录
+	 *
+	 * @param request
+	 * @return
+	 */
+	public static String getBasePath(HttpServletRequest request) {
+		String path = request.getContextPath();
+		String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
+		return basePath;
+	}
+
+	/**
+	 * 得到结构目录
+	 *
+	 * @param request
+	 * @return
+	 */
+	public static String getContextPath(HttpServletRequest request) {
+		String path = request.getContextPath();
+		return path;
 	}
 	
 	public static void main(final String[] args) throws Exception {

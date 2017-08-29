@@ -1,5 +1,6 @@
 package com.yxsd.kanshu.task;
 
+import com.yxsd.kanshu.base.utils.HttpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -25,7 +26,7 @@ public class TaskJob implements Job {
 			logger.error("执行任务：" + arg0.getJobDetail().getName() + "失败");
 
 		} else {
-			HttpUtils.get(url);
+			HttpUtils.getContent(url);
 		}
 
 		logger.info("执行任务：" + arg0.getJobDetail().getName() + "完成");
