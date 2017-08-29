@@ -57,7 +57,7 @@ public class SearchController {
 
 		try {
 			String[] fields = null;
-			if (StringUtils.isBlank(field)) {
+			if (!StringUtils.isBlank(field)) {
 				fields = field.split(",");
 			} else {
 				SearchEnum[] searchEnums = SearchEnum.values();
