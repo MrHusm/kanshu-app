@@ -103,7 +103,7 @@ public class SearchController {
 		// 入参
 		String searchText = request.getParameter("searchText");
 		try {
-			searchText = new String(searchText.getBytes("iso8859-1"), "utf-8");
+			searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
 		} catch (UnsupportedEncodingException e1) {
 			logger.error("search转码出错，条件为：" + searchText, e1);
 
