@@ -1,5 +1,24 @@
 package com.yxsd.kanshu.search.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.base.utils.PageFinder;
@@ -10,21 +29,6 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.search.manager.IndexManager;
 import com.yxsd.kanshu.search.service.IndexService;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 
@@ -51,13 +55,13 @@ public class SearchController {
 	public String searchIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
 		String page = request.getParameter("page");
 		String type = request.getParameter("type");
-		String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
-		model.addAttribute("syn",syn);
-		model.addAttribute("type",type);
+		String syn = request.getParameter("syn") == null ? "0" : request.getParameter("syn");
+		model.addAttribute("syn", syn);
+		model.addAttribute("type", type);
 		Query query = new Query();
-		if(StringUtils.isNotBlank(page)){
+		if (StringUtils.isNotBlank(page)) {
 			query.setPage(Integer.parseInt(page));
-		}else{
+		} else {
 			query.setPage(1);
 		}
 		query.setPageSize(20);
@@ -102,12 +106,14 @@ public class SearchController {
 
 		// 入参
 		String searchText = request.getParameter("searchText");
-		try {
-			searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
-		} catch (UnsupportedEncodingException e1) {
-			logger.error("search转码出错，条件为：" + searchText, e1);
-
+		if (isMessyCode(searchText)) {
+			try {
+				searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
+			} catch (UnsupportedEncodingException e1) {
+				logger.error("search转码出错，条件为：" + searchText, e1);
+			}
 		}
+
 		String field = request.getParameter("fields");
 
 		String page = request.getParameter("page");
@@ -137,7 +143,8 @@ public class SearchController {
 				}
 			}
 
-			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,Integer.parseInt(page));
+			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,
+					Integer.parseInt(page));
 
 			if (maps != null && maps.size() > 0) {
 				List<Book> books = new ArrayList<Book>();
@@ -169,4 +176,44 @@ public class SearchController {
 		return "/search/searchNotResult";
 
 	}
+
+	public static boolean isMessyCode(String strName) {
+		Pattern p = Pattern.compile("\\s*|\t*|\r*|\n*");
+		Matcher m = p.matcher(strName);
+		String after = m.replaceAll("");
+		String temp = after.replaceAll("\\p{P}", "");
+		char[] ch = temp.trim().toCharArray();
+		float chLength = ch.length;
+		float count = 0;
+		for (int i = 0; i < ch.length; i++) {
+			char c = ch[i];
+			if (!Character.isLetterOrDigit(c)) {
+
+				if (!isChinese(c)) {
+					count = count + 1;
+				}
+			}
+		}
+		float result = count / chLength;
+		if (result > 0.4) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public static boolean isChinese(char c) {
+		Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+		if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+				|| ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+				|| ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+				|| ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+				|| ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+				|| ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS) {
+			return true;
+		}
+		return false;
+	}
+
 }
