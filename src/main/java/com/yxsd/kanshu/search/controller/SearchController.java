@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
+import com.yxsd.kanshu.base.utils.PageFinder;
+import com.yxsd.kanshu.base.utils.Query;
+import com.yxsd.kanshu.portal.model.DriveBook;
+import com.yxsd.kanshu.portal.service.IDriveBookService;
 import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.search.manager.IndexManager;
@@ -42,9 +46,17 @@ public class SearchController {
 	@Resource(name = "indexService")
 	IndexService indexService;
 
+	@Resource(name = "driveBookService")
+	IDriveBookService driveBookService;
+
 	@RequestMapping("searchIndex")
 	public String searchIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
+		Query query = new Query();
+		query.setPage(1);
+		query.setPageSize(10);
+		PageFinder<DriveBook> pageFinder = driveBookService.findPageWithCondition(5, query);
 
+		model.addAttribute("driveBooks", pageFinder.getData());
 		return "/search/search";
 	}
 
