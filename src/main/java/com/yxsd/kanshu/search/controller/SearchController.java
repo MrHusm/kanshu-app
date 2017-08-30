@@ -1,24 +1,5 @@
 package com.yxsd.kanshu.search.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.base.utils.PageFinder;
@@ -29,6 +10,23 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.search.manager.IndexManager;
 import com.yxsd.kanshu.search.service.IndexService;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -51,6 +49,13 @@ public class SearchController {
 	@Resource(name = "driveBookService")
 	IDriveBookService driveBookService;
 
+	/**
+	 * 搜索首页
+	 * @param response
+	 * @param request
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping("searchIndex")
 	public String searchIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
 		String page = request.getParameter("page");
@@ -71,6 +76,13 @@ public class SearchController {
 		return "/search/search";
 	}
 
+	/**
+	 * 创建搜索索引
+	 * @param response
+	 * @param request
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping("createIndex")
 	public String createIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
 		String start = request.getParameter("start");
@@ -101,34 +113,37 @@ public class SearchController {
 
 	}
 
+	/**
+	 * 搜索
+	 * @param response
+	 * @param request
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping("search")
 	public String search(HttpServletResponse response, HttpServletRequest request, Model model) {
-
 		// 入参
 		String searchText = request.getParameter("searchText");
-		if (isMessyCode(searchText)) {
-			try {
-				searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
-			} catch (UnsupportedEncodingException e1) {
-				logger.error("search转码出错，条件为：" + searchText, e1);
-			}
-		}
-
 		String field = request.getParameter("fields");
+		String pageNo = request.getParameter("pageNo");
+		String syn = request.getParameter("syn") == null ? "0" : request.getParameter("syn");
+		model.addAttribute("syn", syn);
 
-		String page = request.getParameter("page");
-
-		// 未传pageSize默认查首页
-		if (StringUtils.isBlank(page)) {
-			page = "1";
+		// 未传page默认查首页
+		if (StringUtils.isBlank(pageNo)) {
+			pageNo = "1";
 		}
-
+		model.addAttribute("pageNo",pageNo);
 		try {
 			// 查询为空直接返回
 			if (StringUtils.isBlank(searchText)) {
 				response.sendRedirect("/search/searchIndex.go?type=1");
 				return null;
 			}
+			if (isMessyCode(searchText)) {
+				searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
+			}
+			model.addAttribute("searchText",searchText);
 			logger.info("search被调用，条件为：" + searchText);
 
 			String[] fields = null;
@@ -137,14 +152,12 @@ public class SearchController {
 			} else {
 				SearchEnum[] searchEnums = SearchEnum.values();
 				fields = new String[searchEnums.length];
-
 				for (int i = 0; i < searchEnums.length; i++) {
 					fields[i] = searchEnums[i].getSearchField();
 				}
 			}
-
 			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,
-					Integer.parseInt(page));
+					Integer.parseInt(pageNo));
 
 			if (maps != null && maps.size() > 0) {
 				List<Book> books = new ArrayList<Book>();
@@ -157,7 +170,7 @@ public class SearchController {
 					if (StringUtils.isBlank(tableName)) {
 						tableName = SearchContants.BOOK;
 					}
-					Book book = this.bookService.get(Long.parseLong(id));
+					Book book = this.bookService.getBookById(Long.parseLong(id));
 					if (book != null) {
 						books.add(book);
 					}
@@ -171,9 +184,14 @@ public class SearchController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("search出错，条件为：" + searchText, e);
+			try {
+				response.sendRedirect("/search/searchIndex.go?type=1");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 		// 返回为空界面
-		return "/search/searchNotResult";
+		return null;
 
 	}
 

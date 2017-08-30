@@ -11,7 +11,7 @@
     <script src="/js/common.js"></script>
 </head>
 <body>
-    <#if type?? && type == 1>
+    <#if type?? && type = '1'>
         <div class="notResult">
             <img src="/img/icon/notIcon.png" alt=""  class="notResultIcon"/>
             <span class="notResultTxt">很遗憾，没有相关的搜索结果</span>
@@ -28,8 +28,8 @@
     </#if>
     <div class="hr"></div>
     <article class="pageLoad">
+    <div class="h6"><i class="h6Icon"></i>大家都在搜</div>
 </#if>
-        <div class="h6"><i class="h6Icon"></i>大家都在搜</div>
         <#if pageFinder.data??>
             <#list pageFinder.data as driveBook>
                 <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">

@@ -143,13 +143,12 @@ public class IndexManager {
 	 *            在那些列值中进行查询
 	 * @return 返回查询的结果，map表示每一个结果其中key为属性名称，value是值
 	 */
-	public List<Map<String, String>> searchIndex(String text, String[] fields, int pageSize) {
+	public List<Map<String, String>> searchIndex(String text, String[] fields, int pageNo) {
 
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		DirectoryReader ireader = null;
 
 		try {
-
 			ireader = DirectoryReader.open(directory);
 			IndexSearcher isearcher = new IndexSearcher(ireader);
 
@@ -157,12 +156,12 @@ public class IndexManager {
 			Query query = parser.parse(text);
 
 			// 查询前多少行数据
-			int totle = pageSize * pageCount;
+			int totle = pageNo * pageCount;
 
 			TopScoreDocCollector topCollector = TopScoreDocCollector.create(totle);
 			isearcher.search(query, topCollector);
 			// 取数范围
-			ScoreDoc[] hits = topCollector.topDocs((pageSize - 1) * pageCount, totle).scoreDocs;
+			ScoreDoc[] hits = topCollector.topDocs((pageNo - 1) * pageCount, totle).scoreDocs;
 
 			for (int i = 0; i < hits.length; i++) {
 				Map<String, String> map = new HashMap<String, String>();
@@ -172,9 +171,7 @@ public class IndexManager {
 					map.put(indexableField.name(), hitDoc.get(indexableField.name()));
 				}
 				list.add(map);
-
 			}
-
 		} catch (Exception e) {
 			logger.error("查询索引失败", e);
 			throw new RuntimeException("查询索引失败", e);
@@ -189,7 +186,6 @@ public class IndexManager {
 			}
 		}
 		return list;
-
 	}
 
 	/**

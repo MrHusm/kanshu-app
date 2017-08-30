@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -72,6 +73,93 @@ public class RankClimbController extends BaseController {
                     //saveDrive(title,1,0);
                 }
             }
+            List<String> childUrls = new ArrayList<String>();
+            //编辑推荐文字推荐6本
+            Elements editLists = doc.getElementsByAttributeValue("data-eid","qd_A110");
+            if(editLists != null && editLists.size() > 0){
+                for(Element editList : editLists){
+                    String editListUrl = editList.attr("href");
+                    //logger.info("编辑推荐文字推荐6本url："+ editListUrl);
+                    childUrls.add(editListUrl);
+                }
+            }
+            //编辑推荐图片推荐2本
+            Elements editImgLists = doc.getElementsByAttributeValue("data-eid","qd_A172");
+            if(editImgLists != null && editImgLists.size() > 0){
+                for(Element editImgList : editImgLists){
+                    String editImgUrl = editImgList.attr("href");
+                    //logger.info("编辑推荐图片推荐2本url："+ editImgUrl);
+                    childUrls.add(editImgUrl);
+                }
+            }
+            for(String childUrl : childUrls){
+                if(childUrl.indexOf("http:") == -1){
+                    childUrl = "http:" + childUrl;
+                }
+                Document childDoc = Jsoup.connect(childUrl)
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements bookEles = childDoc.select(".book-info");
+                if(bookEles != null && bookEles.size() > 0){
+                    String title = bookEles.get(0).child(0).child(0).text();
+                    logger.info("编辑推荐文字和图片推荐书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+
+            //热门作品左侧的3本封面推荐
+            Elements hotEles = doc.getElementsByAttributeValue("data-eid","qd_A121");
+            if(hotEles != null && hotEles.size() > 0){
+                for(Element hotEle : hotEles){
+                    String title = hotEle.child(0).attr("alt");
+                    logger.info("热门作品左侧的3本封面推荐书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+
+            //新书推荐左侧的3本封面推荐
+            Elements newEles = doc.getElementsByAttributeValue("data-eid","qd_A138");
+            if(newEles != null && newEles.size() > 0){
+                for(Element newEle : newEles){
+                    String title = newEle.child(0).attr("alt");
+                    logger.info("新书推荐左侧的3本封面推荐书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+
+            //完本精品左侧的3本封面推荐
+            Elements finishEles = doc.getElementsByAttributeValue("data-eid","qd_A129");
+            if(finishEles != null && finishEles.size() > 0){
+                for(Element finishEle : finishEles){
+                    String title = finishEle.child(0).attr("alt");
+                    logger.info("完本精品左侧的3本封面推荐书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+
+            //起点女生首页封推前4本
+            //起点女生首页编辑推荐，全部图书（需要注意，封面有7本；中间文字推有6本，最后还有2个小banner推荐）
+            //起点女生周点击榜的10本书
+            //起点女生新书推荐左侧的3本封面推荐
+            //起点女生完本精选的5本封面推荐
+            //
+            //起点首页本周强推17本
+            Elements strongEles = doc.getElementsByAttributeValue("data-eid","qd_A103");
+            if(strongEles != null && strongEles.size() > 0){
+                for(Element strongEle : strongEles){
+                    String title = strongEle.text();
+                    logger.info("起点首页本周强推17本书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+
+            //起点女生首页本周强推15本图书
+            //http://r.qidian.com/hotsales?style=1&page=1 加这个页面24小时热销榜的数据首页图书排重
+            //http://r.qidian.com/mm/hotsales?style=1 加这个页面24小时热销榜的数据
+
+
 
         } catch (Exception e) {
             e.printStackTrace();

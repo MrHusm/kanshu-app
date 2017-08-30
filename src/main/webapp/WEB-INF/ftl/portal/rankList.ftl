@@ -20,7 +20,9 @@
         <#if pageFinder.data??>
             <#list pageFinder.data as driveBook>
                 <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
-                    <img class="bookListImg" src="${driveBook.book.coverUrl}">
+                    <div class="bookListImg">
+                        <img width="100%" height="100%" src="${driveBook.book.coverUrl}">
+                    </div>
                     <div class="bookList">
                         <div class="bookName">${driveBook.book.title}</div>
                         <div class="bookInfo">

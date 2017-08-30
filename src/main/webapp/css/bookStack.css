@@ -113,6 +113,7 @@ aside > :nth-child(2){
     -ms-flex-grow: 1;
     -ms-flex-positive: 1;
     flex-grow: 1;
+    width: 526px;
 }
 .bookListImg{
     width: 75px;
