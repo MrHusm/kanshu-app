@@ -1,22 +1,5 @@
 package com.yxsd.kanshu.search.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.base.utils.PageFinder;
@@ -27,6 +10,21 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.search.manager.IndexManager;
 import com.yxsd.kanshu.search.service.IndexService;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -51,12 +49,21 @@ public class SearchController {
 
 	@RequestMapping("searchIndex")
 	public String searchIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
+		String page = request.getParameter("page");
+		String type = request.getParameter("type");
+		String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+		model.addAttribute("syn",syn);
+		model.addAttribute("type",type);
 		Query query = new Query();
-		query.setPage(1);
-		query.setPageSize(10);
+		if(StringUtils.isNotBlank(page)){
+			query.setPage(Integer.parseInt(page));
+		}else{
+			query.setPage(1);
+		}
+		query.setPageSize(20);
 		PageFinder<DriveBook> pageFinder = driveBookService.findPageWithCondition(5, query);
 
-		model.addAttribute("driveBooks", pageFinder.getData());
+		model.addAttribute("pageFinder", pageFinder);
 		return "/search/search";
 	}
 
@@ -103,21 +110,21 @@ public class SearchController {
 		}
 		String field = request.getParameter("fields");
 
-		String pages = request.getParameter("pageSize");
+		String page = request.getParameter("page");
 
 		// 未传pageSize默认查首页
-		if (StringUtils.isBlank(pages)) {
-			pages = "1";
+		if (StringUtils.isBlank(page)) {
+			page = "1";
 		}
-
-		// 查询为空直接返回
-		if (StringUtils.isBlank(searchText)) {
-			return "/search/searchNotResult";
-		}
-
-		logger.info("search被调用，条件为：" + searchText);
 
 		try {
+			// 查询为空直接返回
+			if (StringUtils.isBlank(searchText)) {
+				response.sendRedirect("/search/searchIndex.go?type=1");
+				return null;
+			}
+			logger.info("search被调用，条件为：" + searchText);
+
 			String[] fields = null;
 			if (!StringUtils.isBlank(field)) {
 				fields = field.split(",");
@@ -130,38 +137,32 @@ public class SearchController {
 				}
 			}
 
-			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,
-					Integer.parseInt(pages));
+			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,Integer.parseInt(page));
 
 			if (maps != null && maps.size() > 0) {
-
 				List<Book> books = new ArrayList<Book>();
 				for (Map<String, String> map : maps) {
 					String tableName = map.get(SearchContants.TABLENAME);
 					String id = map.get(SearchContants.ID);
-
 					if (StringUtils.isBlank(id)) {
 						continue;
 					}
-
 					if (StringUtils.isBlank(tableName)) {
 						tableName = SearchContants.BOOK;
 					}
-
 					Book book = this.bookService.get(Long.parseLong(id));
 					if (book != null) {
 						books.add(book);
 					}
-
 				}
 				model.addAttribute("searchBooks", books);
-
 				return "/search/searchResult";
-
 			} else {
-				return "/search/searchNotResult";
+				response.sendRedirect("/search/searchIndex.go?type=1");
+				return null;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("search出错，条件为：" + searchText, e);
 		}
 		// 返回为空界面

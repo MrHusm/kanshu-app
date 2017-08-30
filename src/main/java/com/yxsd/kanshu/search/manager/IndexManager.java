@@ -1,23 +1,15 @@
 package com.yxsd.kanshu.search.manager;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.yxsd.kanshu.base.contants.SearchContants;
+import com.yxsd.kanshu.base.contants.SearchEnum;
+import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -29,9 +21,12 @@ import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yxsd.kanshu.base.contants.SearchContants;
-import com.yxsd.kanshu.base.contants.SearchEnum;
-import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qiong.wang
@@ -44,7 +39,7 @@ public class IndexManager {
 	private static Analyzer analyzer = new StandardAnalyzer();
 	private static Directory directory = null;
 
-	private static int pageCount = 10;
+	private static int pageCount = 20;
 
 	private static final Logger logger = LoggerFactory.getLogger(IndexManager.class);
 

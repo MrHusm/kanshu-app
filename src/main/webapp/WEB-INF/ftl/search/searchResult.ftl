@@ -12,7 +12,6 @@
 <body>
     
     <article>
-    
     		<#if searchBooks??>
                     <#list searchBooks as book>
                     	<section class="bookListBox">
@@ -31,7 +30,6 @@
 				        </section>
                     </#list>
             </#if>
-        
     </article>
     <div class="bookLoad">正努力加载更多...</div>
 </body>
