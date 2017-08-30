@@ -54,7 +54,7 @@ public class PortalController extends BaseController{
     @RequestMapping("portalIndex")
     public String portalIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
         String page = request.getParameter("page");
-        //String type = request.getParameter("type");
+        String type = request.getParameter("type");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
         model.addAttribute("syn",syn);
         Query query = new Query();
@@ -64,11 +64,13 @@ public class PortalController extends BaseController{
             query.setPage(1);
         }
         query.setPageSize(20);
-        DriveBook driveBook = new DriveBook();
-        driveBook.setType(3);
-        PageFinder<DriveBook> pageFinder = driveBookService.findPageFinderObjs(driveBook,query);
+        if(StringUtils.isBlank(type)){
+            //默认取首页驱动数据
+            type = "1";
+        }
+        PageFinder<DriveBook> pageFinder = this.driveBookService.findPageWithCondition(Integer.parseInt(type),query);
         model.addAttribute("pageFinder",pageFinder);
-
+        model.addAttribute("type",type);
         return "/portal/portal_index";
     }
 
@@ -200,14 +202,8 @@ public class PortalController extends BaseController{
             query.setPage(1);
         }
         query.setPageSize(20);
-        DriveBook driveBook = new DriveBook();
-        driveBook.setType(Integer.parseInt(type));
 
-        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(Integer.parseInt(type));
-
-        int end = (query.getOffset() + query.getPageSize()) > driveBooks.size() ? driveBooks.size() : (query.getOffset() + query.getPageSize());
-        List<DriveBook> datas = driveBooks.subList(query.getOffset(), end);
-        PageFinder<DriveBook> pageFinder = new PageFinder<DriveBook>(query.getPage(),query.getPageSize(), driveBooks.size(), datas);
+        PageFinder<DriveBook> pageFinder = this.driveBookService.findPageWithCondition(Integer.parseInt(type), query);
 
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("type",type);

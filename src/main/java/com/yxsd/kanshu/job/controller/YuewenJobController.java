@@ -2,7 +2,6 @@ package com.yxsd.kanshu.job.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yxsd.kanshu.base.contants.Constants;
-import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.*;
@@ -15,7 +14,6 @@ import com.yxsd.kanshu.job.service.IPullVolumeService;
 import com.yxsd.kanshu.job.vo.*;
 import com.yxsd.kanshu.product.model.*;
 import com.yxsd.kanshu.product.service.*;
-import com.yxsd.kanshu.search.manager.IndexManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -233,7 +231,10 @@ public class YuewenJobController extends BaseController {
 											//保存图书
 											bookService.save(book);
 											//创建搜索索引
-											IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+											long start = System.currentTimeMillis();
+											//IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+											long end = System.currentTimeMillis();
+											logger.info("start:"+start +",end:"+end+",diff:"+(end-start)/1000);
 											//调用阅文获取书籍卷列表
 											List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
 											if(volumeInfoResps != null){

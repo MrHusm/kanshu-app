@@ -41,7 +41,7 @@ public class ChapterServiceImpl extends ChapterBaseServiceImpl<Chapter, Long> im
     public List<Chapter> getChaptersByBookId(Long bookId,Integer num) {
         String key = RedisKeyConstants.CACHE_BOOK_CATALOG_KEY+bookId;
         List<Chapter> chapters = null;
-        if(slaveRedisTemplate.hasKey(key)){
+        if(masterRedisTemplate.hasKey(key)){
             chapters = slaveRedisTemplate.opsForList().range(key,0,-1);
         }
         if(CollectionUtils.isEmpty(chapters)){

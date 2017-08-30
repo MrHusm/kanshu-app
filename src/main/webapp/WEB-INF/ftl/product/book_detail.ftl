@@ -82,7 +82,7 @@
 <div class="hr"></div>
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i>看了本书的用户还看了</div>
-    <#list driveBooks as driveBook>
+    <#list relatedBooks as driveBook>
         <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
             <img class="bookListImg" data-echo="${driveBook.book.coverUrl}" src="/img/other/book7.jpg">
             <div class="bookList">

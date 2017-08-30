@@ -11,15 +11,15 @@
 </head>
 <body>
     <aside class="newBookBox">
-        <ul class="bookPopular" onclick="rankList(1,'全站畅销')">
+        <ul class="bookPopular" onclick="rankList(6,'全站畅销')">
             <li class="newbook">全站畅销</li>
             <li class="newbookBox"><img class="newbookImg" src="/img/other/book1.jpg"></li>
         </ul>
-        <ul class="bookPopular" onclick="rankList(1,'完结精选')">
+        <ul class="bookPopular" onclick="rankList(7,'完结精选')">
             <li class="newbook">完结精选</li>
             <li class="newImg"><img class="newbookImg" src="/img/other/book2.jpg"></li>
         </ul>
-        <ul class="bookPopular" onclick="rankList(1,'重磅新书')">
+        <ul class="bookPopular" onclick="rankList(8,'重磅新书')">
             <li class="newbook">重磅新书</li>
             <li class="newImg"><img class="newbookImg" src="/img/other/book3.jpg"></li>
         </ul>

@@ -19,7 +19,9 @@ public class DriveBook implements Serializable{
     private Date createDate;
 
     /**
-     * 类型 1：限免榜 2：搜索榜 3：畅销榜
+     * 类型 1：首页驱动 2：首页男生最爱 3：首页女生频道
+     * 4：首页二次元 5：大家都在搜索 6：书库全站畅销
+     * 7：书库完结精选 8：书库重磅新书 9：免费 10：书籍相关图书
      */
     private Integer type;
 

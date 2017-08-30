@@ -136,7 +136,15 @@ public class BookController extends BaseController {
         List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
 
         //用户还看了其他书
-        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(3);
+        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(10);
+        if(CollectionUtils.isNotEmpty(driveBooks)){
+            if(driveBooks.size() > 10){
+                driveBooks = driveBooks.subList(0,10);
+            }
+            Collections.shuffle(driveBooks);
+        }
+
+
         if(CollectionUtils.isNotEmpty(driveBooks) && driveBooks.size() > 10){
             driveBooks = driveBooks.subList(0,10);
         }
@@ -147,7 +155,7 @@ public class BookController extends BaseController {
         }
         model.addAttribute("tags",tags);
         model.addAttribute("authorBooks",authorBooks);
-        model.addAttribute("driveBooks",driveBooks);
+        model.addAttribute("relatedBooks",driveBooks);
         model.addAttribute("readBtn",readBtn);
         model.addAttribute("book",book);
         return "/product/book_detail";
@@ -174,13 +182,16 @@ public class BookController extends BaseController {
         List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
 
         //用户还看了其他书
-        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(3);
-        if(CollectionUtils.isNotEmpty(driveBooks) && driveBooks.size() > 10){
-            driveBooks = driveBooks.subList(0,10);
+        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(10);
+        if(CollectionUtils.isNotEmpty(driveBooks)){
+            if(driveBooks.size() > 10){
+                driveBooks = driveBooks.subList(0,10);
+            }
+            Collections.shuffle(driveBooks);
         }
 
         model.addAttribute("authorBooks",authorBooks);
-        model.addAttribute("driveBooks",driveBooks);
+        model.addAttribute("relatedBooks",driveBooks);
         //model.addAttribute("book",book.getIsFull());
         return "/product/read_through";
     }

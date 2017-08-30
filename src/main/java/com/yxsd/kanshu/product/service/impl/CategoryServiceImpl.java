@@ -39,7 +39,7 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> impleme
     public List<Category> getCategorysByPid(Long pid) {
         String key = RedisKeyConstants.CACHE_CATEGORY_LIST_PID_KEY + pid;
         List<Category> categories = null;
-        if(slaveRedisTemplate.hasKey(key)){
+        if(masterRedisTemplate.hasKey(key)){
             categories = slaveRedisTemplate.opsForList().range(key,0,-1);
         }
         if(CollectionUtils.isEmpty(categories)){

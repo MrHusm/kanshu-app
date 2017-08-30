@@ -121,6 +121,7 @@
 		LEFT JOIN book b 
 		ON d.book_id = b.book_id where 1=1
         <include refid="Base_Where" />
+        order by d.score desc,d.create_date desc
     </select>
     <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
           select count(1)  from drive_book d
@@ -135,6 +136,6 @@
 		LEFT JOIN book b 
 		ON d.book_id = b.book_id where 1=1
         <include refid="Base_Where" />
-        order by d.score asc
+        order by d.score desc
     </select>
 </mapper>

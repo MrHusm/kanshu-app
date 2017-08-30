@@ -5,11 +5,10 @@ import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
-import com.yxsd.kanshu.portal.service.IDriveBookService;
 import com.yxsd.kanshu.portal.dao.IDriveBookDao;
 import com.yxsd.kanshu.portal.model.DriveBook;
+import com.yxsd.kanshu.portal.service.IDriveBookService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +39,10 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
     @Override
     public List<DriveBook> getDriveBooks(Integer type) {
         String key = RedisKeyConstants.CACHE_DRIVE_BOOK_KEY + type;
-        List<DriveBook> driveBooks = slaveRedisTemplate.opsForList().range(key,0,-1);
+        List<DriveBook> driveBooks = null;
+        if(masterRedisTemplate.hasKey(key)){
+            driveBooks = slaveRedisTemplate.opsForList().range(key,0,-1);
+        }
         if(CollectionUtils.isEmpty(driveBooks)){
             driveBooks = this.findListByParams("type",type);
             if(CollectionUtils.isNotEmpty(driveBooks)){
@@ -70,7 +72,14 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
     }
 
     @Override
-    public PageFinder<T> findPage(Object params, Query query) {
-        return null;
+    public PageFinder<DriveBook> findPageWithCondition(Integer type, Query query) {
+        List<DriveBook> driveBooks = this.getDriveBooks(type);
+        PageFinder<DriveBook> pageFinder = new PageFinder<DriveBook>(query.getPage(),query.getPageSize(), 0);
+        if(CollectionUtils.isNotEmpty(driveBooks)){
+            int end = (query.getOffset() + query.getPageSize()) > driveBooks.size() ? driveBooks.size() : (query.getOffset() + query.getPageSize());
+            List<DriveBook> datas = driveBooks.subList(query.getOffset(), end);
+            pageFinder = new PageFinder<DriveBook>(query.getPage(),query.getPageSize(), driveBooks.size(), datas);
+        }
+        return pageFinder;
     }
 }

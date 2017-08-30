@@ -52,7 +52,7 @@
 		<property name="database" value="${slave.redis.database}" />
 		<property name="timeout" value="10000" />
 		<property name="usePool" value="true" />
-		<property name="password" value="${master.redis.password}"/>
+		<property name="password" value="${slave.redis.password}"/>
 	</bean>
 
 	<bean id="slaveRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="slaveJedisConnectionFactory">

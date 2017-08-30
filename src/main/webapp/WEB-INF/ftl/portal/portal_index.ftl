@@ -12,17 +12,17 @@
 </head>
 <body>
     <aside class="newBookBox">
-        <ul class="bookPopular" onclick="rankList(1,'男生')">
+        <ul class="bookPopular" onclick="rankList(2,'男生')">
             <li class="newbook">男生最爱</li>
             <li class="newInfo">都市玄幻万本爽文</li>
             <li class="newbookBox"><img class="newbookImg" src="/img/other/book1.jpg"></li>
         </ul>
-        <ul class="bookPopular" onclick="rankList(2,'女生')">
+        <ul class="bookPopular" onclick="rankList(3,'女生')">
             <li class="newbook">女生频道</li>
             <li class="newInfo">言情后宫跌宕起伏</li>
             <li class="newImg"><img class="newbookImg" src="/img/other/book2.jpg"></li>
         </ul>
-        <ul class="bookPopular" onclick="rankList(3,'二次元')">
+        <ul class="bookPopular" onclick="rankList(4,'二次元')">
             <li class="newbook">二次元</li>
             <li class="newInfo">初音未来唯美世界</li>
             <li class="newImg"><img class="newbookImg" src="/img/other/book3.jpg"></li>
@@ -57,7 +57,7 @@
         </#if>
 <#if syn=='0'>
     </article>
-    <div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/portalIndex.go?page=${pageFinder.pageNo+1}&syn=1" style="display:none;"></div>
+    <div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/portalIndex.go?page=${pageFinder.pageNo+1}&syn=1&type=${type}" style="display:none;"></div>
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
 <script type="text/javascript" src="/js/echo.min.js"></script>
