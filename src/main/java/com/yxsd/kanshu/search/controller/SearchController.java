@@ -22,6 +22,7 @@ import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.search.manager.IndexManager;
+import com.yxsd.kanshu.search.service.IndexService;
 
 /**
  * 
@@ -38,10 +39,43 @@ public class SearchController {
 	@Resource(name = "bookService")
 	IBookService bookService;
 
+	@Resource(name = "indexService")
+	IndexService indexService;
+
 	@RequestMapping("searchIndex")
 	public String searchIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
 
 		return "/search/search";
+	}
+
+	@RequestMapping("createIndex")
+	public String createIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
+		String start = request.getParameter("start");
+		String pages = request.getParameter("pageSize");
+
+		if (StringUtils.isBlank(start) && StringUtils.isBlank(pages)) {
+			indexService.createIndex();
+			return "/search/search";
+		}
+		if (!StringUtils.isBlank(start) && StringUtils.isBlank(pages)) {
+			indexService.createIndex(Integer.parseInt(start));
+			return "/search/search";
+		}
+
+		if (!StringUtils.isBlank(start) && !StringUtils.isBlank(pages)) {
+			indexService.createIndex(Integer.parseInt(start), Integer.parseInt(pages));
+			return "/search/search";
+		}
+
+		String end = request.getParameter("end");
+
+		if (!StringUtils.isBlank(start) && !StringUtils.isBlank(pages) && !StringUtils.isBlank(end)) {
+			indexService.createIndex(Integer.parseInt(start), Integer.parseInt(pages), Integer.parseInt(end));
+			return "/search/search";
+		}
+
+		return "/search/search";
+
 	}
 
 	@RequestMapping("search")
@@ -50,7 +84,7 @@ public class SearchController {
 		// 入参
 		String searchText = request.getParameter("searchText");
 		try {
-			searchText = new String(searchText.getBytes("iso8859-1"),"utf-8");
+			searchText = new String(searchText.getBytes("iso8859-1"), "utf-8");
 		} catch (UnsupportedEncodingException e1) {
 			logger.error("search转码出错，条件为：" + searchText, e1);
 
@@ -58,12 +92,12 @@ public class SearchController {
 		String field = request.getParameter("fields");
 
 		String pages = request.getParameter("pageSize");
-		
-		//未传pageSize默认查首页
-		if(StringUtils.isBlank(pages)){
+
+		// 未传pageSize默认查首页
+		if (StringUtils.isBlank(pages)) {
 			pages = "1";
 		}
-		
+
 		// 查询为空直接返回
 		if (StringUtils.isBlank(searchText)) {
 			return "/search/searchNotResult";
@@ -84,7 +118,8 @@ public class SearchController {
 				}
 			}
 
-			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,Integer.parseInt(pages));
+			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,
+					Integer.parseInt(pages));
 
 			if (maps != null && maps.size() > 0) {
 

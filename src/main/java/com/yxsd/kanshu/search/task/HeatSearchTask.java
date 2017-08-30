@@ -7,8 +7,8 @@ package com.yxsd.kanshu.search.task;
  *
  */
 public class HeatSearchTask {
-	
-	protected void execute() {
+
+	public void execute() {
 
 	}
 }

@@ -67,8 +67,8 @@ public class IndexManager {
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
-				 INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
-//				INDEX_DIR = "/Users/bangpei/search";
+//				 INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
+				INDEX_DIR = "/Users/bangpei/search";
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {

@@ -6,7 +6,7 @@
     <title>春光免费小说-搜索书籍</title>
     <link rel="stylesheet" href="/css/reset_5.css">
     <link rel="stylesheet" href="/css/sreach.css">
-    <script src="/js/jquery-1.11.1.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
     <script src="/js/common.js"></script>
 </head>
 <body>
