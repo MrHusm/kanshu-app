@@ -1,5 +1,6 @@
 package com.yxsd.kanshu.search.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,7 @@ import com.yxsd.kanshu.search.manager.IndexManager;
  *
  */
 @Controller
+@Scope("prototype")
 @RequestMapping("search")
 public class SearchController {
 
@@ -38,7 +41,7 @@ public class SearchController {
 	@RequestMapping("searchIndex")
 	public String searchIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
 
-		return "search";
+		return "/search/search";
 	}
 
 	@RequestMapping("search")
@@ -46,8 +49,21 @@ public class SearchController {
 
 		// 入参
 		String searchText = request.getParameter("searchText");
+		try {
+			searchText = new String(searchText.getBytes("iso8859-1"),"utf-8");
+		} catch (UnsupportedEncodingException e1) {
+			logger.error("search转码出错，条件为：" + searchText, e1);
+
+		}
 		String field = request.getParameter("fields");
 
+		String pages = request.getParameter("pageSize");
+		
+		//未传pageSize默认查首页
+		if(StringUtils.isBlank(pages)){
+			pages = "1";
+		}
+		
 		// 查询为空直接返回
 		if (StringUtils.isBlank(searchText)) {
 			return "/search/searchNotResult";
@@ -68,7 +84,7 @@ public class SearchController {
 				}
 			}
 
-			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields);
+			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,Integer.parseInt(pages));
 
 			if (maps != null && maps.size() > 0) {
 

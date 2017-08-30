@@ -1,7 +1,5 @@
 package com.yxsd.kanshu.base.utils;
 
-import java.util.zip.GZIPOutputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

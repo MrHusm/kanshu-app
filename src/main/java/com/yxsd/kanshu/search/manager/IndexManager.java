@@ -23,12 +23,14 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yxsd.kanshu.base.contants.SearchContants;
+import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
 
 /**
@@ -41,6 +43,8 @@ public class IndexManager {
 	private static String INDEX_DIR;
 	private static Analyzer analyzer = new StandardAnalyzer();
 	private static Directory directory = null;
+
+	private static int pageCount = 10;
 
 	private static final Logger logger = LoggerFactory.getLogger(IndexManager.class);
 
@@ -63,7 +67,8 @@ public class IndexManager {
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
-				INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
+				 INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
+//				INDEX_DIR = "/Users/bangpei/search";
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
@@ -143,7 +148,7 @@ public class IndexManager {
 	 *            在那些列值中进行查询
 	 * @return 返回查询的结果，map表示每一个结果其中key为属性名称，value是值
 	 */
-	public List<Map<String, String>> searchIndex(String text, String[] fields) {
+	public List<Map<String, String>> searchIndex(String text, String[] fields, int pageSize) {
 
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		DirectoryReader ireader = null;
@@ -155,7 +160,14 @@ public class IndexManager {
 
 			QueryParser parser = new MultiFieldQueryParser(fields, analyzer);
 			Query query = parser.parse(text);
-			ScoreDoc[] hits = isearcher.search(query, 1000).scoreDocs;
+
+			// 查询前多少行数据
+			int totle = pageSize * pageCount;
+
+			TopScoreDocCollector topCollector = TopScoreDocCollector.create(totle);
+			isearcher.search(query, topCollector);
+			// 取数范围
+			ScoreDoc[] hits = topCollector.topDocs((pageSize - 1) * pageCount, totle).scoreDocs;
 
 			for (int i = 0; i < hits.length; i++) {
 				Map<String, String> map = new HashMap<String, String>();
@@ -269,66 +281,77 @@ public class IndexManager {
 		}
 	}
 
-	// public static void main(String[] args) {
-	//
-	// Thread thread = new Thread(new Runnable() {
-	//
-	// @Override
-	// public void run() {
-	// for (int i = 0; i < 100; i++) {
-	// Map<String, String> fieldMap = new HashMap<String, String>();
-	// fieldMap.put("wqwq" + i, "ynynyn" + i);
-	// IndexManager.getManager().createIndex("sdfas" + i, "book", fieldMap);
-	//
-	// Map<String, String> fieldMap1 = new HashMap<String, String>();
-	// fieldMap.put("ynynyn" + i, "wqwq" + i);
-	// IndexManager.getManager().createIndex("ddddd" + i, "book", fieldMap1);
-	// }
-	// }
-	// });
-	//
-	// Thread thread1 = new Thread(new Runnable() {
-	//
-	// @Override
-	// public void run() {
-	// for (int i = 0; i < 100; i++) {
-	// Map<String, String> fieldMap = new HashMap<String, String>();
-	// fieldMap.put("wqwq" + i, "ynynyn" + i);
-	// IndexManager.getManager().createIndex("sdfas" + i, "book", fieldMap);
-	//
-	// Map<String, String> fieldMap1 = new HashMap<String, String>();
-	// fieldMap.put("ynynyn" + i, "wqwq" + i);
-	// IndexManager.getManager().createIndex("ddddd" + i, "book", fieldMap1);
-	// }
-	// }
-	// });
-	//
-	// Thread thread2 = new Thread(new Runnable() {
-	//
-	// @Override
-	// public void run() {
-	// for (int i = 0; i < 100; i++) {
-	// Map<String, String> fieldMap = new HashMap<String, String>();
-	// fieldMap.put("wqwq" + i, "ynynyn" + i);
-	// long start = System.currentTimeMillis();
-	// IndexManager.getManager().createIndex("sdfas" + i, "book", fieldMap);
-	// System.out.println(System.currentTimeMillis() - start);
-	//
-	// }
-	// }
-	// });
-	// thread.start();
-	// thread1.start();
-	// //
-	// thread2.start();
-	// List<Map<String, String>> list =
-	// IndexManager.getManager().searchIndex("ynynyn1",
-	// new String[] { "wqwq", "ynynyn" });
-	// // // for (Map<String, String> map : list) {
-	// // // System.out.println(map.keySet());
-	// // // }
-	// //
-	// System.out.println(list.size());
-	// }
+	public static void main(String[] args) {
+
+		// Thread thread = new Thread(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// for (int i = 0; i < 100; i++) {
+		// Map<String, String> fieldMap = new HashMap<String, String>();
+		// fieldMap.put(SearchEnum.title.getSearchField(), "升棺发财"+i);
+		// fieldMap.put(SearchEnum.author_name.getSearchField(), "冯媛 哈智超 李晓");
+		// fieldMap.put(SearchEnum.intro.getSearchField(),
+		// "【全网独家】陆垚在上大学时重逢幼儿园同学马俐，虽然彼此心存好感，但由于陆垚有严重的“表白障碍症”，只能眼巴巴看着自己的女神马俐与别人谈恋爱。而自此之后很多年，陆垚只能以朋友的名义爱着马俐，也与她开始了一段“友情不甘、恋人不敢”的长跑。围绕那一片暧昧的感情空间，细腻描写男女主角之间小心翼翼的进退和试探，总有某个场景戳中你过往的某个记忆瞬间。世间有多少表白，总是止于唇齿，葬于岁月。兜兜转转十数年而过，回过头来，发现心底还保留着那份最初的期待，还能找回一段纯粹动人的爱情。");
+		// fieldMap.put(SearchEnum.author_penname.getSearchField(), "冯媛 哈智超
+		// 李晓");
+		// fieldMap.put(SearchEnum.category_sec_name.getSearchField(), "小说");
+		// fieldMap.put(SearchEnum.category_thr_name.getSearchField(), "影视小说");
+		//
+		// IndexManager.getManager().createIndex("151", "book", fieldMap);
+		//
+		//// Map<String, String> fieldMap1 = new HashMap<String, String>();
+		//// fieldMap.put("ynynyn" + i, "wqwq" + i);
+		//// IndexManager.getManager().createIndex("ddddd" + i, "book",
+		// fieldMap1);
+		// }
+		// }
+		// });
+		////
+		//// // Thread thread1 = new Thread(new Runnable() {
+		//// //
+		//// // @Override
+		//// // public void run() {
+		//// // for (int i = 0; i < 100; i++) {
+		//// // Map<String, String> fieldMap = new HashMap<String, String>();
+		//// // fieldMap.put("wqwq" + i, "ynynyn" + i);
+		//// // IndexManager.getManager().createIndex("sdfas" + i, "book",
+		// fieldMap);
+		//// //
+		//// // Map<String, String> fieldMap1 = new HashMap<String, String>();
+		//// // fieldMap.put("ynynyn" + i, "wqwq" + i);
+		//// // IndexManager.getManager().createIndex("ddddd" + i, "book",
+		//// // fieldMap1);
+		//// // }
+		//// // }
+		//// // });
+		//// //
+		//// // Thread thread2 = new Thread(new Runnable() {
+		//// //
+		//// // @Override
+		//// // public void run() {
+		//// // for (int i = 0; i < 100; i++) {
+		//// // Map<String, String> fieldMap = new HashMap<String, String>();
+		//// // fieldMap.put("wqwq" + i, "ynynyn" + i);
+		//// // long start = System.currentTimeMillis();
+		//// // IndexManager.getManager().createIndex("sdfas" + i, "book",
+		// fieldMap);
+		//// // System.out.println(System.currentTimeMillis() - start);
+		//// //
+		//// // }
+		//// // }
+		//// // });
+		//// // thread.start();
+		//// // thread1.start();
+		//// // //
+		// thread.start();
+		List<Map<String, String>> list = IndexManager.getManager().searchIndex("大学",
+				new String[] { SearchEnum.intro.getSearchField(), SearchEnum.title.getSearchField() }, 11);
+		// // for (Map<String, String> map : list) {
+		// // System.out.println(map.keySet());
+		// // }
+		//
+		System.out.println(list.size());
+	}
 
 }
