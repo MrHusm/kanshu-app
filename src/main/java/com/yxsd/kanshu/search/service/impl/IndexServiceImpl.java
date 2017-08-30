@@ -14,12 +14,11 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.search.manager.IndexManager;
 import com.yxsd.kanshu.search.service.IndexService;
-import com.yxsd.kanshu.search.task.CreateIndexTask;
 
 @Service(value = "indexService")
 public class IndexServiceImpl implements IndexService {
 
-	private static final Logger logger = LoggerFactory.getLogger(CreateIndexTask.class);
+	private static final Logger logger = LoggerFactory.getLogger(IndexServiceImpl.class);
 
 	@Resource(name = "bookService")
 	private IBookService bookService;
