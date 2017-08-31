@@ -133,7 +133,7 @@ public class SearchController {
 		if (StringUtils.isBlank(pageNo)) {
 			pageNo = "1";
 		}
-		model.addAttribute("pageNo",pageNo);
+		model.addAttribute("pageNo",Integer.parseInt(pageNo));
 		try {
 			// 查询为空直接返回
 			if (StringUtils.isBlank(searchText)) {

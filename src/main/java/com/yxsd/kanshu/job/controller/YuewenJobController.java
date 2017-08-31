@@ -205,18 +205,20 @@ public class YuewenJobController extends BaseController {
 					cbids = tempList.toArray(new String[0]);
 					//判断是否拉取过
 					for (int i = 0; i < cbids.length; i++) {
-						logger.info("ifpullBook params:copyrightCode={},copyrightBookId={}", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
-								cbids[i]);
+						logger.info("ifpullBook params:copyrightCode={},copyrightBookId={}", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbids[i]);
 						PullBook pullBookFromDB = pullBookService.findUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
 								"copyrightBookId", cbids[i]);
 						if(pullBookFromDB != null){
+							logger.info("该书已经拉取过pullBook params:copyrightCode={},copyrightBookId={}", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbids[i]);
 							cbids[i] = "";
+						}else{
+							//设置图书正在拉取状态
+							pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbids[i], 3, null);
 						}
 					}
 
 					for (final String cbid : cbids) {
-						//设置图书正在拉取状态
-						pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbid, 3, null);
+						logger.info("开始拉取图书："+cbid);
 						pullBookPool.execute(new Runnable() {
 
 							@Override
@@ -1242,6 +1244,9 @@ public class YuewenJobController extends BaseController {
 		chapter.setVolumeId(volumeId);// 否	保存的卷id
 		chapter.setBookId(bookId);// 否	保存的作品id
 		chapter.setTitle(chapterInfoResp.getChaptertitle());// 是	章节名称
+		if(chapterInfoResp.getChaptersort() < 0){
+			chapterInfoResp.setChaptersort(0L);
+		}
 		String chapterSort = chapterInfoResp.getChaptersort().toString();
 		if(index != null){
 			logger.info("setChapter index={},chapterSort={}", index, chapterSort);

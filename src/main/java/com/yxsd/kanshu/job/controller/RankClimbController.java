@@ -138,9 +138,34 @@ public class RankClimbController extends BaseController {
                     //saveDrive(title,1,0);
                 }
             }
-
+            //起点女生网
+            String girlUrl = "http://www.qdmm.com/";
+            Document girlDoc = Jsoup.connect(girlUrl)
+                    .userAgent(USER_AGENT) // 设置 User-Agent
+                    .cookie("auth", "token") // 设置 cookie
+                    .timeout(10000)           // 设置连接超时时间
+                    .get();                 // 使用 POST 方法访问 URL
             //起点女生首页封推前4本
+            Element girlThumb = girlDoc.getElementById("thumb");
+            if(girlThumb != null){
+                Elements eleThumbBooks = girlThumb.children();
+                if(eleThumbBooks != null && eleThumbBooks.size() > 0){
+                    for(int i = 0; i < eleThumbBooks.size() - 1; i++){
+                        String title = eleThumbBooks.get(i).text().trim();
+                        logger.info("起点女生封推前4本书名："+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
             //起点女生首页编辑推荐，全部图书（需要注意，封面有7本；中间文字推有6本，最后还有2个小banner推荐）
+            Elements girlEditEles = girlDoc.select(".description");
+            if(girlEditEles != null && girlEditEles.size() > 0){
+                String title = girlEditEles.get(0).child(0).child(0).child(0).text();
+                logger.info("起点女生首页编辑推荐图片推荐书名："+ title);
+            }
+
+
             //起点女生周点击榜的10本书
             //起点女生新书推荐左侧的3本封面推荐
             //起点女生完本精选的5本封面推荐
