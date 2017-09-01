@@ -28,7 +28,7 @@
 </#if>
 <#if syn=='0'>
 </div>
-<div class="bookLoad" id="autopbn" curpage="${pageNo+1}" totalpage="${pageCount}" rel="/user/findBookAccountLog.go?userId=${userId?c}&page=${pageNo+1}&syn=1&bookId=${bookId?c}" style="display:none;"></div>
+<div class="bookLoad" id="autopbn" curpage="${pageNo+1}" totalpage="${pageCount}" rel="/user/findBookAccountLog.go?userId=${userId}&page=${pageNo+1}&syn=1&bookId=${bookId}" style="display:none;"></div>
 
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
