@@ -15,16 +15,16 @@
   <#list pageFinder.data as userAccountLog>
       <div class="rechargeList">
           <#if userAccountLog.type==1>
-            <div>支付宝充值${userAccountLog.unitMoney}钻&nbsp;&nbsp;|&nbsp;&nbsp;赠送${userAccountLog.unitVirtual}钻</div>
+            <div>支付宝充值${userAccountLog.unitMoney?c}钻&nbsp;&nbsp;|&nbsp;&nbsp;赠送${userAccountLog.unitVirtual?c}钻</div>
           </#if>
           <#if userAccountLog.type==2>
-              <div>微信充值${userAccountLog.unitMoney}钻&nbsp;&nbsp;|&nbsp;&nbsp;赠送${userAccountLog.unitVirtual}钻</div>
+              <div>微信充值${userAccountLog.unitMoney?c}钻&nbsp;&nbsp;|&nbsp;&nbsp;赠送${userAccountLog.unitVirtual?c}钻</div>
           </#if>
           <#if userAccountLog.type==11>
-              <div>客服赠送${userAccountLog.unitMoney+userAccountLog.unitVirtual}钻</div>
+              <div>客服赠送${userAccountLog.unitMoney?c+userAccountLog.unitVirtual?c}钻</div>
           </#if>
           <#if userAccountLog.type==12>
-              <div>签到赠送${userAccountLog.unitMoney+userAccountLog.unitVirtual}钻</div>
+              <div>签到赠送${userAccountLog.unitMoney?c+userAccountLog.unitVirtual?c}钻</div>
           </#if>
           <time class="rechargeTime">${userAccountLog.createDate?string("yyyy-MM-dd HH:mm:ss")}</time>
       </div>
@@ -32,7 +32,7 @@
 </#if>
 <#if syn=='0'>
 </div>
-<div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/user/findUserAccountLog.go?userId=${userId}&page=${pageFinder.pageNo+1}&syn=1&type=${type}" style="display:none;"></div>
+<div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/user/findUserAccountLog.go?userId=${userId?c}&page=${pageFinder.pageNo+1}&syn=1&type=${type}" style="display:none;"></div>
 
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>

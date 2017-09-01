@@ -83,8 +83,8 @@ public class BookController extends BaseController {
         String channel = request.getParameter("channel");
         String userId = request.getParameter("userId");
 
-        if(StringUtils.isBlank(bookId)){
-            logger.error("BookController_bookDetail:bookId为空");
+        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(userId)){
+            logger.error("BookController_bookDetail:bookId或者userId为空");
             return "error";
         }
 

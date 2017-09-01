@@ -15,7 +15,7 @@ ${userAccount.money}-${userAccount.virtualMoney}
 <#if vips??>
     <ul>
         <#list vips as vip>
-            <li><input type="radio" name="vipItem" value="${vip.vipId}"/>${vip.days}-${vip.price}-${vip.discountPrice}-${vip.virtualMoney}</li>
+            <li><input type="radio" name="vipItem" value="${vip.vipId?c}"/>${vip.days}-${vip.price}-${vip.discountPrice}-${vip.virtualMoney}</li>
         </#list>
     </ul>
 </#if>

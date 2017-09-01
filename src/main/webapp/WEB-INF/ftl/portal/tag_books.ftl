@@ -13,7 +13,7 @@
 </#if>
     <#if pageFinder??>
         <#list pageFinder.data as book>
-            <section class="bookListBox" onclick="bookInfo(${book.bookId},'${book.title}')">
+            <section class="bookListBox" onclick="bookInfo(${book.bookId?c},'${book.title}')">
                 <div class="bookListImg">
                     <img data-echo="${book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                 </div>

@@ -20,8 +20,8 @@
             </ul>
         </div>
         <div class="readingBtn">
-            <input type="button" onclick="window.JSHandle.openRead(${book.bookId},'${book.title}','${book.coverUrl}',${maxChapterIndex})" value="<#if readBtn == 0>免费试读<#else>阅读</#if>" class="readingBtnPub readingActive">
-            <input type="button" onclick="window.JSHandle.addToShelf(${book.bookId},'${book.title}','${book.coverUrl}',${maxChapterIndex})" value="收藏" class="readingBtnPub">
+            <input type="button" onclick="window.JSHandle.openRead(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="<#if readBtn == 0>免费试读<#else>阅读</#if>" class="readingBtnPub readingActive">
+            <input type="button" onclick="window.JSHandle.addToShelf(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="收藏" class="readingBtnPub">
         </div>
         <div class="readingCont">
             <p class="readingContP">
@@ -41,7 +41,7 @@
 
         </div>
         <div class="radingBottonBox">
-            <div class="readingBotL" onclick="window.JSHandle.openCatalog(${book.bookId})">
+            <div class="readingBotL" onclick="window.JSHandle.openCatalog(${book.bookId?c})">
                 <img src="/img/icon/menuIcon.png" alt="" class="readingBotLImg" />
                 <span>目录</span>
             </div>
@@ -55,7 +55,7 @@
     <div class="h6"><i class="h6Icon"></i>本书作者还写了</div>
     <#list authorBooks as authorBook >
         <#if authorBook.bookId != book.bookId>
-            <section class="bookListBox" onclick="bookInfo(${authorBook.bookId},'${authorBook.title}')">
+            <section class="bookListBox" onclick="bookInfo(${authorBook.bookId?c},'${authorBook.title}')">
                 <div class="bookListImg">
                     <img data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                 </div>
@@ -87,7 +87,7 @@
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i>看了本书的用户还看了</div>
     <#list relatedBooks as driveBook>
-        <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
+        <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId?c},'${driveBook.book.title}')">
             <div class="bookListImg">
                 <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </div>

@@ -10,7 +10,7 @@
 </head>
 <body>
 <form id="form" action="/user/updateNickNameByUid.go" method="post">
-    <input type="hidden" name="userId" id="userId" value="${user.userId}"/>
+    <input type="hidden" name="userId" id="userId" value="${user.userId?c}"/>
     <input type="hidden" name="oldName" id="oldName" value="${user.nickName}"/>
 
     <input type="text" name="nickName" id="nickName" value="${user.nickName}"/>

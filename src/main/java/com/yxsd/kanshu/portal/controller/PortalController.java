@@ -207,7 +207,7 @@ public class PortalController extends BaseController{
 
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("type",type);
-        return "/portal/rankList";
+        return "/portal/rank_list";
     }
 
 }

@@ -13,7 +13,7 @@
         <#list records as consume>
             <div class="rechargeList">
                 <div>${consume.title}</div>
-                <div class="rechargeTime">${consume.charge}钻&nbsp;|&nbsp;<time>${consume.createDate}</time></div>
+                <div class="rechargeTime">${consume.charge?c}钻&nbsp;|&nbsp;<time>${consume.createDate}</time></div>
             </div>
         </#list>
     </div>

@@ -22,13 +22,13 @@
     <#list data as result>
         <div class="rechargeList">
             <div>${result.name}</div>
-            <div class="rechargeTime">${result.charge}钻&nbsp;|&nbsp;<time>${result.createDate?string("yyyy-MM-dd HH:mm:ss")}</time></div>
+            <div class="rechargeTime">${result.charge?c}钻&nbsp;|&nbsp;<time>${result.createDate?string("yyyy-MM-dd HH:mm:ss")}</time></div>
         </div>
     </#list>
 </#if>
 <#if syn=='0'>
 </div>
-<div class="bookLoad" id="autopbn" curpage="${pageNo+1}" totalpage="${pageCount}" rel="/user/findBookAccountLog.go?userId=${userId}&page=${pageNo+1}&syn=1&bookId=${bookId}" style="display:none;"></div>
+<div class="bookLoad" id="autopbn" curpage="${pageNo+1}" totalpage="${pageCount}" rel="/user/findBookAccountLog.go?userId=${userId?c}&page=${pageNo+1}&syn=1&bookId=${bookId?c}" style="display:none;"></div>
 
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>

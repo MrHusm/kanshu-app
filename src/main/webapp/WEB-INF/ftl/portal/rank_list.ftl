@@ -12,14 +12,14 @@
     <script src="/js/jquery.min.js"></script>
 </head>
 <body>
-    <#if type == '1'>
+    <#if type == '9'>
         <div class="freeTxt">百本图书限时免费看！每日持续更新</div>
     </#if>
     <article class="pageLoad">
 </#if>
         <#if pageFinder.data??>
             <#list pageFinder.data as driveBook>
-                <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
+                <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId?c},'${driveBook.book.title}')">
                     <div class="bookListImg">
                         <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                     </div>

@@ -34,7 +34,7 @@
     //成功函数
     function isSuccess() {
         num++;
-        var url = '/book/ajaxBuyResponse??userId=${userId}&payType=${payType}&type=${type}&param=${param}&WIDout_trade_no=${WIDout_trade_no}";
+        var url = '/book/ajaxBuyResponse??userId=${userId?c}&payType=${payType}&type=${type}&param=${param}&WIDout_trade_no=${WIDout_trade_no}";
         $.ajax({
             url: url,
             type: 'GET',

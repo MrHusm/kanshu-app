@@ -12,7 +12,7 @@
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i>本书作者还写了</div>
     <#list authorBooks as authorBook >
-        <section class="bookListBox" onclick="bookInfo(${authorBook.bookId},'${authorBook.title}')">
+        <section class="bookListBox" onclick="bookInfo(${authorBook.bookId?c},'${authorBook.title}')">
             <div class="bookListImg">
                 <img data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </div>
@@ -43,7 +43,7 @@
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i>看了本书的用户还看了</div>
     <#list relatedBooks as driveBook>
-        <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
+        <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId?c},'${driveBook.book.title}')">
             <div class="bookListImg">
                 <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </div>
