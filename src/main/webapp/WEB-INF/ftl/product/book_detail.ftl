@@ -49,42 +49,48 @@
         </div>
     </div>
 </figure>
-<#if authorBooks??>
+<#if (authorBooks?size>1)>
 <div class="hr"></div>
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i>本书作者还写了</div>
     <#list authorBooks as authorBook >
-        <section class="bookListBox" onclick="bookInfo(${authorBook.bookId},'${authorBook.title}')">
-            <img class="bookListImg" data-echo="${authorBook.coverUrl}" src="/img/other/book7.jpg">
-            <div class="bookList">
-                <div class="bookName">${authorBook.title}</div>
-                <div class="bookInfo">
-                    <#if authorBook.intro?length gt 40>
-                        ${authorBook.intro?substring(0,40)}...
-                    <#else>
-                        ${authorBook.intro}
-                    </#if>
+        <#if authorBook.bookId != book.bookId>
+            <section class="bookListBox" onclick="bookInfo(${authorBook.bookId},'${authorBook.title}')">
+                <div class="bookListImg">
+                    <img data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                 </div>
-                <div class="authorBox">
-                    <div class="authorNmae">${authorBook.authorPenname}</div>
-                    <div class="bookGenre">
-                        <div class="bookGenrePublic">${authorBook.categorySecName}</div>
-                        <div class="bookGenrePublic bookGenrePublicStyle">${authorBook.categoryThrName}</div>
+                <div class="bookList">
+                    <div class="bookName">${authorBook.title}</div>
+                    <div class="bookInfo">
+                        <#if authorBook.intro?length gt 40>
+                        ${authorBook.intro?substring(0,40)}...
+                        <#else>
+                        ${authorBook.intro}
+                        </#if>
+                    </div>
+                    <div class="authorBox">
+                        <div class="authorNmae">${authorBook.authorPenname}</div>
+                        <div class="bookGenre">
+                            <div class="bookGenrePublic">${authorBook.categorySecName}</div>
+                            <div class="bookGenrePublic bookGenrePublicStyle">${authorBook.categoryThrName}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </#if>
     </#list>
 </div>
 </#if>
 
-<#if driveBooks??>
+<#if relatedBooks??>
 <div class="hr"></div>
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i>看了本书的用户还看了</div>
     <#list relatedBooks as driveBook>
         <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
-            <img class="bookListImg" data-echo="${driveBook.book.coverUrl}" src="/img/other/book7.jpg">
+            <div class="bookListImg">
+                <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+            </div>
             <div class="bookList">
                 <div class="bookName">${driveBook.book.title}</div>
                 <div class="bookInfo">

@@ -16,7 +16,9 @@
 	<#if searchBooks??>
 		<#list searchBooks as book>
             <section class="bookListBox" onclick="bookInfo(${book.bookId},'${book.title}')">
-                <img class="bookListImg" data-echo="${book.coverUrl}" src="/img/other/book7.jpg" onerror="javascript:this.src='/img/other/book7.jpg';">
+                <div class="bookListImg">
+                    <img data-echo="${book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+                </div>
                 <div class="bookList">
                     <div class="bookName">${book.title}</div>
                     <div class="bookInfo">

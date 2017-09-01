@@ -144,10 +144,6 @@ public class BookController extends BaseController {
             Collections.shuffle(driveBooks);
         }
 
-
-        if(CollectionUtils.isNotEmpty(driveBooks) && driveBooks.size() > 10){
-            driveBooks = driveBooks.subList(0,10);
-        }
         List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
 
         if(CollectionUtils.isNotEmpty(chapters)){

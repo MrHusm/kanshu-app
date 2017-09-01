@@ -34,7 +34,9 @@
         <#if pageFinder.data??>
             <#list pageFinder.data as driveBook>
                 <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
-                    <img class="bookListImg" data-echo="${driveBook.book.coverUrl}" src="/img/other/book7.jpg" onerror="javascript:this.src='/img/other/book7.jpg';">
+                    <div class="bookListImg">
+                        <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+                    </div>
                     <div class="bookList">
                         <div class="bookName">${driveBook.book.title}</div>
                         <div class="bookInfo">

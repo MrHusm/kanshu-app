@@ -92,6 +92,64 @@ public class YuewenJobController extends BaseController {
 	@Resource
 	private IAuthorService authorService;
 
+	@RequestMapping(value = "/getAllBooks")
+	@ResponseBody
+	public void getAllBooks(HttpServletRequest request, HttpServletResponse response){
+		String url = "http://cp.book.qq.com/ServiceBus.do?service=CpNovel&action=booklist&appKey=b7f7a2f01203&appToken=3b516aebe091&pageNo=1&pageSize=100000";
+
+		String result = HttpUtils.getContent(url, "UTF-8");
+
+		Object[] cbids = JSON.parseObject(result).getJSONObject("result").getJSONArray("cbids").toArray();
+		try{
+			File file1 =new File("/var/www/1.txt");
+			File file2 =new File("/var/www/2.txt");
+			File file3 =new File("/var/www/3.txt");
+
+			if(!file1.exists()){
+				file1.createNewFile();
+			}
+			if(!file2.exists()){
+				file2.createNewFile();
+			}
+			if(!file3.exists()){
+				file3.createNewFile();
+			}
+
+			FileWriter fileWritter1 = new FileWriter(file1.getAbsolutePath(),true);
+			BufferedWriter bufferWritter1 = new BufferedWriter(fileWritter1);
+			FileWriter fileWritter2 = new FileWriter(file2.getAbsolutePath(),true);
+			BufferedWriter bufferWritter2 = new BufferedWriter(fileWritter2);
+			FileWriter fileWritter3 = new FileWriter(file3.getAbsolutePath(),true);
+			BufferedWriter bufferWritter3 = new BufferedWriter(fileWritter3);
+
+			for(int i = 0; i < cbids.length; i++){
+				if(i < 20000){
+					bufferWritter1.write(String.valueOf(cbids[i]));
+					bufferWritter1.newLine();
+				}else if(i < 40000){
+					bufferWritter2.write(String.valueOf(cbids[i]));
+					bufferWritter2.newLine();
+				}else{
+					bufferWritter3.write(String.valueOf(cbids[i]));
+					bufferWritter3.newLine();
+				}
+
+
+			}
+			bufferWritter1.flush();
+			bufferWritter2.flush();
+			bufferWritter3.flush();
+			bufferWritter1.close();
+			bufferWritter2.close();
+			bufferWritter3.close();
+			fileWritter1.close();
+			fileWritter2.close();
+			fileWritter3.close();
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+	}
+
 
 	/**
 	 *
@@ -160,6 +218,85 @@ public class YuewenJobController extends BaseController {
 	}
 
 	/**
+	 * 单线程拉取
+	 * @param request
+	 */
+	@RequestMapping(value = "/pullBooksOne")
+	@ResponseBody
+	public void pullBooksOne(HttpServletRequest request) {
+		logger.info("yuewen pullBooks begin!");
+		String appKey = ConfigPropertieUtils.getString(YUEWEN_APPKEY);
+		String token = getYueWenToken();
+		Integer type = Integer.parseInt(request.getParameter("type"));
+
+		File file = new File("/var/www/"+type+".txt");
+		BufferedReader reader = null;
+		List<String> cbids = new ArrayList<String>();
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			String cbid = null;
+			while ((cbid = reader.readLine()) != null) {
+				if(StringUtils.isNotBlank(cbid)){
+					cbids.add(cbid.trim());
+				}
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e1) {
+				}
+			}
+		}
+
+		for (final String cbid : cbids) {
+			logger.info("开始拉取图书："+cbid);
+			try {
+				PullBook pullBookFromDB = pullBookService.findUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+						"copyrightBookId", cbid);
+				if(pullBookFromDB != null){
+					logger.info("该书已经拉取过pullBook params:copyrightCode={},copyrightBookId={}", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbid);
+					continue;
+				}
+
+				//调用阅文接口获取书籍信息并保存到数据库
+				BookInfoResp bookInfoResp = getBookByYuewen(cbid);
+				if(bookInfoResp != null) {
+					//封装图书数据
+					Book book = setBook(bookInfoResp);
+					//保存图书
+					bookService.save(book);
+					//创建搜索索引
+					//IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+					//调用阅文获取书籍卷列表
+					List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
+					if (volumeInfoResps != null) {
+						if (volumeInfoResps.size() > 0) {
+							// 有卷的信息：调用卷的基本信息，获取卷的章节列表，章节的基本信息，章节内容
+							addChapterByVolume(volumeInfoResps, book.getBookId(), cbid);
+						} else {
+							// 没有卷的信息：调用获取书的所有章节列表，章节的基本信息，章节内容
+							addChapterByBook(book.getBookId(), cbid);
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				int pullStatus = 0;
+
+				String pullFailureCause = "拉取异常：" + ExceptionUtils.getFullStackTrace(e);
+				pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+						cbid, pullStatus, pullFailureCause);
+			}
+		}
+		logger.info("yuewen pullBooks end!");
+	}
+
+
+	/**
 	 *
 	 * @Title: pullBooks
 	 * @Description: 拉取图书
@@ -195,6 +332,14 @@ public class YuewenJobController extends BaseController {
 						//创建线程池
 						pullBookPool = new ThreadPoolExecutor(COREPOOL_SIZE+20, COREPOOL_SIZE+20, THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS,
 								new LinkedBlockingQueue<Runnable>(THREAD_POOL_QUEUE_SIZE + 100), new CallerRunsPolicy());
+					}else{
+						logger.info("线程池完成的任务数量："+pullBookPool.getCompletedTaskCount()+",队列中的数量："+pullBookPool.getQueue().size());
+						if(pullBookPool.getQueue().isEmpty()){
+							logger.info("开始新的调用拉取");
+						}else{
+							logger.info("等待上一轮拉取结束");
+							return;
+						}
 					}
 					List<String> tempList = new ArrayList<String>();
 					for (String cbid : cbids) {

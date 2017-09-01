@@ -21,7 +21,7 @@
             <#list pageFinder.data as driveBook>
                 <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId},'${driveBook.book.title}')">
                     <div class="bookListImg">
-                        <img width="100%" height="100%" src="${driveBook.book.coverUrl}">
+                        <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                     </div>
                     <div class="bookList">
                         <div class="bookName">${driveBook.book.title}</div>
@@ -47,15 +47,23 @@
 <#if syn=='0'>
     </article>
     <div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/rankList.go?page=${pageFinder.pageNo+1}&syn=1&type=${type}" style="display:none;"></div>
-
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
+<script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
     function bookInfo(bookId,title) {
         var url = "/book/bookDetail.go?bookId="+bookId;
         window.JSHandle.goToHtml(url,title,1,1);
     }
 </script>
+</#if>
+<script type="application/javascript">
+    Echo.init({
+        offset: 0,
+        throttle: 0
+    });
+</script>
+<#if syn=='0'>
 </body>
 </html>
 </#if>
