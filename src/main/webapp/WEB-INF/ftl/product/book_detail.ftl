@@ -133,5 +133,6 @@
         throttle: 0
     });
 </script>
+<script type="text/javascript" src="/book/statisBookExpand.go?bookId=${book.bookId?c}&type=1"></script>
 </body>
 </html>

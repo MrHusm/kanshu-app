@@ -168,7 +168,7 @@ var Lazy = {
     var e = false;
     window.onscroll = function() {
         var j = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
-        b = b.replace(/&page=\d+/, "&page=" + h);
+        b = b.replace(/page=\d+/, "page=" + h);
         var i = "is_first_catelist_" + window.location.href;
         if (j + document.documentElement.clientHeight + 500 >= document.documentElement.scrollHeight && !d) {
             c.show();

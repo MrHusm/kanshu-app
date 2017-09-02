@@ -46,7 +46,7 @@
 	</#if>
 <#if syn=='0'>
     </article>
-    <div class="bookLoad" id="autopbn" curpage="${pageNo+1}" totalpage="100" rel="/search/search.go?pageNo=${pageNo+1}&searchText=${searchText}&syn=1" style="display:none;"></div>
+    <div class="bookLoad" id="autopbn" curpage="${page+1}" totalpage="100" rel="/search/search.go?page=${page+1}&searchText=${searchText}&syn=1" style="display:none;"></div>
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
 <script type="text/javascript" src="/js/echo.min.js"></script>

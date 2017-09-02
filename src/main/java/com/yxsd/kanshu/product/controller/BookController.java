@@ -1,6 +1,8 @@
 package com.yxsd.kanshu.product.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.controller.BaseController;
@@ -12,7 +14,9 @@ import com.yxsd.kanshu.pay.service.IAlipayResponseService;
 import com.yxsd.kanshu.portal.model.DriveBook;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
 import com.yxsd.kanshu.product.model.Book;
+import com.yxsd.kanshu.product.model.BookExpand;
 import com.yxsd.kanshu.product.model.Chapter;
+import com.yxsd.kanshu.product.service.IBookExpandService;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.ucenter.model.User;
@@ -32,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -46,6 +51,9 @@ public class BookController extends BaseController {
 
     @Resource(name="bookService")
     IBookService bookService;
+
+    @Resource(name="bookExpandService")
+    IBookExpandService bookExpandService;
 
     @Resource(name="userService")
     IUserService userService;
@@ -87,27 +95,33 @@ public class BookController extends BaseController {
             logger.error("BookController_bookDetail:bookId或者userId为空");
             return "error";
         }
+        Book book = this.bookService.getBookById(Long.parseLong(bookId));
 
         //阅读按钮标识 0：免费试读 1：阅读
         int readBtn = 0;
-        User user = this.userService.getUserByUserId(Long.parseLong(userId));
-        if(user.isVip()){
-            //VIP用户
+        if(book.getIsFree() == 0) {
+            //免费图书
             readBtn = 1;
         }else{
-            DriveBook driveBook = driveBookService.getDriveBookByCondition(1,Long.parseLong(bookId));
-            if(driveBook != null){
-                //限免图书
+            User user = this.userService.getUserByUserId(Long.parseLong(userId));
+            if(user.isVip()){
+                //VIP用户
                 readBtn = 1;
             }else{
-                UserPayBook userPayBook = this.userPayBookService.findUniqueByParams("userId",userId,"bookId",bookId,"type",2);
-                if(userPayBook != null){
-                    //全本购买过
+                DriveBook driveBook = driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId));
+                if(driveBook != null){
+                    //限免图书
                     readBtn = 1;
+                }else{
+                    UserPayBook userPayBook = this.userPayBookService.findUniqueByParams("userId",userId,"bookId",bookId,"type",2);
+                    if(userPayBook != null){
+                        //全本购买过
+                        readBtn = 1;
+                    }
                 }
             }
         }
-        Book book = this.bookService.getBookById(Long.parseLong(bookId));
+
         String tag = book.getTag();
         List<String> tags = new ArrayList<String>();
         if(StringUtils.isNotBlank(tag)){
@@ -155,6 +169,58 @@ public class BookController extends BaseController {
         model.addAttribute("readBtn",readBtn);
         model.addAttribute("book",book);
         return "/product/book_detail";
+    }
+
+    /**
+     * 图书数据统计
+     * type 1:点击量 2：销量
+     * @param response
+     * @param request
+     */
+    @RequestMapping("statisBookExpand")
+    public void statisBookExpand(HttpServletResponse response, HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String type = request.getParameter("type");
+        String bookId = request.getParameter("bookId");
+
+        if(StringUtils.isBlank(type) && StringUtils.isBlank(bookId)){
+            logger.error("BookController_statisBookExpand:type或bookId为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+
+        try{
+            BookExpand bookExpand = this.bookExpandService.findUniqueByParams("bookId",bookId);
+            if(bookExpand == null){
+                Book book = this.bookService.getBookById(Long.parseLong(bookId));
+                bookExpand = new BookExpand();
+                bookExpand.setBookId(Long.parseLong(bookId));
+                bookExpand.setBookName(book.getTitle());
+                if("1".equals(type)){
+                    bookExpand.setClickNum(1L);
+                }else if("2".equals(type)){
+                    bookExpand.setSaleNum(1L);
+                }
+                bookExpand.setCreateDate(new Date());
+                bookExpand.setUpdateDate(new Date());
+                bookExpandService.save(bookExpand);
+            }else{
+                if("1".equals(type)){
+                    bookExpand.setClickNum((bookExpand.getClickNum() ==  null ? 0 : bookExpand.getClickNum()) + 1);
+                }else if("2".equals(type)){
+                    bookExpand.setSaleNum((bookExpand.getSaleNum() ==  null ? 0 : bookExpand.getSaleNum()) + 1);
+                }
+                bookExpand.setUpdateDate(new Date());
+                bookExpandService.update(bookExpand);
+            }
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
     }
 
     /**
@@ -212,10 +278,14 @@ public class BookController extends BaseController {
         }
         try{
             User user = this.userService.getUserByUserId(Long.parseLong(userId));
+
+            //获取图书信息
+            Book book = this.bookService.getBookById(Long.parseLong(bookId));
+
             //获取图书所有章节
             List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
             //获取限免图书
-            DriveBook driveBook = this.driveBookService.getDriveBookByCondition(1,Long.parseLong(bookId));
+            DriveBook driveBook = this.driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId));
 
             //批量或整本购买的图书
             List<UserPayBook> userPayBooks = this.userPayBookService.findListByParams("userId",userId,"bookId",bookId);
@@ -239,6 +309,12 @@ public class BookController extends BaseController {
                 chapterMap.put("price",chapter.getPrice());
                 chapterMap.put("idx",chapter.getIdx());
                 chapterMap.put("lock",true);
+                if(book.getIsFree() == 0){
+                    //免费图书
+                    chapter.setLock(false);
+                    chapterMap.put("lock",false);
+                    continue;
+                }
                 if(driveBook != null) {
                     //限免图书 解锁
                     chapter.setLock(false);
@@ -316,7 +392,14 @@ public class BookController extends BaseController {
             return;
         }
         try{
+            Book book = this.bookService.getBookById(Long.parseLong(bookId));
+
             Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId),1,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
+
+            if(book.getIsFree() == 0){
+                //免费图书
+                chapter.setLock(false);
+            }
 
             if(chapter.getIsFree() == 0){
                 //免费章节
@@ -324,7 +407,7 @@ public class BookController extends BaseController {
             }
             if(chapter.isLock()){
                 //获取限免图书
-                DriveBook driveBook = this.driveBookService.getDriveBookByCondition(1,Long.parseLong(bookId));
+                DriveBook driveBook = this.driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId));
                 if(driveBook != null) {
                     //限免图书 解锁
                     chapter.setLock(false);
@@ -378,7 +461,6 @@ public class BookController extends BaseController {
             //收费章节显示用户账号信息
             if(chapter.isLock()){
                 UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
-                Book book = this.bookService.getBookById(Long.parseLong(bookId));
 
                 chapter.setContent("");
                 //计费方式 1:按章 2:按本
@@ -805,20 +887,32 @@ public class BookController extends BaseController {
     public void getUpdatedChapterCount(HttpServletResponse response, HttpServletRequest request) {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String bookId = request.getParameter("bookId");
-        String index = request.getParameter("index");
+        String param = request.getParameter("param");
 
-        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(index)){
-            logger.error("BookController_getUpdateChapterCount:bookId或index为空");
+        if(StringUtils.isBlank(param)){
+            logger.error("BookController_getUpdateChapterCount:param为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
         }
         try{
-            int num = (int)(Long.parseLong(bookId) % Constants.CHAPTR_TABLE_NUM);
-            int count = this.chapterService.updatedChapterCount(Long.parseLong(bookId),num,Integer.parseInt(index));
+            List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+            param = URLDecoder.decode(param,"UTF-8");
+            JSONArray jsonArray = JSONObject.parseArray(param);
+            for(int i = 0 , len = jsonArray.size(); i< len ;i++) {
+                Map map = (Map) jsonArray.get(i);
+                Long bookId = Long.parseLong(map.get("bookId").toString());
+                int index = Integer.parseInt(map.get("index").toString());
+                int num = (int)(bookId % Constants.CHAPTR_TABLE_NUM);
+                int count = this.chapterService.updatedChapterCount(bookId,num,index);
 
-            sender.put("count",count);
+                Map<String,Object> data = new HashMap<String,Object>();
+                data.put("bookId",bookId);
+                data.put("count",count);
+                result.add(data);
+            }
+
+            sender.put("result",result);
             sender.success(response);
         }catch (Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());

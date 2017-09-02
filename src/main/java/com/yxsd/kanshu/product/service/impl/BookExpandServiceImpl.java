@@ -5,6 +5,7 @@ import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
 import com.yxsd.kanshu.product.dao.IBookExpandDao;
 import com.yxsd.kanshu.product.model.BookExpand;
 import com.yxsd.kanshu.product.service.IBookExpandService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -17,6 +18,12 @@ public class BookExpandServiceImpl extends BaseServiceImpl<BookExpand, Long> imp
 
     @Resource(name="bookExpandDao")
     private IBookExpandDao bookExpandDao;
+
+    @Resource(name = "masterRedisTemplate")
+    private RedisTemplate<String,BookExpand> masterRedisTemplate;
+
+    @Resource(name = "slaveRedisTemplate")
+    private RedisTemplate<String,BookExpand> slaveRedisTemplate;
 
     @Override
     public IBaseDao<BookExpand> getBaseDao() {

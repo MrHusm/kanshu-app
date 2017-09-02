@@ -125,15 +125,15 @@ public class SearchController {
 		// 入参
 		String searchText = request.getParameter("searchText");
 		String field = request.getParameter("fields");
-		String pageNo = request.getParameter("pageNo");
+		String page = request.getParameter("page");
 		String syn = request.getParameter("syn") == null ? "0" : request.getParameter("syn");
 		model.addAttribute("syn", syn);
 
 		// 未传page默认查首页
-		if (StringUtils.isBlank(pageNo)) {
-			pageNo = "1";
+		if (StringUtils.isBlank(page)) {
+			page = "1";
 		}
-		model.addAttribute("pageNo",Integer.parseInt(pageNo));
+		model.addAttribute("page",Integer.parseInt(page));
 		try {
 			// 查询为空直接返回
 			if (StringUtils.isBlank(searchText)) {
@@ -144,7 +144,7 @@ public class SearchController {
 				searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
 			}
 			model.addAttribute("searchText",searchText);
-			logger.info("search被调用，条件为：" + searchText);
+			logger.info("search被调用，条件为page:" + page + ",searchText:" + searchText);
 
 			String[] fields = null;
 			if (!StringUtils.isBlank(field)) {
@@ -157,7 +157,7 @@ public class SearchController {
 				}
 			}
 			List<Map<String, String>> maps = IndexManager.getManager().searchIndex(searchText.trim(), fields,
-					Integer.parseInt(pageNo));
+					Integer.parseInt(page));
 
 			if (maps != null && maps.size() > 0) {
 				List<Book> books = new ArrayList<Book>();
