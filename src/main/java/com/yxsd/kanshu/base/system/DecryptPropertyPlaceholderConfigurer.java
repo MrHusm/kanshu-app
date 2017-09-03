@@ -1,17 +1,13 @@
 package com.yxsd.kanshu.base.system;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Properties;
-
 import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.util.PropertiesPersister;
+
+import java.io.*;
+import java.util.Properties;
 
 /**
  * 加载资源文件

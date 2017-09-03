@@ -261,26 +261,498 @@ public class RankClimbController extends BaseController {
     @RequestMapping("climbSecDrive")
     public void climbSecDrive() {
         logger.info("开始爬虫首页二次元驱动爬虫");
-//        二次元
-//        http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0
-//        这个链接里选中二次元的分类，按照人气值排序
-//        https://www.readnovel.com/all?pageNum=1&pageSize=10&gender=2&catId=30055&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0
-//        这个链接N次元分类
-//        http://chuangshi.qq.com/bk/2cy/so3/
-//        这个链接二次元分类
         try {
+            //        http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0
+            //        这个链接里选中二次元的分类，按照人气值排序
             Document doc = Jsoup.connect("http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0")
                     .userAgent(USER_AGENT) // 设置 User-Agent
                     .cookie("auth", "token") // 设置 cookie
                     .timeout(10000)           // 设置连接超时时间
                     .get();                 // 使用 POST 方法访问 URL
 
+            Elements eles = doc.getElementsByAttributeValue("data-eid","qd_B58");
+            if(eles != null && eles.size() > 0){
+                for(Element ele : eles){
+                    String title = ele.text();
+                    logger.info("二次元第一个链接20本书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+//        https://www.readnovel.com/all?pageNum=1&pageSize=10&gender=2&catId=30055&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0
+//        这个链接N次元分类
+            Document doc2 = Jsoup.connect("https://www.readnovel.com/all?pageNum=1&pageSize=10&gender=2&catId=30055&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0")
+                    .userAgent(USER_AGENT) // 设置 User-Agent
+                    .cookie("auth", "token") // 设置 cookie
+                    .timeout(10000)           // 设置连接超时时间
+                    .get();                 // 使用 POST 方法访问 URL
+
+            Elements eles2 = doc2.select(".book-info");
+            if(eles2 != null && eles2.size() > 0){
+                for(Element ele : eles2){
+                    String title = ele.child(0).child(0).text();
+                    logger.info("二次元第二个链接10本书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+            //        http://chuangshi.qq.com/bk/2cy/so3/
+            //        这个链接二次元分类
+            String baseUrl = "http://chuangshi.qq.com/bk/2cy/so3/p/%d.html";
+            for(int i = 1; i < 5; i++){
+                Document doc3 = Jsoup.connect(String.format(baseUrl,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+
+                Elements eles3 = doc3.select(".green");
+                if(eles2 != null && eles2.size() > 0){
+                    for(Element ele : eles3){
+                        String title = ele.text();
+                        logger.info("二次元第三个链接100本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
         }catch(Exception e){
             e.printStackTrace();
         }
         logger.info("结束爬虫首页二次元驱动爬虫");
     }
 
+
+    /**
+     * 首页男生驱动爬虫
+     */
+    @RequestMapping("climbBoyDrive")
+    public void climbBoyDrive() {
+        logger.info("开始爬虫首页男生驱动爬虫");
+        try {
+//            http://a.qidian.com/?page=1&style=1&pageSize=20&siteid=1&hiddenField=0
+//            这个链接选择男生→全部，按照人气值排序
+            String baseUrl = "http://a.qidian.com/?page=1&style=1&pageSize=20&siteid=1&hiddenField=0&page=%d";
+            for(int i = 1; i < 20; i++){
+                Document doc = Jsoup.connect(String.format(baseUrl,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_B58");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("首页男生驱动20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 首页女生驱动爬虫
+     */
+    @RequestMapping("climbGirlDrive")
+    public void climbGirlDrive() {
+        logger.info("开始爬虫首页女生驱动爬虫");
+        try {
+//            http://a.qidian.com/mm?orderId=&style=1&pageSize=20&siteid=0&hiddenField=0&page=1
+//            这个链接选择女生→全部，按照人气值排序
+            String baseUrl = "http://a.qidian.com/mm?orderId=&style=1&pageSize=20&siteid=0&hiddenField=0&page=%d";
+            for(int i = 1; i < 20; i++){
+                Document doc = Jsoup.connect(String.format(baseUrl,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_B58");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("首页女生驱动20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 全站畅销驱动爬虫
+     */
+    @RequestMapping("climbSaleDrive")
+    public void climbSaleDrive() {
+        logger.info("开始爬虫全站畅销驱动爬虫");
+        try {
+//            http://r.qidian.com/yuepiao?style=1
+//            http://r.qidian.com/mm/yuepiao?style=1
+//            http://r.qidian.com/vipreward?style=1
+//            http://r.qidian.com/mm/subscr?style=1
+//            https://www.readnovel.com/rank/hotsales?period=2&pageNum=1
+            String baseUrl1 = "http://r.qidian.com/yuepiao?style=1&page=%d";
+            for(int i = 1; i < 11; i++){
+                Document doc = Jsoup.connect(String.format(baseUrl1,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("全站畅销驱动第一个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+            String baseUrl2 = "http://r.qidian.com/mm/yuepiao?style=1&page=%d";
+            for(int i = 1; i < 11; i++){
+                Document doc = Jsoup.connect(String.format(baseUrl2,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("全站畅销驱动第二个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+            String baseUrl3 = "http://r.qidian.com/vipreward?style=1&page=%d";
+            for(int i = 1; i < 6; i++){
+                Document doc = Jsoup.connect(String.format(baseUrl3,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("全站畅销驱动第三个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+            String baseUrl4 = "http://r.qidian.com/mm/subscr?style=1&page=%d";
+            for(int i = 1; i < 6; i++){
+                Document doc = Jsoup.connect(String.format(baseUrl4,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("全站畅销驱动第四个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+            String baseUrl5 = "https://www.readnovel.com/rank/hotsales?period=2&pageNum=%d";
+            for(int i = 1; i < 6; i++){
+                Document doc = Jsoup.connect(String.format(baseUrl5,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("全站畅销驱动第五个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 完结精选驱动爬虫
+     */
+    @RequestMapping("climbFullDrive")
+    public void climbFullDrive() {
+        logger.info("开始爬虫全站畅销驱动爬虫");
+        try {
+//            http://r.qidian.com/fin?style=1
+//            http://fin.qidian.com/mm
+//            https://www.readnovel.com/finish
+            String baseUrl1 = "http://r.qidian.com/fin?style=1&page=%d";
+            for (int i = 1; i < 11; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl1,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("完结精选驱动第一个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+            String baseUrl2 = "http://fin.qidian.com/mm?action=hidden&orderId=&style=1&pageSize=20&siteid=0&hiddenField=2&page=%d";
+            for (int i = 1; i < 11; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl2,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_B58");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("完结精选驱动第二个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+            String baseUrl3 = "https://www.readnovel.com/finish?pageSize=10&gender=2&catId=-1&isFinish=1&isVip=-1&size=-1&updT=-1&orderBy=0&pageNum=%d";
+            for (int i = 1; i < 11; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl3,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements eles = doc.select(".book-info");
+                if(eles != null && eles.size() > 0){
+                    for(Element ele : eles){
+                        String title = ele.child(0).child(0).text();
+                        logger.info("完结精选驱动第三个链接10本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 重磅新书驱动爬虫
+     */
+    @RequestMapping("climbNewDrive")
+    public void climbNewDrive() {
+//        http://r.qidian.com/signnewbook?style=1
+//        http://r.qidian.com/mm/signnewbook?style=1
+//        http://r.qidian.com/pubnewbook?style=1
+//        http://r.qidian.com/mm/pubnewbook?style=1
+//        http://r.qidian.com/newsign?style=1
+//        http://r.qidian.com/mm/newsign?style=1
+//        http://r.qidian.com/newauthor?style=1
+//        http://r.qidian.com/mm/newauthor?style=1
+//        https://www.readnovel.com/rank/newbook?period=2&pageNum=1
+        String baseUrl1 = "http://r.qidian.com/signnewbook?style=1&page=%d";
+        try{
+            for (int i = 1; i < 5; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl1,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第一个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String baseUrl2 = "http://r.qidian.com/mm/signnewbook?style=1&page=%d";
+        try{
+            for (int i = 1; i < 5; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl2,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第二个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String baseUrl3 = "http://r.qidian.com/pubnewbook?style=1&page=%d";
+        try{
+            for (int i = 1; i < 5; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl3,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第三个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String baseUrl4 = "http://r.qidian.com/mm/pubnewbook?style=1&page=%d";
+        try{
+            for (int i = 1; i < 5; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl4,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第四个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String baseUrl5 = "http://r.qidian.com/newsign?style=1&page=%d";
+        try{
+            for (int i = 1; i < 5; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl5,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第五个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String baseUrl6 = "http://r.qidian.com/mm/newsign?style=1&page=%d";
+        try{
+            for (int i = 1; i < 5; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl6,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第六个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String baseUrl7 = "http://r.qidian.com/newauthor?style=1&page=%d";
+        try{
+            for (int i = 1; i < 5; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl7,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第七个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String baseUrl8 = "http://r.qidian.com/mm/newauthor?style=1&page=%d";
+        try{
+            for (int i = 1; i < 5; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl8,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第八个链接20本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String baseUrl9 = "https://www.readnovel.com/rank/newbook?period=2&pageNum=%d";
+        try{
+            for (int i = 1; i < 11; i++) {
+                Document doc = Jsoup.connect(String.format(baseUrl9,i))
+                        .userAgent(USER_AGENT) // 设置 User-Agent
+                        .cookie("auth", "token") // 设置 cookie
+                        .timeout(10000)           // 设置连接超时时间
+                        .get();                 // 使用 POST 方法访问 URL
+                Elements elements = doc.getElementsByAttributeValue("data-eid","qd_C40");
+                if(elements != null && elements.size() > 0){
+                    for(Element ele : elements){
+                        String title = ele.text();
+                        logger.info("重磅新书驱动第九个链接10本书名：i_"+i+"_title_"+ title);
+                        //saveDrive(title,1,0);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 将图书保存到驱动表
@@ -312,9 +784,16 @@ public class RankClimbController extends BaseController {
             }
         }
     }
+
     public static void main(String[] args) {
         RankClimbController climbController = new RankClimbController();
-        climbController.climbIndexDrive();
+        //climbController.climbIndexDrive();
+        //climbController.climbSecDrive();
+        //climbController.climbBoyDrive();
+        //climbController.climbGirlDrive();
+        //climbController.climbSaleDrive();
+        //climbController.climbFullDrive();
+        climbController.climbNewDrive();
     }
 
 }
