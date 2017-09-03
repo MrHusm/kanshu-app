@@ -167,9 +167,34 @@ public class RankClimbController extends BaseController {
 
 
             //起点女生周点击榜的10本书
+            Elements girlClickEles = girlDoc.getElementsByAttributeValue("data-eid","qd_A147");
+            if(girlClickEles != null && girlClickEles.size() > 0){
+                for(Element girlClickEle : girlClickEles){
+                    String title = girlClickEle.text();
+                    logger.info("起点女生周点击榜的10本书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+
             //起点女生新书推荐左侧的3本封面推荐
-            //起点女生完本精选的5本封面推荐
-            //
+            Elements girlNewEles = girlDoc.getElementsByAttributeValue("data-eid","qd_A138");
+            if(girlNewEles != null && girlNewEles.size() > 0){
+                for(Element girlNewEle : girlNewEles){
+                    String title = girlNewEle.child(0).attr("alt");
+                    logger.info("起点女生新书推荐左侧的3本封面推荐书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
+            //起点女生完本精品的5本封面推荐
+            Elements girlFullEles = girlDoc.select(".fin-list > ul li");
+            if(girlFullEles != null && girlFullEles.size() > 0){
+                for(Element girlFullEle : girlFullEles){
+                    String title = girlFullEle.child(0).attr("alt");
+                    logger.info("起点女生完本精品的5本封面推荐书名："+ title);
+                }
+            }
+
+
             //起点首页本周强推17本
             Elements strongEles = doc.getElementsByAttributeValue("data-eid","qd_A103");
             if(strongEles != null && strongEles.size() > 0){
@@ -181,9 +206,46 @@ public class RankClimbController extends BaseController {
             }
 
             //起点女生首页本周强推15本图书
+            Elements girlStrongEles = girlDoc.getElementsByAttributeValue("data-eid","qd_A103");
+            if(girlStrongEles != null && girlStrongEles.size() > 0){
+                for(Element girlStrongEle : girlStrongEles){
+                    String title = girlStrongEle.text();
+                    logger.info("起点女生首页本周强推15本图书书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
             //http://r.qidian.com/hotsales?style=1&page=1 加这个页面24小时热销榜的数据首页图书排重
+            //起点24小时热销榜
+            String saleUrl = "http://r.qidian.com/hotsales?style=1&page=1";
+            Document saleDoc = Jsoup.connect(saleUrl)
+                    .userAgent(USER_AGENT) // 设置 User-Agent
+                    .cookie("auth", "token") // 设置 cookie
+                    .timeout(10000)           // 设置连接超时时间
+                    .get();                 // 使用 POST 方法访问 URL
+            Elements saleEles = saleDoc.getElementsByAttributeValue("data-eid","qd_C40");
+            if(saleEles != null && saleEles.size() > 0){
+                for(Element saleEle : saleEles){
+                    String title = saleEle.text();
+                    logger.info("24小时热销榜20本书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
             //http://r.qidian.com/mm/hotsales?style=1 加这个页面24小时热销榜的数据
-
+            //起点女生24小时热销榜
+            String girlSaleUrl = "http://r.qidian.com/mm/hotsales?style=1";
+            Document girlSaleDoc = Jsoup.connect(girlSaleUrl)
+                    .userAgent(USER_AGENT) // 设置 User-Agent
+                    .cookie("auth", "token") // 设置 cookie
+                    .timeout(10000)           // 设置连接超时时间
+                    .get();                 // 使用 POST 方法访问 URL
+            Elements girlSaleEles = girlSaleDoc.getElementsByAttributeValue("data-eid","qd_C40");
+            if(girlSaleEles != null && girlSaleEles.size() > 0){
+                for(Element girlSaleEle : girlSaleEles){
+                    String title = girlSaleEle.text();
+                    logger.info("起点女生24小时热销榜20本书名："+ title);
+                    //saveDrive(title,1,0);
+                }
+            }
 
 
         } catch (Exception e) {
@@ -192,6 +254,33 @@ public class RankClimbController extends BaseController {
 
         logger.info("畅销榜爬虫结束");
     }
+
+    /**
+     * 首页二次元驱动爬虫
+     */
+    @RequestMapping("climbSecDrive")
+    public void climbSecDrive() {
+        logger.info("开始爬虫首页二次元驱动爬虫");
+//        二次元
+//        http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0
+//        这个链接里选中二次元的分类，按照人气值排序
+//        https://www.readnovel.com/all?pageNum=1&pageSize=10&gender=2&catId=30055&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0
+//        这个链接N次元分类
+//        http://chuangshi.qq.com/bk/2cy/so3/
+//        这个链接二次元分类
+        try {
+            Document doc = Jsoup.connect("http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0")
+                    .userAgent(USER_AGENT) // 设置 User-Agent
+                    .cookie("auth", "token") // 设置 cookie
+                    .timeout(10000)           // 设置连接超时时间
+                    .get();                 // 使用 POST 方法访问 URL
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        logger.info("结束爬虫首页二次元驱动爬虫");
+    }
+
 
     /**
      * 将图书保存到驱动表
@@ -205,13 +294,18 @@ public class RankClimbController extends BaseController {
             if (CollectionUtils.isNotEmpty(books)) {
                 Book book = books.get(0);
                 if (book != null) {
-                    DriveBook driveBook = new DriveBook();
-                    driveBook.setBookId(book.getBookId());
-                    driveBook.setType(type);
-                    driveBook.setScore(score);
-                    driveBook.setCreateDate(new Date());
-                    driveBookService.save(driveBook);
-                    logger.info("驱动保存成功书名_"+title+"_type+"+type+"_score"+score);
+                    DriveBook driveBook = this.driveBookService.getDriveBookByCondition(type,book.getBookId());
+                    if(driveBook == null){
+                        driveBook = new DriveBook();
+                        driveBook.setBookId(book.getBookId());
+                        driveBook.setType(type);
+                        driveBook.setScore(score);
+                        driveBook.setCreateDate(new Date());
+                        driveBookService.save(driveBook);
+                        logger.info("驱动保存成功书名_"+title+"_type+"+type+"_score"+score);
+                    }else{
+                        logger.info("驱动图书已存在_"+title+"_type+"+type);
+                    }
                 }else{
                     logger.info("保存驱动查询图书不存在:"+title);
                 }

@@ -1697,7 +1697,7 @@ public class YuewenJobController extends BaseController {
 		fieldMap.put(SearchEnum.author_penname.getSearchField(),book.getAuthorPenname());
 		fieldMap.put(SearchEnum.category_sec_name.getSearchField(),book.getCategorySecName());
 		fieldMap.put(SearchEnum.category_thr_name.getSearchField(),book.getCategoryThrName());
-		fieldMap.put(SearchEnum.intro.getSearchField(),book.getIntro());
+		//fieldMap.put(SearchEnum.intro.getSearchField(),book.getIntro());
 		return fieldMap;
 	}
 

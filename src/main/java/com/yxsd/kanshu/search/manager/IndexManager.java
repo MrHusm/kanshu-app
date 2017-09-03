@@ -62,8 +62,8 @@ public class IndexManager {
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
-				 INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
-//				INDEX_DIR = "/Users/bangpei/search";
+				INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
+				//INDEX_DIR = "/usr/local/search";
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
@@ -112,8 +112,23 @@ public class IndexManager {
 			document.add(new TextField(SearchContants.TABLENAME, tableName, Store.YES));
 
 			for (String key : fieldMap.keySet()) {
-				document.add(new TextField(key, fieldMap.get(key), Store.YES));
+				TextField field = new TextField(key, fieldMap.get(key), Store.YES);
+				//设置搜索权重
+				if(SearchEnum.title.getSearchField().equals(key)){
+					field.setBoost(10f);
+				}else if(SearchEnum.author_name.getSearchField().equals(key)){
+					field.setBoost(8f);
+				}else if(SearchEnum.author_penname.getSearchField().equals(key)){
+					field.setBoost(8f);
+				}else if(SearchEnum.category_sec_name.getSearchField().equals(key)){
+					field.setBoost(3f);
+				}else if(SearchEnum.category_thr_name.getSearchField().equals(key)){
+					field.setBoost(5f);
+				}else if(SearchEnum.intro.getSearchField().equals(key)){
+					field.setBoost(1f);
+				}
 
+				document.add(field);
 			}
 			indexWriter.addDocument(document);
 			indexWriter.commit();
@@ -155,9 +170,9 @@ public class IndexManager {
 			QueryParser parser = new MultiFieldQueryParser(fields, analyzer);
 			Query query = parser.parse(text);
 
+
 			// 查询前多少行数据
 			int totle = pageNo * pageCount;
-
 			TopScoreDocCollector topCollector = TopScoreDocCollector.create(totle);
 			isearcher.search(query, topCollector);
 			// 取数范围

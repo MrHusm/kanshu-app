@@ -88,6 +88,7 @@ public class SearchController {
 		String start = request.getParameter("start");
 		String pages = request.getParameter("pageSize");
 
+		logger.info("开始初始化索引");
 		if (StringUtils.isBlank(start) && StringUtils.isBlank(pages)) {
 			indexService.createIndex();
 			return "/search/search";
@@ -178,8 +179,13 @@ public class SearchController {
 				model.addAttribute("searchBooks", books);
 				return "/search/searchResult";
 			} else {
-				response.sendRedirect("/search/searchIndex.go?type=1");
-				return null;
+				if("0".equals(syn)){
+					response.sendRedirect("/search/searchIndex.go?type=1");
+					return null;
+				}else{
+					model.addAttribute("searchBooks", null);
+					return "/search/searchResult";
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

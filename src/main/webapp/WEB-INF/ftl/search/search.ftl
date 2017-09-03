@@ -18,12 +18,12 @@
         </div>
     <#else>
         <div class="tag newClear">
-            <div class="tagPub"><span class="tagCont tagPubStyle1">都市</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle2">玄幻</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle3">言情</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle4">体育</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle1">军事</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle2">武侠</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="search('都市')">都市</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="search('玄幻')">玄幻</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle3" onclick="search('言情')">言情</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle4" onclick="search('体育')">体育</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="search('军事')">军事</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="search('武侠')">武侠</span></div>
         </div>
     </#if>
     <div class="hr"></div>
@@ -66,6 +66,11 @@
     function bookInfo(bookId,title) {
         var url = "/book/bookDetail.go?bookId="+bookId;
         window.JSHandle.goToHtml(url,title,1,1);
+    }
+
+    function search(text){
+        var url = "/search/search.go?searchText="+text;
+        window.location.href=url;
     }
 </script>
 </#if>

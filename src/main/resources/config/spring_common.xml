@@ -30,10 +30,10 @@
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 	
-	<!-- 支持异步方法执行 -->
+	<!-- 支持异步方法执行
 	<task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>  
     <task:executor id="taskExecutor" pool-size="5"/>  
-    <task:scheduler id="taskScheduler" pool-size="10" />
+    <task:scheduler id="taskScheduler" pool-size="10" />-->
 
 	<bean class="com.yxsd.kanshu.base.system.SpringContextHolder" lazy-init="false" />
 
