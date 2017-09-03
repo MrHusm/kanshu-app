@@ -29,6 +29,11 @@ public class DriveBook implements Serializable{
      * 排序分数
      */
     private Integer score;
+
+    /***
+     * 1:上线 0：未上线
+     */
+    private Integer status;
     
     
     private Book book;
@@ -79,5 +84,13 @@ public class DriveBook implements Serializable{
 
     public void setScore(Integer score) {
         this.score = score;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

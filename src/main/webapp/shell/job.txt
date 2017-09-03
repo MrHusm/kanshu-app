@@ -1,0 +1,35 @@
+#阅文图书初始拉取job
+*/2 * * * * sh /usr/local/shell/pullBooks_online.sh
+
+#阅文图书处理拉取失败图书job
+
+#阅文图书处理拉取失败卷job
+
+#阅文图书处理拉取失败章节job
+
+#阅文图书定时更新job
+
+#阅文图书定时下架job
+
+#首页驱动爬虫job
+0 4 * * * sh /usr/local/shell/climbIndexDrive.sh
+
+#首页二次元驱动爬虫job
+0 4 * * * sh /usr/local/shell/climbSecDrive.sh
+
+#首页男生驱动爬虫job
+0 4 * * * sh /usr/local/shell/climbBoyDrive.sh
+
+#首页女生驱动爬虫job
+0 4 * * * sh /usr/local/shell/climbGirlDrive.sh
+
+#全站畅销驱动爬虫job
+0 4 * * * sh /usr/local/shell/climbSaleDrive.sh
+
+#完结精选驱动爬虫job
+0 4 * * * sh /usr/local/shell/climbFullDrive.sh
+
+#重磅新书驱动爬虫job
+0 4 * * * sh /usr/local/shell/climbNewDrive.sh
+
+

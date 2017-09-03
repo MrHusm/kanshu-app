@@ -22,10 +22,10 @@ public class RedisKeyConstants {
     public final static String CACHE_BOOK_CATALOG_KEY = "book_catalog_";
 
     //图书驱动key
-    public final static String CACHE_DRIVE_BOOK_KEY = "drive_book_type_";
+    public final static String CACHE_DRIVE_BOOK_KEY = "drive_book_type_%s_status_%s";
 
     //图书驱动具体图书key
-    public final static String CACHE_DRIVE_BOOK_ONE_KEY = "drive_book_type_%s_bid_%s";
+    public final static String CACHE_DRIVE_BOOK_ONE_KEY = "drive_book_type_%s_bid_%s_status_%s";
 
     //章节+内容key
     public final static String CACHE_CHAPTER_TYPE_KEY = "chapter_content_cid_%s_type_%s";

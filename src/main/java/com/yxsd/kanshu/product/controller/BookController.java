@@ -108,7 +108,7 @@ public class BookController extends BaseController {
                 //VIP用户
                 readBtn = 1;
             }else{
-                DriveBook driveBook = driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId));
+                DriveBook driveBook = driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId),1);
                 if(driveBook != null){
                     //限免图书
                     readBtn = 1;
@@ -150,7 +150,7 @@ public class BookController extends BaseController {
         List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
 
         //用户还看了其他书
-        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(10);
+        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(10,1);
         if(CollectionUtils.isNotEmpty(driveBooks)){
             if(driveBooks.size() > 10){
                 driveBooks = driveBooks.subList(0,10);
@@ -244,7 +244,7 @@ public class BookController extends BaseController {
         List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
 
         //用户还看了其他书
-        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(10);
+        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(10,1);
         if(CollectionUtils.isNotEmpty(driveBooks)){
             if(driveBooks.size() > 10){
                 driveBooks = driveBooks.subList(0,10);
@@ -285,7 +285,7 @@ public class BookController extends BaseController {
             //获取图书所有章节
             List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
             //获取限免图书
-            DriveBook driveBook = this.driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId));
+            DriveBook driveBook = this.driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId),1);
 
             //批量或整本购买的图书
             List<UserPayBook> userPayBooks = this.userPayBookService.findListByParams("userId",userId,"bookId",bookId);
@@ -407,7 +407,7 @@ public class BookController extends BaseController {
             }
             if(chapter.isLock()){
                 //获取限免图书
-                DriveBook driveBook = this.driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId));
+                DriveBook driveBook = this.driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId),1);
                 if(driveBook != null) {
                     //限免图书 解锁
                     chapter.setLock(false);

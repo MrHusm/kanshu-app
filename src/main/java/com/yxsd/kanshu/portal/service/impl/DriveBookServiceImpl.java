@@ -37,14 +37,14 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
     }
 
     @Override
-    public List<DriveBook> getDriveBooks(Integer type) {
-        String key = RedisKeyConstants.CACHE_DRIVE_BOOK_KEY + type;
+    public List<DriveBook> getDriveBooks(Integer type,Integer status) {
+        String key =String.format(RedisKeyConstants.CACHE_DRIVE_BOOK_KEY, type, status);
         List<DriveBook> driveBooks = null;
         if(masterRedisTemplate.hasKey(key)){
             driveBooks = slaveRedisTemplate.opsForList().range(key,0,-1);
         }
         if(CollectionUtils.isEmpty(driveBooks)){
-            driveBooks = this.findListByParams("type",type);
+            driveBooks = this.findListByParams("type",type,"status",status);
             if(CollectionUtils.isNotEmpty(driveBooks)){
                 for(int i = 0; i < driveBooks.size(); i++){
                     masterRedisTemplate.opsForList().rightPush(key,driveBooks.get(i));
@@ -59,11 +59,11 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
     }
 
     @Override
-    public DriveBook getDriveBookByCondition(Integer type, Long bookId) {
-        String key = String.format(RedisKeyConstants.CACHE_DRIVE_BOOK_ONE_KEY,type,bookId);
+    public DriveBook getDriveBookByCondition(Integer type, Long bookId,Integer status) {
+        String key = String.format(RedisKeyConstants.CACHE_DRIVE_BOOK_ONE_KEY,type,bookId,status);
         DriveBook driveBook = slaveRedisTemplate.opsForValue().get(key);
         if(driveBook == null){
-            driveBook = this.findUniqueByParams("type",type,"bookId",bookId);
+            driveBook = this.findUniqueByParams("type",type,"bookId",bookId,"status",status);
             if(driveBook != null){
                 masterRedisTemplate.opsForValue().set(key,driveBook,1,TimeUnit.DAYS);
             }
@@ -73,7 +73,7 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
 
     @Override
     public PageFinder<DriveBook> findPageWithCondition(Integer type, Query query) {
-        List<DriveBook> driveBooks = this.getDriveBooks(type);
+        List<DriveBook> driveBooks = this.getDriveBooks(type,1);
         PageFinder<DriveBook> pageFinder = new PageFinder<DriveBook>(query.getPage(),query.getPageSize(), 0);
         if(CollectionUtils.isNotEmpty(driveBooks)){
             int end = (query.getOffset() + query.getPageSize()) > driveBooks.size() ? driveBooks.size() : (query.getOffset() + query.getPageSize());

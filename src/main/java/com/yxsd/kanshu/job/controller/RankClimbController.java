@@ -1,5 +1,6 @@
 package com.yxsd.kanshu.job.controller;
 
+import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.portal.model.DriveBook;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
@@ -14,6 +15,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -39,15 +41,19 @@ public class RankClimbController extends BaseController {
     @Resource(name="bookService")
     IBookService bookService;
 
+    @Resource(name = "masterRedisTemplate")
+    private RedisTemplate<String,DriveBook> masterRedisTemplate;
+
     /**
      * 首页驱动爬虫
      */
     @RequestMapping("climbIndexDrive")
     public void climbIndexDrive() {
-        logger.info("开始爬虫起点网站首页驱动");
-        String baseUrl = "http://www.qidian.com/";
+        logger.info("开始爬虫首页驱动");
+        Document doc = null;
         try {
-            Document doc = Jsoup.connect(baseUrl)
+            String baseUrl = "http://www.qidian.com/";
+            doc = Jsoup.connect(baseUrl)
                     .userAgent(USER_AGENT) // 设置 User-Agent
                     .cookie("auth", "token") // 设置 cookie
                     .timeout(10000)           // 设置连接超时时间
@@ -59,20 +65,35 @@ public class RankClimbController extends BaseController {
                 if(eleThumbBooks != null && eleThumbBooks.size() > 0){
                     for(int i = 0; i < eleThumbBooks.size() - 1; i++){
                         String title = eleThumbBooks.get(i).text().trim();
-                        logger.info("封推前4本书名："+ title);
-                        //saveDrive(title,1,0);
+                        logger.info("爬虫首页驱动封推前4本书名："+ title);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫首页驱动封推前4本未获取到数据");
                 }
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动封推前4本异常");
+            e.printStackTrace();
+        }
+        try{
             //编辑推荐7本
             Elements slides = doc.select(".slideItem");
             if(slides != null && slides.size() > 0){
                 for(Element slideItem : slides){
                     String title = slideItem.child(0).child(0).attr("title");
                     logger.info("编辑推荐7本书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动编辑推荐7本未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动编辑推荐7本异常");
+            e.printStackTrace();
+        }
+
+        try{
             List<String> childUrls = new ArrayList<String>();
             //编辑推荐文字推荐6本
             Elements editLists = doc.getElementsByAttributeValue("data-eid","qd_A110");
@@ -105,42 +126,70 @@ public class RankClimbController extends BaseController {
                 if(bookEles != null && bookEles.size() > 0){
                     String title = bookEles.get(0).child(0).child(0).text();
                     logger.info("编辑推荐文字和图片推荐书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动编辑推荐文字和图片推荐异常");
+            e.printStackTrace();
+        }
 
+        try{
             //热门作品左侧的3本封面推荐
             Elements hotEles = doc.getElementsByAttributeValue("data-eid","qd_A121");
             if(hotEles != null && hotEles.size() > 0){
                 for(Element hotEle : hotEles){
                     String title = hotEle.child(0).attr("alt");
                     logger.info("热门作品左侧的3本封面推荐书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动热门作品左侧的3本封面推荐未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动热门作品左侧的3本封面推荐异常");
+            e.printStackTrace();
+        }
 
+        try{
             //新书推荐左侧的3本封面推荐
             Elements newEles = doc.getElementsByAttributeValue("data-eid","qd_A138");
             if(newEles != null && newEles.size() > 0){
                 for(Element newEle : newEles){
                     String title = newEle.child(0).attr("alt");
                     logger.info("新书推荐左侧的3本封面推荐书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动新书推荐左侧的3本封面推荐未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动新书推荐左侧的3本封面推荐异常");
+            e.printStackTrace();
+        }
 
+        try{
             //完本精品左侧的3本封面推荐
             Elements finishEles = doc.getElementsByAttributeValue("data-eid","qd_A129");
             if(finishEles != null && finishEles.size() > 0){
                 for(Element finishEle : finishEles){
                     String title = finishEle.child(0).attr("alt");
                     logger.info("完本精品左侧的3本封面推荐书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动完本精品左侧的3本封面推荐未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动完本精品左侧的3本封面推荐异常");
+            e.printStackTrace();
+        }
+
+        Document girlDoc = null;
+        try{
             //起点女生网
             String girlUrl = "http://www.qdmm.com/";
-            Document girlDoc = Jsoup.connect(girlUrl)
+            girlDoc = Jsoup.connect(girlUrl)
                     .userAgent(USER_AGENT) // 设置 User-Agent
                     .cookie("auth", "token") // 设置 cookie
                     .timeout(10000)           // 设置连接超时时间
@@ -153,38 +202,67 @@ public class RankClimbController extends BaseController {
                     for(int i = 0; i < eleThumbBooks.size() - 1; i++){
                         String title = eleThumbBooks.get(i).text().trim();
                         logger.info("起点女生封推前4本书名："+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
                 }
+            }else{
+                logger.info("爬虫首页驱动起点女生封推前4本未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动起点女生封推前4本异常");
+            e.printStackTrace();
+        }
 
+        try{
             //起点女生首页编辑推荐，全部图书（需要注意，封面有7本；中间文字推有6本，最后还有2个小banner推荐）
             Elements girlEditEles = girlDoc.select(".description");
             if(girlEditEles != null && girlEditEles.size() > 0){
                 String title = girlEditEles.get(0).child(0).child(0).child(0).text();
                 logger.info("起点女生首页编辑推荐图片推荐书名："+ title);
+            }else{
+                logger.info("爬虫首页驱动起点女生首页编辑推荐图片推荐未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动起点女生首页编辑推荐图片推荐异常");
+            e.printStackTrace();
+        }
 
 
+        try{
             //起点女生周点击榜的10本书
             Elements girlClickEles = girlDoc.getElementsByAttributeValue("data-eid","qd_A147");
             if(girlClickEles != null && girlClickEles.size() > 0){
                 for(Element girlClickEle : girlClickEles){
                     String title = girlClickEle.text();
                     logger.info("起点女生周点击榜的10本书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动起点女生周点击榜的10本未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动起点女生周点击榜的10本异常");
+            e.printStackTrace();
+        }
 
+        try{
             //起点女生新书推荐左侧的3本封面推荐
             Elements girlNewEles = girlDoc.getElementsByAttributeValue("data-eid","qd_A138");
             if(girlNewEles != null && girlNewEles.size() > 0){
                 for(Element girlNewEle : girlNewEles){
                     String title = girlNewEle.child(0).attr("alt");
                     logger.info("起点女生新书推荐左侧的3本封面推荐书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动起点女生新书推荐左侧的3本封面推荐未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动起点女生新书推荐左侧的3本封面推荐异常");
+            e.printStackTrace();
+        }
+
+        try{
             //起点女生完本精品的5本封面推荐
             Elements girlFullEles = girlDoc.select(".fin-list > ul li");
             if(girlFullEles != null && girlFullEles.size() > 0){
@@ -192,32 +270,54 @@ public class RankClimbController extends BaseController {
                     String title = girlFullEle.child(0).attr("alt");
                     logger.info("起点女生完本精品的5本封面推荐书名："+ title);
                 }
+            }else{
+                logger.info("爬虫首页驱动起点女生完本精品的5本封面推荐未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动起点女生完本精品的5本封面推荐异常");
+            e.printStackTrace();
+        }
 
-
+        try{
             //起点首页本周强推17本
             Elements strongEles = doc.getElementsByAttributeValue("data-eid","qd_A103");
             if(strongEles != null && strongEles.size() > 0){
                 for(Element strongEle : strongEles){
                     String title = strongEle.text();
                     logger.info("起点首页本周强推17本书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动起点首页本周强推17本未获取到数据");
             }
+        }catch(Exception e){
+            logger.error("爬虫首页驱动起点首页本周强推17本异常");
+            e.printStackTrace();
+        }
 
+        try{
             //起点女生首页本周强推15本图书
             Elements girlStrongEles = girlDoc.getElementsByAttributeValue("data-eid","qd_A103");
             if(girlStrongEles != null && girlStrongEles.size() > 0){
                 for(Element girlStrongEle : girlStrongEles){
                     String title = girlStrongEle.text();
                     logger.info("起点女生首页本周强推15本图书书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.error("爬虫首页驱动起点女生首页本周强推15本图书未获取到数据");
             }
-            //http://r.qidian.com/hotsales?style=1&page=1 加这个页面24小时热销榜的数据首页图书排重
-            //起点24小时热销榜
+        }catch(Exception e){
+            logger.error("爬虫首页驱动起点女生首页本周强推15本图书异常");
+            e.printStackTrace();
+        }
+
+        //http://r.qidian.com/hotsales?style=1&page=1 加这个页面24小时热销榜的数据首页图书排重
+        //起点24小时热销榜
+        Document saleDoc = null;
+        try{
             String saleUrl = "http://r.qidian.com/hotsales?style=1&page=1";
-            Document saleDoc = Jsoup.connect(saleUrl)
+            saleDoc = Jsoup.connect(saleUrl)
                     .userAgent(USER_AGENT) // 设置 User-Agent
                     .cookie("auth", "token") // 设置 cookie
                     .timeout(10000)           // 设置连接超时时间
@@ -227,13 +327,22 @@ public class RankClimbController extends BaseController {
                 for(Element saleEle : saleEles){
                     String title = saleEle.text();
                     logger.info("24小时热销榜20本书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动24小时热销榜20本未获取到数据");
             }
-            //http://r.qidian.com/mm/hotsales?style=1 加这个页面24小时热销榜的数据
-            //起点女生24小时热销榜
+        }catch(Exception e){
+            logger.error("爬虫首页驱动24小时热销榜20本异常");
+            e.printStackTrace();
+        }
+
+        //http://r.qidian.com/mm/hotsales?style=1 加这个页面24小时热销榜的数据
+        //起点女生24小时热销榜
+        Document girlSaleDoc = null;
+        try{
             String girlSaleUrl = "http://r.qidian.com/mm/hotsales?style=1";
-            Document girlSaleDoc = Jsoup.connect(girlSaleUrl)
+            girlSaleDoc = Jsoup.connect(girlSaleUrl)
                     .userAgent(USER_AGENT) // 设置 User-Agent
                     .cookie("auth", "token") // 设置 cookie
                     .timeout(10000)           // 设置连接超时时间
@@ -243,16 +352,21 @@ public class RankClimbController extends BaseController {
                 for(Element girlSaleEle : girlSaleEles){
                     String title = girlSaleEle.text();
                     logger.info("起点女生24小时热销榜20本书名："+ title);
-                    //saveDrive(title,1,0);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动起点女生24小时热销榜20本未获取到数据");
             }
-
-
-        } catch (Exception e) {
+        }catch(Exception e){
+            logger.error("爬虫首页驱动起点女生24小时热销榜20本异常");
             e.printStackTrace();
         }
 
-        logger.info("畅销榜爬虫结束");
+        //上线驱动
+        onlineDrive(1);
+
+        logger.info("结束爬虫首页驱动");
+
     }
 
     /**
@@ -261,26 +375,35 @@ public class RankClimbController extends BaseController {
     @RequestMapping("climbSecDrive")
     public void climbSecDrive() {
         logger.info("开始爬虫首页二次元驱动爬虫");
+        Document doc = null;
         try {
-            //        http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0
-            //        这个链接里选中二次元的分类，按照人气值排序
-            Document doc = Jsoup.connect("http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0")
+            //http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0
+            //这个链接里选中二次元的分类，按照人气值排序
+            doc = Jsoup.connect("http://a.qidian.com/?chanId=12&orderId=&page=1&style=1&pageSize=20&siteid=1&hiddenField=0")
                     .userAgent(USER_AGENT) // 设置 User-Agent
                     .cookie("auth", "token") // 设置 cookie
                     .timeout(10000)           // 设置连接超时时间
                     .get();                 // 使用 POST 方法访问 URL
-
             Elements eles = doc.getElementsByAttributeValue("data-eid","qd_B58");
             if(eles != null && eles.size() > 0){
                 for(Element ele : eles){
                     String title = ele.text();
-                    logger.info("二次元第一个链接20本书名："+ title);
-                    //saveDrive(title,1,0);
+                    logger.info("首页二次元第一个链接20本书名："+ title);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.info("爬虫首页驱动二次元第一个链接20本未获取到数据");
             }
-//        https://www.readnovel.com/all?pageNum=1&pageSize=10&gender=2&catId=30055&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0
-//        这个链接N次元分类
-            Document doc2 = Jsoup.connect("https://www.readnovel.com/all?pageNum=1&pageSize=10&gender=2&catId=30055&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0")
+        }catch(Exception e){
+            logger.error("爬虫首页驱动二次元第一个链接20本异常");
+            e.printStackTrace();
+        }
+
+        Document doc2 = null;
+        try{
+            //https://www.readnovel.com/all?pageNum=1&pageSize=10&gender=2&catId=30055&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0
+            //这个链接N次元分类
+            doc2 = Jsoup.connect("https://www.readnovel.com/all?pageNum=1&pageSize=10&gender=2&catId=30055&isFinish=-1&isVip=-1&size=-1&updT=-1&orderBy=0")
                     .userAgent(USER_AGENT) // 设置 User-Agent
                     .cookie("auth", "token") // 设置 cookie
                     .timeout(10000)           // 设置连接超时时间
@@ -290,32 +413,45 @@ public class RankClimbController extends BaseController {
             if(eles2 != null && eles2.size() > 0){
                 for(Element ele : eles2){
                     String title = ele.child(0).child(0).text();
-                    logger.info("二次元第二个链接10本书名："+ title);
-                    //saveDrive(title,1,0);
+                    logger.info("首页二次元第二个链接10本书名："+ title);
+                    saveDrive(title,1,0);
                 }
+            }else{
+                logger.error("爬虫首页驱动二次元第二个链接10本未获取到数据");
             }
-            //        http://chuangshi.qq.com/bk/2cy/so3/
-            //        这个链接二次元分类
+        }catch(Exception e){
+            logger.error("爬虫首页驱动二次元第二个链接10本异常");
+            e.printStackTrace();
+        }
+
+        try{
+            //http://chuangshi.qq.com/bk/2cy/so3/
+            //这个链接二次元分类
             String baseUrl = "http://chuangshi.qq.com/bk/2cy/so3/p/%d.html";
-            for(int i = 1; i < 5; i++){
-                Document doc3 = Jsoup.connect(String.format(baseUrl,i))
+            for(int i = 1; i < 5; i++) {
+                Document doc3 = Jsoup.connect(String.format(baseUrl, i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
                         .timeout(10000)           // 设置连接超时时间
                         .get();                 // 使用 POST 方法访问 URL
 
                 Elements eles3 = doc3.select(".green");
-                if(eles2 != null && eles2.size() > 0){
-                    for(Element ele : eles3){
+                if (eles3 != null && eles3.size() > 0) {
+                    for (Element ele : eles3) {
                         String title = ele.text();
-                        logger.info("二次元第三个链接100本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        logger.info("二次元第三个链接100本书名：i_" + i + "_title_" + title);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.error("爬虫首页驱动二次元第二个链接10本未获取到数据_i="+i);
                 }
             }
         }catch(Exception e){
+            logger.error("爬虫首页驱动二次元第二个链接10本异常");
             e.printStackTrace();
         }
+        //上线驱动
+        onlineDrive(4);
         logger.info("结束爬虫首页二次元驱动爬虫");
     }
 
@@ -327,8 +463,8 @@ public class RankClimbController extends BaseController {
     public void climbBoyDrive() {
         logger.info("开始爬虫首页男生驱动爬虫");
         try {
-//            http://a.qidian.com/?page=1&style=1&pageSize=20&siteid=1&hiddenField=0
-//            这个链接选择男生→全部，按照人气值排序
+            //http://a.qidian.com/?page=1&style=1&pageSize=20&siteid=1&hiddenField=0
+            //这个链接选择男生→全部，按照人气值排序
             String baseUrl = "http://a.qidian.com/?page=1&style=1&pageSize=20&siteid=1&hiddenField=0&page=%d";
             for(int i = 1; i < 20; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl,i))
@@ -341,14 +477,19 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("首页男生驱动20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫首页男生驱动未获取到数据i="+i);
                 }
             }
-
         }catch (Exception e){
+            logger.error("爬虫首页男生驱动异常");
             e.printStackTrace();
         }
+        //上线驱动
+        onlineDrive(2);
+        logger.info("结束爬虫首页男生驱动");
     }
 
     /**
@@ -358,8 +499,8 @@ public class RankClimbController extends BaseController {
     public void climbGirlDrive() {
         logger.info("开始爬虫首页女生驱动爬虫");
         try {
-//            http://a.qidian.com/mm?orderId=&style=1&pageSize=20&siteid=0&hiddenField=0&page=1
-//            这个链接选择女生→全部，按照人气值排序
+            //http://a.qidian.com/mm?orderId=&style=1&pageSize=20&siteid=0&hiddenField=0&page=1
+            //这个链接选择女生→全部，按照人气值排序
             String baseUrl = "http://a.qidian.com/mm?orderId=&style=1&pageSize=20&siteid=0&hiddenField=0&page=%d";
             for(int i = 1; i < 20; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl,i))
@@ -372,14 +513,19 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("首页女生驱动20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫首页女生驱动未获取到数据i="+i);
                 }
             }
-
         }catch (Exception e){
+            logger.error("爬虫首页女生驱动异常");
             e.printStackTrace();
         }
+        //上线驱动
+        onlineDrive(3);
+        logger.info("结束爬虫首页女生驱动爬虫");
     }
 
     /**
@@ -387,13 +533,13 @@ public class RankClimbController extends BaseController {
      */
     @RequestMapping("climbSaleDrive")
     public void climbSaleDrive() {
-        logger.info("开始爬虫全站畅销驱动爬虫");
+        logger.info("开始爬虫全站畅销驱动");
         try {
-//            http://r.qidian.com/yuepiao?style=1
-//            http://r.qidian.com/mm/yuepiao?style=1
-//            http://r.qidian.com/vipreward?style=1
-//            http://r.qidian.com/mm/subscr?style=1
-//            https://www.readnovel.com/rank/hotsales?period=2&pageNum=1
+            //http://r.qidian.com/yuepiao?style=1
+            //http://r.qidian.com/mm/yuepiao?style=1
+            //http://r.qidian.com/vipreward?style=1
+            //http://r.qidian.com/mm/subscr?style=1
+            //https://www.readnovel.com/rank/hotsales?period=2&pageNum=1
             String baseUrl1 = "http://r.qidian.com/yuepiao?style=1&page=%d";
             for(int i = 1; i < 11; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl1,i))
@@ -406,11 +552,18 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第一个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫全站畅销驱动第一个链接未获取到数据i="+i);
                 }
             }
+        }catch (Exception e){
+            logger.error("爬虫全站畅销驱动第一个链接异常");
+            e.printStackTrace();
+        }
 
+        try{
             String baseUrl2 = "http://r.qidian.com/mm/yuepiao?style=1&page=%d";
             for(int i = 1; i < 11; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl2,i))
@@ -423,11 +576,18 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第二个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫全站畅销驱动第二个链接未获取到数据i="+i);
                 }
             }
+        }catch (Exception e){
+            logger.error("爬虫全站畅销驱动第二个链接异常");
+            e.printStackTrace();
+        }
 
+        try{
             String baseUrl3 = "http://r.qidian.com/vipreward?style=1&page=%d";
             for(int i = 1; i < 6; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl3,i))
@@ -440,11 +600,18 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第三个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫全站畅销驱动第三个链接未获取到数据i="+i);
                 }
             }
+        }catch (Exception e){
+            logger.error("爬虫全站畅销驱动第三个链接异常");
+            e.printStackTrace();
+        }
 
+        try{
             String baseUrl4 = "http://r.qidian.com/mm/subscr?style=1&page=%d";
             for(int i = 1; i < 6; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl4,i))
@@ -457,11 +624,18 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第四个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫全站畅销驱动第四个链接未获取到数据i="+i);
                 }
             }
+        }catch (Exception e){
+            logger.error("爬虫全站畅销驱动第四个链接异常");
+            e.printStackTrace();
+        }
 
+        try{
             String baseUrl5 = "https://www.readnovel.com/rank/hotsales?period=2&pageNum=%d";
             for(int i = 1; i < 6; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl5,i))
@@ -474,14 +648,19 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第五个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫全站畅销驱动第五个链接未获取到数据i="+i);
                 }
             }
-
         }catch (Exception e){
+            logger.error("爬虫全站畅销驱动第五个链接异常");
             e.printStackTrace();
         }
+        //上线驱动
+        onlineDrive(6);
+        logger.info("结束爬虫全站畅销驱动");
     }
 
     /**
@@ -489,7 +668,7 @@ public class RankClimbController extends BaseController {
      */
     @RequestMapping("climbFullDrive")
     public void climbFullDrive() {
-        logger.info("开始爬虫全站畅销驱动爬虫");
+        logger.info("开始爬虫完结精选驱动");
         try {
 //            http://r.qidian.com/fin?style=1
 //            http://fin.qidian.com/mm
@@ -506,11 +685,18 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("完结精选驱动第一个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.error("爬虫完结精选驱动第一个链接未获取到数据i="+i);
                 }
             }
+        }catch (Exception e){
+            logger.error("爬虫完结精选驱动第一个链接异常");
+            e.printStackTrace();
+        }
 
+        try{
             String baseUrl2 = "http://fin.qidian.com/mm?action=hidden&orderId=&style=1&pageSize=20&siteid=0&hiddenField=2&page=%d";
             for (int i = 1; i < 11; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl2,i))
@@ -523,11 +709,18 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("完结精选驱动第二个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.error("爬虫完结精选驱动第二个链接未获取到数据i="+i);
                 }
             }
+        }catch (Exception e){
+            logger.error("爬虫完结精选驱动第二个链接异常");
+            e.printStackTrace();
+        }
 
+        try{
             String baseUrl3 = "https://www.readnovel.com/finish?pageSize=10&gender=2&catId=-1&isFinish=1&isVip=-1&size=-1&updT=-1&orderBy=0&pageNum=%d";
             for (int i = 1; i < 11; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl3,i))
@@ -540,14 +733,20 @@ public class RankClimbController extends BaseController {
                     for(Element ele : eles){
                         String title = ele.child(0).child(0).text();
                         logger.info("完结精选驱动第三个链接10本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.error("爬虫完结精选驱动第三个链接未获取到数据i="+i);
                 }
             }
-
         }catch (Exception e){
+            logger.error("爬虫完结精选驱动第三个链接异常");
             e.printStackTrace();
         }
+        //上线驱动
+        onlineDrive(7);
+        logger.info("结束爬虫完结精选驱动");
+
     }
 
     /**
@@ -555,6 +754,7 @@ public class RankClimbController extends BaseController {
      */
     @RequestMapping("climbNewDrive")
     public void climbNewDrive() {
+        logger.info("开始爬虫重磅新书驱动");
 //        http://r.qidian.com/signnewbook?style=1
 //        http://r.qidian.com/mm/signnewbook?style=1
 //        http://r.qidian.com/pubnewbook?style=1
@@ -577,11 +777,14 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第一个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.error("爬虫重磅新书驱动第一个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第一个链接异常");
             e.printStackTrace();
         }
 
@@ -598,11 +801,14 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第二个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫重磅新书驱动第二个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第二个链接异常");
             e.printStackTrace();
         }
 
@@ -619,11 +825,14 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第三个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫重磅新书驱动第三个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第三个链接异常");
             e.printStackTrace();
         }
 
@@ -640,11 +849,14 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第四个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫重磅新书驱动第四个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第四个链接异常");
             e.printStackTrace();
         }
 
@@ -661,11 +873,14 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第五个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫重磅新书驱动第五个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第五个链接异常");
             e.printStackTrace();
         }
 
@@ -682,11 +897,14 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第六个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫重磅新书驱动第六个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第六个链接异常");
             e.printStackTrace();
         }
 
@@ -703,11 +921,14 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第七个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫重磅新书驱动第七个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第七个链接异常");
             e.printStackTrace();
         }
 
@@ -724,11 +945,14 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第八个链接20本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫重磅新书驱动第八个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第八个链接异常");
             e.printStackTrace();
         }
 
@@ -745,13 +969,19 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第九个链接10本书名：i_"+i+"_title_"+ title);
-                        //saveDrive(title,1,0);
+                        saveDrive(title,1,0);
                     }
+                }else{
+                    logger.info("爬虫重磅新书驱动第九个链接未获取到数据i="+i);
                 }
             }
         }catch (Exception e){
+            logger.error("爬虫重磅新书驱动第九个链接异常");
             e.printStackTrace();
         }
+        //上线驱动
+        onlineDrive(8);
+        logger.info("结束爬虫重磅新书驱动");
     }
 
     /**
@@ -766,12 +996,13 @@ public class RankClimbController extends BaseController {
             if (CollectionUtils.isNotEmpty(books)) {
                 Book book = books.get(0);
                 if (book != null) {
-                    DriveBook driveBook = this.driveBookService.getDriveBookByCondition(type,book.getBookId());
+                    DriveBook driveBook = this.driveBookService.findUniqueByParams(type,book.getBookId(),"status",0);
                     if(driveBook == null){
                         driveBook = new DriveBook();
                         driveBook.setBookId(book.getBookId());
                         driveBook.setType(type);
                         driveBook.setScore(score);
+                        driveBook.setStatus(0);
                         driveBook.setCreateDate(new Date());
                         driveBookService.save(driveBook);
                         logger.info("驱动保存成功书名_"+title+"_type+"+type+"_score"+score);
@@ -783,6 +1014,39 @@ public class RankClimbController extends BaseController {
                 }
             }
         }
+    }
+
+    /**
+     * 上线新驱动
+     * @param type 类型 1：首页驱动 2：首页男生最爱 3：首页女生频道
+     * 4：首页二次元 5：大家都在搜索 6：书库全站畅销
+     * 7：书库完结精选 8：书库重磅新书 9：限免 10：书籍相关图书
+     */
+    public void onlineDrive(Integer type){
+        logger.info("开始上线驱动type="+type);
+        List<DriveBook> newDriveBooks = this.driveBookService.getDriveBooks(type,0);
+        if(newDriveBooks != null && newDriveBooks.size() > 50){
+            //查询出来放入缓存
+            List<DriveBook> oldDriveBooks = this.driveBookService.getDriveBooks(type,1);
+            if(CollectionUtils.isNotEmpty(oldDriveBooks)){
+                for(DriveBook oldDriveBook : oldDriveBooks){
+                    //删除老的驱动
+                    this.driveBookService.deleteById(oldDriveBook.getId());
+                    //清除缓存
+                    String key = String.format(RedisKeyConstants.CACHE_DRIVE_BOOK_ONE_KEY,type,oldDriveBook.getBookId(),1);
+                    masterRedisTemplate.delete(key);
+                }
+            }
+            for(DriveBook newDriveBook : newDriveBooks){
+                //新驱动上线
+                newDriveBook.setStatus(1);
+                this.driveBookService.update(newDriveBook);
+            }
+            //清除缓存
+            String key =String.format(RedisKeyConstants.CACHE_DRIVE_BOOK_KEY, type, 1);
+            masterRedisTemplate.delete(key);
+        }
+        logger.info("结束上线驱动type="+type);
     }
 
     public static void main(String[] args) {
