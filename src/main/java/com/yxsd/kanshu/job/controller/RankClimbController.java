@@ -996,7 +996,7 @@ public class RankClimbController extends BaseController {
             if (CollectionUtils.isNotEmpty(books)) {
                 Book book = books.get(0);
                 if (book != null) {
-                    DriveBook driveBook = this.driveBookService.findUniqueByParams(type,book.getBookId(),"status",0);
+                    DriveBook driveBook = this.driveBookService.findUniqueByParams("type",type,"bookId",book.getBookId(),"status",0);
                     if(driveBook == null){
                         driveBook = new DriveBook();
                         driveBook.setBookId(book.getBookId());
