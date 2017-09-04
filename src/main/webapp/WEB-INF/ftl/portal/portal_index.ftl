@@ -40,10 +40,12 @@
                     <div class="bookList">
                         <div class="bookName">${driveBook.book.title}</div>
                         <div class="bookInfo">
-                            <#if driveBook.book.intro?length gt 40>
-                                ${driveBook.book.intro?substring(0,40)}...
-                            <#else>
-                                ${driveBook.book.intro}
+                            <#if driveBook.book.intro??>
+                                <#if driveBook.book.intro?length gt 40>
+                                    ${driveBook.book.intro?substring(0,40)}...
+                                <#else>
+                                    ${driveBook.book.intro}
+                                </#if>
                             </#if>
                         </div>
                         <div class="authorBox">

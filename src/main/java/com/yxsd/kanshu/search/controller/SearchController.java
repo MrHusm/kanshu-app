@@ -141,9 +141,9 @@ public class SearchController {
 				response.sendRedirect("/search/searchIndex.go?type=1");
 				return null;
 			}
-			if (isMessyCode(searchText)) {
+			//if (isMessyCode(searchText)) {
 				searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
-			}
+			//}
 			model.addAttribute("searchText",searchText);
 			logger.info("search被调用，条件为page:" + page + ",searchText:" + searchText);
 

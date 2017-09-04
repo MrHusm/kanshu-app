@@ -43,10 +43,12 @@
                 <div class="bookList">
                     <div class="bookName">${book.title}</div>
                     <div class="bookInfo">
-                        <#if book.intro?length gt 40>
-                            ${book.intro?substring(0,40)}...
-                        <#else>
-                            ${book.intro}
+                        <#if book.intro??>
+                            <#if book.intro?length gt 40>
+                                ${book.intro?substring(0,40)}...
+                            <#else>
+                                ${book.intro}
+                            </#if>
                         </#if>
                     </div>
                     <div class="authorBox">
