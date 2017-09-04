@@ -41,7 +41,7 @@
 
         </div>
         <div class="radingBottonBox">
-            <div class="readingBotL" onclick="window.JSHandle.openCatalog(${book.bookId?c})">
+            <div class="readingBotL" onclick="window.JSHandle.openCatalog(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})">
                 <img src="/img/icon/menuIcon.png" alt="" class="readingBotLImg" />
                 <span>目录</span>
             </div>
