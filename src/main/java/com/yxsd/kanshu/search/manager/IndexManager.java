@@ -1,23 +1,15 @@
 package com.yxsd.kanshu.search.manager;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.yxsd.kanshu.base.contants.SearchContants;
+import com.yxsd.kanshu.base.contants.SearchEnum;
+import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -30,9 +22,12 @@ import org.apache.lucene.store.RAMDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yxsd.kanshu.base.contants.SearchContants;
-import com.yxsd.kanshu.base.contants.SearchEnum;
-import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author qiong.wang
@@ -127,9 +122,9 @@ public class IndexManager {
 				if (SearchEnum.title.getSearchField().equals(key)) {
 					field.setBoost(10f);
 				} else if (SearchEnum.author_name.getSearchField().equals(key)) {
-					field.setBoost(8f);
+					field.setBoost(4f);
 				} else if (SearchEnum.author_penname.getSearchField().equals(key)) {
-					field.setBoost(8f);
+					field.setBoost(4f);
 				} else if (SearchEnum.category_sec_name.getSearchField().equals(key)) {
 					field.setBoost(3f);
 				} else if (SearchEnum.category_thr_name.getSearchField().equals(key)) {
