@@ -1,15 +1,23 @@
 package com.yxsd.kanshu.search.manager;
 
-import com.yxsd.kanshu.base.contants.SearchContants;
-import com.yxsd.kanshu.base.contants.SearchEnum;
-import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.*;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -18,15 +26,13 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.RAMDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.yxsd.kanshu.base.contants.SearchContants;
+import com.yxsd.kanshu.base.contants.SearchEnum;
+import com.yxsd.kanshu.base.utils.ConfigPropertieUtils;
 
 /**
  * @author qiong.wang
@@ -40,6 +46,8 @@ public class IndexManager {
 	private static Directory directory = null;
 
 	private static int pageCount = 20;
+
+	private static Directory ramDirectory = null;
 
 	private static final Logger logger = LoggerFactory.getLogger(IndexManager.class);
 
@@ -62,8 +70,8 @@ public class IndexManager {
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
-				INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
-				//INDEX_DIR = "/usr/local/search";
+				 INDEX_DIR = ConfigPropertieUtils.getString("search.folder");
+//				INDEX_DIR = "/Users/bangpei/search";
 			}
 
 			if (StringUtils.isBlank(INDEX_DIR)) {
@@ -73,19 +81,14 @@ public class IndexManager {
 
 			try {
 				directory = FSDirectory.open(new File(INDEX_DIR).toPath());
+
+				// 创建内存索引库
+				ramDirectory = new RAMDirectory(FSDirectory.open(new File(INDEX_DIR).toPath()), null);
 			} catch (IOException e) {
 				logger.error("创建索引文件目录失败", e);
 				throw new RuntimeException("创建索引文件目录失败", e);
 			}
 
-			// try {
-			// IndexWriterConfig config = new IndexWriterConfig(analyzer);
-			//
-			// indexWriter = new IndexWriter(directory, config);
-			// } catch (IOException e) {
-			// logger.error("打开索引文件目录失败", e);
-			// throw new RuntimeException("打开索引文件目录失败", e);
-			// }
 			return indexManager;
 		}
 
@@ -104,27 +107,34 @@ public class IndexManager {
 	 */
 	public synchronized boolean createIndex(String id, String tableName, Map<String, String> fieldMap) {
 		IndexWriter indexWriter = null;
+		IndexWriter ramIndexWriter = null;
 		try {
+
+			// 操作内存的IndexWriter
+			IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
+			ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
+
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			indexWriter = new IndexWriter(directory, config);
+			
 			Document document = new Document();
 			document.add(new TextField(SearchContants.ID, id, Store.YES));
 			document.add(new TextField(SearchContants.TABLENAME, tableName, Store.YES));
 
 			for (String key : fieldMap.keySet()) {
 				TextField field = new TextField(key, fieldMap.get(key), Store.YES);
-				//设置搜索权重
-				if(SearchEnum.title.getSearchField().equals(key)){
+				// 设置搜索权重
+				if (SearchEnum.title.getSearchField().equals(key)) {
 					field.setBoost(10f);
-				}else if(SearchEnum.author_name.getSearchField().equals(key)){
+				} else if (SearchEnum.author_name.getSearchField().equals(key)) {
 					field.setBoost(8f);
-				}else if(SearchEnum.author_penname.getSearchField().equals(key)){
+				} else if (SearchEnum.author_penname.getSearchField().equals(key)) {
 					field.setBoost(8f);
-				}else if(SearchEnum.category_sec_name.getSearchField().equals(key)){
+				} else if (SearchEnum.category_sec_name.getSearchField().equals(key)) {
 					field.setBoost(3f);
-				}else if(SearchEnum.category_thr_name.getSearchField().equals(key)){
+				} else if (SearchEnum.category_thr_name.getSearchField().equals(key)) {
 					field.setBoost(5f);
-				}else if(SearchEnum.intro.getSearchField().equals(key)){
+				} else if (SearchEnum.intro.getSearchField().equals(key)) {
 					field.setBoost(1f);
 				}
 
@@ -132,6 +142,9 @@ public class IndexManager {
 			}
 			indexWriter.addDocument(document);
 			indexWriter.commit();
+
+			ramIndexWriter.addDocument(document);
+			ramIndexWriter.commit();
 			return true;
 		} catch (Exception e) {
 			logger.error("创建索引失败", e);
@@ -139,8 +152,16 @@ public class IndexManager {
 		} finally {
 			if (indexWriter != null) {
 				try {
-					indexWriter.rollback();
 					indexWriter.close();
+				} catch (IOException e) {
+					logger.error("创建索引失败", e);
+					throw new RuntimeException("创建索引失败", e);
+				}
+			}
+
+			if (ramIndexWriter != null) {
+				try {
+					ramIndexWriter.close();
 				} catch (IOException e) {
 					logger.error("创建索引失败", e);
 					throw new RuntimeException("创建索引失败", e);
@@ -164,12 +185,11 @@ public class IndexManager {
 		DirectoryReader ireader = null;
 
 		try {
-			ireader = DirectoryReader.open(directory);
+			ireader = DirectoryReader.open(ramDirectory);
 			IndexSearcher isearcher = new IndexSearcher(ireader);
 
 			QueryParser parser = new MultiFieldQueryParser(fields, analyzer);
 			Query query = parser.parse(text);
-
 
 			// 查询前多少行数据
 			int totle = pageNo * pageCount;
@@ -212,7 +232,14 @@ public class IndexManager {
 	 */
 	public synchronized boolean deleteIndex(Map<String, String> fields) {
 		IndexWriter indexWriter = null;
+
+		IndexWriter ramIndexWriter = null;
+
 		try {
+
+			// 操作内存的IndexWriter
+			IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
+			ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
 
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			indexWriter = new IndexWriter(directory, config);
@@ -232,11 +259,19 @@ public class IndexManager {
 		} finally {
 			if (indexWriter != null) {
 				try {
-					indexWriter.rollback();
 					indexWriter.close();
 				} catch (IOException e) {
 					logger.error("删除索引失败", e);
 					throw new RuntimeException("删除索引失败", e);
+				}
+			}
+
+			if (ramIndexWriter != null) {
+				try {
+					ramIndexWriter.close();
+				} catch (IOException e) {
+					logger.error("创建索引失败", e);
+					throw new RuntimeException("创建索引失败", e);
 				}
 			}
 		}
@@ -255,7 +290,14 @@ public class IndexManager {
 	 */
 	public synchronized boolean updateIndex(String id, String tableName, Map<String, String> fieldMap) {
 		IndexWriter indexWriter = null;
+
+		IndexWriter ramIndexWriter = null;
+
 		try {
+
+			// 操作内存的IndexWriter
+			IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
+			ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
 
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			indexWriter = new IndexWriter(directory, config);
@@ -277,11 +319,19 @@ public class IndexManager {
 		} finally {
 			if (indexWriter != null) {
 				try {
-					indexWriter.rollback();
 					indexWriter.close();
 				} catch (IOException e) {
 					logger.error("更新索引失败", e);
 					throw new RuntimeException("更新索引失败", e);
+				}
+			}
+
+			if (ramIndexWriter != null) {
+				try {
+					ramIndexWriter.close();
+				} catch (IOException e) {
+					logger.error("创建索引失败", e);
+					throw new RuntimeException("创建索引失败", e);
 				}
 			}
 		}
@@ -293,24 +343,23 @@ public class IndexManager {
 		//
 		// @Override
 		// public void run() {
-		// for (int i = 0; i < 100; i++) {
-		// Map<String, String> fieldMap = new HashMap<String, String>();
-		// fieldMap.put(SearchEnum.title.getSearchField(), "升棺发财"+i);
-		// fieldMap.put(SearchEnum.author_name.getSearchField(), "冯媛 哈智超 李晓");
-		// fieldMap.put(SearchEnum.intro.getSearchField(),
-		// "【全网独家】陆垚在上大学时重逢幼儿园同学马俐，虽然彼此心存好感，但由于陆垚有严重的“表白障碍症”，只能眼巴巴看着自己的女神马俐与别人谈恋爱。而自此之后很多年，陆垚只能以朋友的名义爱着马俐，也与她开始了一段“友情不甘、恋人不敢”的长跑。围绕那一片暧昧的感情空间，细腻描写男女主角之间小心翼翼的进退和试探，总有某个场景戳中你过往的某个记忆瞬间。世间有多少表白，总是止于唇齿，葬于岁月。兜兜转转十数年而过，回过头来，发现心底还保留着那份最初的期待，还能找回一段纯粹动人的爱情。");
-		// fieldMap.put(SearchEnum.author_penname.getSearchField(), "冯媛 哈智超
-		// 李晓");
-		// fieldMap.put(SearchEnum.category_sec_name.getSearchField(), "小说");
-		// fieldMap.put(SearchEnum.category_thr_name.getSearchField(), "影视小说");
-		//
-		// IndexManager.getManager().createIndex("151", "book", fieldMap);
-		//
-		//// Map<String, String> fieldMap1 = new HashMap<String, String>();
-		//// fieldMap.put("ynynyn" + i, "wqwq" + i);
-		//// IndexManager.getManager().createIndex("ddddd" + i, "book",
-		// fieldMap1);
-		// }
+		for (int i = 0; i < 100; i++) {
+			Map<String, String> fieldMap = new HashMap<String, String>();
+			fieldMap.put(SearchEnum.title.getSearchField(), "升棺发财" + i);
+			fieldMap.put(SearchEnum.author_name.getSearchField(), "冯媛 哈智超 李晓");
+			fieldMap.put(SearchEnum.intro.getSearchField(),
+					"【全网独家】陆垚在上大学时重逢幼儿园同学马俐，虽然彼此心存好感，但由于陆垚有严重的“表白障碍症”，只能眼巴巴看着自己的女神马俐与别人谈恋爱。而自此之后很多年，陆垚只能以朋友的名义爱着马俐，也与她开始了一段“友情不甘、恋人不敢”的长跑。围绕那一片暧昧的感情空间，细腻描写男女主角之间小心翼翼的进退和试探，总有某个场景戳中你过往的某个记忆瞬间。世间有多少表白，总是止于唇齿，葬于岁月。兜兜转转十数年而过，回过头来，发现心底还保留着那份最初的期待，还能找回一段纯粹动人的爱情。");
+			fieldMap.put(SearchEnum.author_penname.getSearchField(), "冯媛 哈智超李晓");
+			fieldMap.put(SearchEnum.category_sec_name.getSearchField(), "小说");
+			fieldMap.put(SearchEnum.category_thr_name.getSearchField(), "影视小说");
+
+			IndexManager.getManager().createIndex("151", "book", fieldMap);
+
+			// Map<String, String> fieldMap1 = new HashMap<String, String>();
+			// fieldMap.put("ynynyn" + i, "wqwq" + i);
+			// IndexManager.getManager().createIndex("ddddd" + i, "book",
+			// fieldMap1);
+		}
 		// }
 		// });
 		////
@@ -351,8 +400,8 @@ public class IndexManager {
 		//// // thread1.start();
 		//// // //
 		// thread.start();
-		List<Map<String, String>> list = IndexManager.getManager().searchIndex("大学",
-				new String[] { SearchEnum.intro.getSearchField(), SearchEnum.title.getSearchField() }, 11);
+		List<Map<String, String>> list = IndexManager.getManager().searchIndex("发财",
+				new String[] { SearchEnum.title.getSearchField() }, 1);
 		// // for (Map<String, String> map : list) {
 		// // System.out.println(map.keySet());
 		// // }
