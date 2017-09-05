@@ -82,7 +82,7 @@ public class RankClimbController extends BaseController {
             if(slides != null && slides.size() > 0){
                 for(Element slideItem : slides){
                     String title = slideItem.child(0).child(0).attr("title");
-                    logger.info("编辑推荐7本书名："+ title);
+                    logger.info("首页驱动编辑推荐7本书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -125,7 +125,7 @@ public class RankClimbController extends BaseController {
                 Elements bookEles = childDoc.select(".book-info");
                 if(bookEles != null && bookEles.size() > 0){
                     String title = bookEles.get(0).child(0).child(0).text();
-                    logger.info("编辑推荐文字和图片推荐书名："+ title);
+                    logger.info("首页驱动编辑推荐文字和图片推荐书名："+ title);
                     saveDrive(title,1,0);
                 }
             }
@@ -140,7 +140,7 @@ public class RankClimbController extends BaseController {
             if(hotEles != null && hotEles.size() > 0){
                 for(Element hotEle : hotEles){
                     String title = hotEle.child(0).attr("alt");
-                    logger.info("热门作品左侧的3本封面推荐书名："+ title);
+                    logger.info("首页驱动热门作品左侧的3本封面推荐书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -157,7 +157,7 @@ public class RankClimbController extends BaseController {
             if(newEles != null && newEles.size() > 0){
                 for(Element newEle : newEles){
                     String title = newEle.child(0).attr("alt");
-                    logger.info("新书推荐左侧的3本封面推荐书名："+ title);
+                    logger.info("首页驱动新书推荐左侧的3本封面推荐书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -174,7 +174,7 @@ public class RankClimbController extends BaseController {
             if(finishEles != null && finishEles.size() > 0){
                 for(Element finishEle : finishEles){
                     String title = finishEle.child(0).attr("alt");
-                    logger.info("完本精品左侧的3本封面推荐书名："+ title);
+                    logger.info("首页驱动完本精品左侧的3本封面推荐书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -201,7 +201,7 @@ public class RankClimbController extends BaseController {
                 if(eleThumbBooks != null && eleThumbBooks.size() > 0){
                     for(int i = 0; i < eleThumbBooks.size() - 1; i++){
                         String title = eleThumbBooks.get(i).text().trim();
-                        logger.info("起点女生封推前4本书名："+ title);
+                        logger.info("首页驱动起点女生封推前4本书名："+ title);
                         saveDrive(title,1,0);
                     }
                 }
@@ -218,7 +218,7 @@ public class RankClimbController extends BaseController {
             Elements girlEditEles = girlDoc.select(".description");
             if(girlEditEles != null && girlEditEles.size() > 0){
                 String title = girlEditEles.get(0).child(0).child(0).child(0).text();
-                logger.info("起点女生首页编辑推荐图片推荐书名："+ title);
+                logger.info("首页驱动起点女生首页编辑推荐图片推荐书名："+ title);
             }else{
                 logger.info("爬虫首页驱动起点女生首页编辑推荐图片推荐未获取到数据");
             }
@@ -234,7 +234,7 @@ public class RankClimbController extends BaseController {
             if(girlClickEles != null && girlClickEles.size() > 0){
                 for(Element girlClickEle : girlClickEles){
                     String title = girlClickEle.text();
-                    logger.info("起点女生周点击榜的10本书名："+ title);
+                    logger.info("首页驱动起点女生周点击榜的10本书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -251,7 +251,7 @@ public class RankClimbController extends BaseController {
             if(girlNewEles != null && girlNewEles.size() > 0){
                 for(Element girlNewEle : girlNewEles){
                     String title = girlNewEle.child(0).attr("alt");
-                    logger.info("起点女生新书推荐左侧的3本封面推荐书名："+ title);
+                    logger.info("首页驱动起点女生新书推荐左侧的3本封面推荐书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -268,7 +268,7 @@ public class RankClimbController extends BaseController {
             if(girlFullEles != null && girlFullEles.size() > 0){
                 for(Element girlFullEle : girlFullEles){
                     String title = girlFullEle.child(0).attr("alt");
-                    logger.info("起点女生完本精品的5本封面推荐书名："+ title);
+                    logger.info("首页驱动起点女生完本精品的5本封面推荐书名："+ title);
                 }
             }else{
                 logger.info("爬虫首页驱动起点女生完本精品的5本封面推荐未获取到数据");
@@ -284,7 +284,7 @@ public class RankClimbController extends BaseController {
             if(strongEles != null && strongEles.size() > 0){
                 for(Element strongEle : strongEles){
                     String title = strongEle.text();
-                    logger.info("起点首页本周强推17本书名："+ title);
+                    logger.info("首页驱动起点首页本周强推17本书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -301,7 +301,7 @@ public class RankClimbController extends BaseController {
             if(girlStrongEles != null && girlStrongEles.size() > 0){
                 for(Element girlStrongEle : girlStrongEles){
                     String title = girlStrongEle.text();
-                    logger.info("起点女生首页本周强推15本图书书名："+ title);
+                    logger.info("首页驱动起点女生首页本周强推15本图书书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -326,7 +326,7 @@ public class RankClimbController extends BaseController {
             if(saleEles != null && saleEles.size() > 0){
                 for(Element saleEle : saleEles){
                     String title = saleEle.text();
-                    logger.info("24小时热销榜20本书名："+ title);
+                    logger.info("首页驱动24小时热销榜20本书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -351,7 +351,7 @@ public class RankClimbController extends BaseController {
             if(girlSaleEles != null && girlSaleEles.size() > 0){
                 for(Element girlSaleEle : girlSaleEles){
                     String title = girlSaleEle.text();
-                    logger.info("起点女生24小时热销榜20本书名："+ title);
+                    logger.info("首页驱动起点女生24小时热销榜20本书名："+ title);
                     saveDrive(title,1,0);
                 }
             }else{
@@ -439,7 +439,7 @@ public class RankClimbController extends BaseController {
                 if (eles3 != null && eles3.size() > 0) {
                     for (Element ele : eles3) {
                         String title = ele.text();
-                        logger.info("二次元第三个链接100本书名：i_" + i + "_title_" + title);
+                        logger.info("首页二次元第三个链接100本书名：i_" + i + "_title_" + title);
                         saveDrive(title,1,0);
                     }
                 }else{
@@ -466,7 +466,7 @@ public class RankClimbController extends BaseController {
             //http://a.qidian.com/?page=1&style=1&pageSize=20&siteid=1&hiddenField=0
             //这个链接选择男生→全部，按照人气值排序
             String baseUrl = "http://a.qidian.com/?page=1&style=1&pageSize=20&siteid=1&hiddenField=0&page=%d";
-            for(int i = 1; i < 20; i++){
+            for(int i = 1; i < 40; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -502,7 +502,7 @@ public class RankClimbController extends BaseController {
             //http://a.qidian.com/mm?orderId=&style=1&pageSize=20&siteid=0&hiddenField=0&page=1
             //这个链接选择女生→全部，按照人气值排序
             String baseUrl = "http://a.qidian.com/mm?orderId=&style=1&pageSize=20&siteid=0&hiddenField=0&page=%d";
-            for(int i = 1; i < 20; i++){
+            for(int i = 1; i < 40; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -541,7 +541,7 @@ public class RankClimbController extends BaseController {
             //http://r.qidian.com/mm/subscr?style=1
             //https://www.readnovel.com/rank/hotsales?period=2&pageNum=1
             String baseUrl1 = "http://r.qidian.com/yuepiao?style=1&page=%d";
-            for(int i = 1; i < 11; i++){
+            for(int i = 1; i < 20; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl1,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -565,7 +565,7 @@ public class RankClimbController extends BaseController {
 
         try{
             String baseUrl2 = "http://r.qidian.com/mm/yuepiao?style=1&page=%d";
-            for(int i = 1; i < 11; i++){
+            for(int i = 1; i < 20; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl2,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -613,7 +613,7 @@ public class RankClimbController extends BaseController {
 
         try{
             String baseUrl4 = "http://r.qidian.com/mm/subscr?style=1&page=%d";
-            for(int i = 1; i < 6; i++){
+            for(int i = 1; i < 20; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl4,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -637,7 +637,7 @@ public class RankClimbController extends BaseController {
 
         try{
             String baseUrl5 = "https://www.readnovel.com/rank/hotsales?period=2&pageNum=%d";
-            for(int i = 1; i < 6; i++){
+            for(int i = 1; i < 20; i++){
                 Document doc = Jsoup.connect(String.format(baseUrl5,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -674,7 +674,7 @@ public class RankClimbController extends BaseController {
 //            http://fin.qidian.com/mm
 //            https://www.readnovel.com/finish
             String baseUrl1 = "http://r.qidian.com/fin?style=1&page=%d";
-            for (int i = 1; i < 11; i++) {
+            for (int i = 1; i < 20; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl1,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -698,7 +698,7 @@ public class RankClimbController extends BaseController {
 
         try{
             String baseUrl2 = "http://fin.qidian.com/mm?action=hidden&orderId=&style=1&pageSize=20&siteid=0&hiddenField=2&page=%d";
-            for (int i = 1; i < 11; i++) {
+            for (int i = 1; i < 20; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl2,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -722,7 +722,7 @@ public class RankClimbController extends BaseController {
 
         try{
             String baseUrl3 = "https://www.readnovel.com/finish?pageSize=10&gender=2&catId=-1&isFinish=1&isVip=-1&size=-1&updT=-1&orderBy=0&pageNum=%d";
-            for (int i = 1; i < 11; i++) {
+            for (int i = 1; i < 20; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl3,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -766,7 +766,7 @@ public class RankClimbController extends BaseController {
 //        https://www.readnovel.com/rank/newbook?period=2&pageNum=1
         String baseUrl1 = "http://r.qidian.com/signnewbook?style=1&page=%d";
         try{
-            for (int i = 1; i < 5; i++) {
+            for (int i = 1; i < 20; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl1,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -814,7 +814,7 @@ public class RankClimbController extends BaseController {
 
         String baseUrl3 = "http://r.qidian.com/pubnewbook?style=1&page=%d";
         try{
-            for (int i = 1; i < 5; i++) {
+            for (int i = 1; i < 20; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl3,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -838,7 +838,7 @@ public class RankClimbController extends BaseController {
 
         String baseUrl4 = "http://r.qidian.com/mm/pubnewbook?style=1&page=%d";
         try{
-            for (int i = 1; i < 5; i++) {
+            for (int i = 1; i < 15; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl4,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -862,7 +862,7 @@ public class RankClimbController extends BaseController {
 
         String baseUrl5 = "http://r.qidian.com/newsign?style=1&page=%d";
         try{
-            for (int i = 1; i < 5; i++) {
+            for (int i = 1; i < 20; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl5,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -886,7 +886,7 @@ public class RankClimbController extends BaseController {
 
         String baseUrl6 = "http://r.qidian.com/mm/newsign?style=1&page=%d";
         try{
-            for (int i = 1; i < 5; i++) {
+            for (int i = 1; i < 10; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl6,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -910,7 +910,7 @@ public class RankClimbController extends BaseController {
 
         String baseUrl7 = "http://r.qidian.com/newauthor?style=1&page=%d";
         try{
-            for (int i = 1; i < 5; i++) {
+            for (int i = 1; i < 20; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl7,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -934,7 +934,7 @@ public class RankClimbController extends BaseController {
 
         String baseUrl8 = "http://r.qidian.com/mm/newauthor?style=1&page=%d";
         try{
-            for (int i = 1; i < 5; i++) {
+            for (int i = 1; i < 20; i++) {
                 Document doc = Jsoup.connect(String.format(baseUrl8,i))
                         .userAgent(USER_AGENT) // 设置 User-Agent
                         .cookie("auth", "token") // 设置 cookie
@@ -1052,12 +1052,12 @@ public class RankClimbController extends BaseController {
     public static void main(String[] args) {
         RankClimbController climbController = new RankClimbController();
         //climbController.climbIndexDrive();
-        //climbController.climbSecDrive();
+        climbController.climbSecDrive();
         //climbController.climbBoyDrive();
         //climbController.climbGirlDrive();
         //climbController.climbSaleDrive();
         //climbController.climbFullDrive();
-        climbController.climbNewDrive();
+        //climbController.climbNewDrive();
     }
 
 }
