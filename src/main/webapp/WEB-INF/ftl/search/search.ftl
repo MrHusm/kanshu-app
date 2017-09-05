@@ -33,22 +33,20 @@
         <#if pageFinder.data??>
             <#list pageFinder.data as driveBook>
                 <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId?c},'${driveBook.book.title}')">
-                    <div class="bookListImg">
-                        <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-                    </div>
+                    <img class="bookListImg" data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                     <div class="bookList">
                         <div class="bookName">${driveBook.book.title}</div>
                         <div class="bookInfo">
                             <#if driveBook.book.intro??>
-                                <#if driveBook.book.intro?length gt 40>
-                                    ${driveBook.book.intro?substring(0,40)}...
+                                <#if driveBook.book.intro?replace("　","")?replace("　","")?length gt 40>
+                                    ${driveBook.book.intro?replace("　","")?replace("　","")?substring(0,40)}...
                                 <#else>
-                                    ${driveBook.book.intro}
+                                    ${driveBook.book.intro?replace("　","")?replace("　","")}
                                 </#if>
                             </#if>
                         </div>
                         <div class="authorBox">
-                            <div class="authorNmae">${driveBook.book.authorPenname}</div>
+                            <div class="authorNmae">作者：${driveBook.book.authorPenname}</div>
                             <div class="bookGenre">
                                 <div class="bookGenrePublic">${driveBook.book.categorySecName}</div>
                                 <div class="bookGenrePublic bookGenrePublicStyle">${driveBook.book.categoryThrName}</div>

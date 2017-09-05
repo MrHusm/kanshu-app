@@ -127,6 +127,7 @@ public class UserController extends BaseController {
                 user.setPassword("v"+Long.toHexString(System.currentTimeMillis()));
                 user.setDeviceType(deviceType);
                 user.setDeviceSerialNo(deviceSerialNo);
+                user.setLogo("http://47.94.174.25:8081/img/user_logo_default.jpg");
                 if(StringUtils.isNotBlank(channel)){
                     user.setChannel(Integer.parseInt(channel));
                     user.setChannelNow(Integer.parseInt(channel));
@@ -355,6 +356,7 @@ public class UserController extends BaseController {
             return;
         }
         try{
+            logger.info("修改昵称为："+nickName);
             if(nickName.length() > 8){
                 sender.fail(-1, "昵称不能超过8个字", response);
             }else{

@@ -16,12 +16,12 @@
                 <li class="readingBoxName">${book.title}</li>
                 <li class="readingBoxAuthor">${book.authorPenname}</li>
                 <li class="readingBoxType">${book.categoryThrName}</li>
-                <li class="readingBoxsize">字数：${wordCount}</li>
+                <li class="readingBoxsize">${wordCount}</li>
             </ul>
         </div>
         <div class="readingBtn">
             <input type="button" onclick="window.JSHandle.openRead(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="<#if readBtn == 0>免费试读<#else>阅读</#if>" class="readingBtnPub readingActive">
-            <input type="button" onclick="window.JSHandle.addToShelf(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="收藏" class="readingBtnPub">
+            <input type="button" onclick="window.JSHandle.addToShelf(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="+书架" class="readingBtnPub">
         </div>
         <div class="readingCont">
             <p class="readingContP">
@@ -42,8 +42,8 @@
             </#if>
 
         </div>
-        <div class="radingBottonBox">
-            <div class="readingBotL" onclick="window.JSHandle.openCatalog(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})">
+        <div class="radingBottonBox" onclick="window.JSHandle.openCatalog(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})">
+            <div class="readingBotL">
                 <img src="/img/icon/menuIcon.png" alt="" class="readingBotLImg" />
                 <span>目录</span>
             </div>
@@ -58,22 +58,20 @@
     <#list authorBooks as authorBook >
         <#if authorBook.bookId != book.bookId>
             <section class="bookListBox" onclick="bookInfo(${authorBook.bookId?c},'${authorBook.title}')">
-                <div class="bookListImg">
-                    <img data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-                </div>
+                <img class="bookListImg" data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                 <div class="bookList">
                     <div class="bookName">${authorBook.title}</div>
                     <div class="bookInfo">
                         <#if authorBook.intro??>
-                            <#if authorBook.intro?length gt 40>
-                                ${authorBook.intro?substring(0,40)}...
+                            <#if authorBook.intro?replace("　","")?replace("　","")?length gt 40>
+                                ${authorBook.intro?replace("　","")?replace("　","")?substring(0,40)}...
                             <#else>
-                                ${authorBook.intro}
+                                ${authorBook.intro?replace("　","")?replace("　","")}
                             </#if>
                         </#if>
                     </div>
                     <div class="authorBox">
-                        <div class="authorNmae">${authorBook.authorPenname}</div>
+                        <div class="authorNmae">作者：${authorBook.authorPenname}</div>
                         <div class="bookGenre">
                             <div class="bookGenrePublic">${authorBook.categorySecName}</div>
                             <div class="bookGenrePublic bookGenrePublicStyle">${authorBook.categoryThrName}</div>
@@ -92,22 +90,20 @@
     <div class="h6"><i class="h6Icon"></i>看了本书的用户还看了</div>
     <#list relatedBooks as driveBook>
         <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId?c},'${driveBook.book.title}')">
-            <div class="bookListImg">
-                <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-            </div>
+            <img class="bookListImg" data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             <div class="bookList">
                 <div class="bookName">${driveBook.book.title}</div>
                 <div class="bookInfo">
                     <#if driveBook.book.intro??>
-                        <#if driveBook.book.intro?length gt 40>
-                            ${driveBook.book.intro?substring(0,40)}...
+                        <#if driveBook.book.intro?replace("　","")?replace("　","")?length gt 40>
+                            ${driveBook.book.intro?replace("　","")?replace("　","")?substring(0,40)}...
                         <#else>
-                            ${driveBook.book.intro}
+                            ${driveBook.book.intro?replace("　","")?replace("　","")}
                         </#if>
                     </#if>
                 </div>
                 <div class="authorBox">
-                    <div class="authorNmae">${driveBook.book.authorPenname}</div>
+                    <div class="authorNmae">作者：${driveBook.book.authorPenname}</div>
                     <div class="bookGenre">
                         <div class="bookGenrePublic">${driveBook.book.categorySecName}</div>
                         <div class="bookGenrePublic bookGenrePublicStyle">${driveBook.book.categoryThrName}</div>

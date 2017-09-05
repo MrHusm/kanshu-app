@@ -17,10 +17,10 @@
             您没有消费记录
         </#if>
     </div>
-    <div class="pageBoxBtn">
-        <input class="pageBtnPub" type="button" onclick="window.history.go(-1)" value="返回">
-        <input class="pageBtnPub" onclick="window.location.reload()" type="button" value="重新加载">
-    </div>
+    <#--<div class="pageBoxBtn">-->
+        <#--<input class="pageBtnPub" type="button" onclick="window.history.go(-1)" value="返回">-->
+        <#--<input class="pageBtnPub" onclick="window.location.reload()" type="button" value="重新加载">-->
+    <#--</div>-->
 </div>
 </body>
 </html>

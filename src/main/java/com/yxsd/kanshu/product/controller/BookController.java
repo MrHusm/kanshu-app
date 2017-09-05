@@ -134,7 +134,7 @@ public class BookController extends BaseController {
         if(book.getWordCount() < 9999){
             model.addAttribute("wordCount",book.getWordCount());
         }else{
-            model.addAttribute("wordCount",book.getWordCount() / 10000.0 +"万+");
+            model.addAttribute("wordCount",String .format("%.1f",book.getWordCount() / 10000.0)  +"万+");
         }
 
         int diffDay = DateUtil.diffDate(new Date(),book.getLastChapterUpdateDate());
@@ -309,6 +309,13 @@ public class BookController extends BaseController {
                 chapterMap.put("price",chapter.getPrice());
                 chapterMap.put("idx",chapter.getIdx());
                 chapterMap.put("lock",true);
+                if(chapter.getPrice() <= 0){
+                    //章节价格小于等于0
+                    chapter.setLock(false);
+                    chapterMap.put("lock",false);
+                    continue;
+                }
+
                 if(book.getIsFree() == 0){
                     //免费图书
                     chapter.setLock(false);
@@ -398,6 +405,15 @@ public class BookController extends BaseController {
 
             if(book.getIsFree() == 0){
                 //免费图书
+                chapter.setLock(false);
+            }
+            if(book.getChargeType() == 2 && book.getPrice() <=0){
+                //按本付费书 且价格小于等于0
+                chapter.setLock(false);
+            }
+
+            if(chapter.getPrice() <= 0){
+                //章节小于等于0
                 chapter.setLock(false);
             }
 
@@ -516,7 +532,10 @@ public class BookController extends BaseController {
             map.put("chapterId",chapterId);
             map.put("channel",channel);
             //购买
-            int code = this.userService.charge(Long.parseLong(userId),chapter.getPrice(),Constants.CONSUME_TYPE_S1,map);
+            int code = 0;
+            if(chapter.getPrice() > 0){
+                code = this.userService.charge(Long.parseLong(userId),chapter.getPrice(),Constants.CONSUME_TYPE_S1,map);
+            }
             if(code == 0){
                 sender.put("code",0);
                 sender.put("message","购买成功");
@@ -733,7 +752,10 @@ public class BookController extends BaseController {
             map.put("bookId",bookId);
             map.put("channel",channel);
             //购买
-            int code = this.userService.charge(Long.parseLong(userId),book.getPrice(),Constants.CONSUME_TYPE_S3,map);
+            int code = 0;
+            if(book.getPrice() > 0){
+                code = this.userService.charge(Long.parseLong(userId),book.getPrice(),Constants.CONSUME_TYPE_S3,map);
+            }
             if(code == 0){
                 sender.put("code",0);
                 sender.put("message","购买成功");
@@ -946,6 +968,9 @@ public class BookController extends BaseController {
         for(int i = 0; i < chapters.size(); i++){
             Chapter c = chapters.get(i);
             if(c.getIsFree() == 0){
+                continue;
+            }
+            if(c.getPrice() <=0){
                 continue;
             }
 

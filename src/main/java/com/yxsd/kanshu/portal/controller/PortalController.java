@@ -9,6 +9,7 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.model.Category;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.ICategoryService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @Scope("prototype")
@@ -69,6 +67,19 @@ public class PortalController extends BaseController{
             type = "1";
         }
         PageFinder<DriveBook> pageFinder = this.driveBookService.findPageWithCondition(Integer.parseInt(type),query);
+        //榜单封面图
+        List<DriveBook> boyDriveBooks = this.driveBookService.getDriveBooks(2,1);
+        if(CollectionUtils.isNotEmpty(boyDriveBooks)){
+            model.addAttribute("boyImg",boyDriveBooks.get(0).getBook().getCoverUrl());
+        }
+        List<DriveBook> girlDriveBooks = this.driveBookService.getDriveBooks(3,1);
+        if(CollectionUtils.isNotEmpty(boyDriveBooks)){
+            model.addAttribute("girlImg",girlDriveBooks.get(0).getBook().getCoverUrl());
+        }
+        List<DriveBook> secDriveBooks = this.driveBookService.getDriveBooks(4,1);
+        if(CollectionUtils.isNotEmpty(boyDriveBooks)){
+            model.addAttribute("secImg",secDriveBooks.get(0).getBook().getCoverUrl());
+        }
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("type",type);
         return "/portal/portal_index";
@@ -90,6 +101,19 @@ public class PortalController extends BaseController{
             List<Category> categories = this.categoryService.getCategorysByPid(parentCategory.getCategoryId());
             map.put(parentCategory.getName(),categories);
             data.add(map);
+        }
+        //榜单封面图
+        List<DriveBook> saleDriveBooks = this.driveBookService.getDriveBooks(6,1);
+        if(CollectionUtils.isNotEmpty(saleDriveBooks)){
+            model.addAttribute("saleImg",saleDriveBooks.get(0).getBook().getCoverUrl());
+        }
+        List<DriveBook> fullDriveBooks = this.driveBookService.getDriveBooks(7,1);
+        if(CollectionUtils.isNotEmpty(fullDriveBooks)){
+            model.addAttribute("fullImg",fullDriveBooks.get(0).getBook().getCoverUrl());
+        }
+        List<DriveBook> newDriveBooks = this.driveBookService.getDriveBooks(8,1);
+        if(CollectionUtils.isNotEmpty(newDriveBooks)){
+            model.addAttribute("newImg",newDriveBooks.get(0).getBook().getCoverUrl());
         }
         model.addAttribute("data",data);
         return "/portal/category_index";

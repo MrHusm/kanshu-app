@@ -13,15 +13,21 @@
     <aside class="newBookBox">
         <ul class="bookPopular" onclick="rankList(6,'全站畅销')">
             <li class="newbook">全站畅销</li>
-            <li class="newbookBox"><img class="newbookImg" src="/img/other/book1.jpg"></li>
+            <li class="newbookBox">
+                <img class="newbookImg" data-echo="${saleImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+            </li>
         </ul>
         <ul class="bookPopular" onclick="rankList(7,'完结精选')">
             <li class="newbook">完结精选</li>
-            <li class="newImg"><img class="newbookImg" src="/img/other/book2.jpg"></li>
+            <li class="newImg">
+                <img class="newbookImg" data-echo="${fullImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+            </li>
         </ul>
         <ul class="bookPopular" onclick="rankList(8,'重磅新书')">
             <li class="newbook">重磅新书</li>
-            <li class="newImg"><img class="newbookImg" src="/img/other/book3.jpg"></li>
+            <li class="newImg">
+                <img class="newbookImg" data-echo="${newImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+            </li>
         </ul>
     </aside>
 
@@ -50,6 +56,7 @@
 
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
+<script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
     function categoryBooks(categoryId,title){
         var url = "/portal/categoryBooks.go?categoryId="+categoryId;
@@ -61,6 +68,11 @@
         var url = "/portal/rankList.go?type="+type;
         window.JSHandle.goToHtml(url,title,0,0);
     }
+
+    Echo.init({
+        offset: 0,
+        throttle: 0
+    });
 </script>
 </body>
 </html>

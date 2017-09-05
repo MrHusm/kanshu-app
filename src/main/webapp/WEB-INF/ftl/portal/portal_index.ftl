@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>精选</title>
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="/css/index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="/css/reset_5.css">
+    <link rel="stylesheet" href="/css/index.css">
     <script src="/js/jquery.min.js"></script>
 </head>
 <body>
@@ -15,17 +14,23 @@
         <ul class="bookPopular" onclick="rankList(2,'男生')">
             <li class="newbook">男生最爱</li>
             <li class="newInfo">都市玄幻万本爽文</li>
-            <li class="newbookBox"><img class="newbookImg" src="/img/other/book1.jpg"></li>
+            <li class="newbookBox">
+                <img class="newbookImg" data-echo="${boyImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+            </li>
         </ul>
         <ul class="bookPopular" onclick="rankList(3,'女生')">
             <li class="newbook">女生频道</li>
             <li class="newInfo">言情后宫跌宕起伏</li>
-            <li class="newImg"><img class="newbookImg" src="/img/other/book2.jpg"></li>
+            <li class="newImg">
+                <img class="newbookImg" data-echo="${girlImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+            </li>
         </ul>
         <ul class="bookPopular" onclick="rankList(4,'二次元')">
             <li class="newbook">二次元</li>
             <li class="newInfo">初音未来唯美世界</li>
-            <li class="newImg"><img class="newbookImg" src="/img/other/book3.jpg"></li>
+            <li class="newImg">
+                <img class="newbookImg" data-echo="${secImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+            </li>
         </ul>
     </aside>
     <div class="hr"></div>
@@ -34,22 +39,20 @@
         <#if pageFinder.data??>
             <#list pageFinder.data as driveBook>
                 <section class="bookListBox" onclick="bookInfo(${driveBook.book.bookId?c},'${driveBook.book.title}')">
-                    <div class="bookListImg">
-                        <img data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-                    </div>
+                    <img class="bookListImg" data-echo="${driveBook.book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                     <div class="bookList">
                         <div class="bookName">${driveBook.book.title}</div>
                         <div class="bookInfo">
                             <#if driveBook.book.intro??>
-                                <#if driveBook.book.intro?length gt 40>
-                                    ${driveBook.book.intro?substring(0,40)}...
+                                <#if driveBook.book.intro?replace("　","")?replace("　","")?length gt 40>
+                                    ${driveBook.book.intro?replace("　","")?replace("　","")?substring(0,40)}...
                                 <#else>
-                                    ${driveBook.book.intro}
+                                    ${driveBook.book.intro?replace("　","")?replace("　","")}
                                 </#if>
                             </#if>
                         </div>
                         <div class="authorBox">
-                            <div class="authorNmae">${driveBook.book.authorPenname}</div>
+                            <div class="authorNmae">作者：${driveBook.book.authorPenname}</div>
                             <div class="bookGenre">
                                 <div class="bookGenrePublic">${driveBook.book.categorySecName}</div>
                                 <div class="bookGenrePublic bookGenrePublicStyle">${driveBook.book.categoryThrName}</div>

@@ -14,22 +14,20 @@
     <#if pageFinder??>
         <#list pageFinder.data as book>
             <section class="bookListBox" onclick="bookInfo(${book.bookId?c},'${book.title}')">
-                <div class="bookListImg">
-                    <img data-echo="${book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-                </div>
+                <img class="bookListImg" data-echo="${book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                 <div class="bookList">
                     <div class="bookName">${book.title}</div>
                     <div class="bookInfo">
                         <#if book.intro??>
-                            <#if book.intro?length gt 40>
-                                ${book.intro?substring(0,40)}...
+                            <#if book.intro?replace("　","")?replace("　","")?length gt 40>
+                                ${book.intro?replace("　","")?replace("　","")?substring(0,40)}...
                             <#else>
-                                ${book.intro}
+                                ${book.intro?replace("　","")?replace("　","")}
                             </#if>
                         </#if>
                     </div>
                     <div class="authorBox">
-                        <div class="authorNmae">${book.authorPenname}</div>
+                        <div class="authorNmae">作者：${book.authorPenname}</div>
                         <div class="bookGenre">
                             <div class="bookGenrePublic">${book.categorySecName}</div>
                             <div class="bookGenrePublic bookGenrePublicStyle">${book.categoryThrName}</div>
