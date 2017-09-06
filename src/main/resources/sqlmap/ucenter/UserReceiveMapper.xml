@@ -5,6 +5,7 @@
         <id column="id" property="id" jdbcType="BIGINT" />
         <result column="user_id" property="userId" jdbcType="BIGINT" />
         <result column="vip_status" property="vipStatus" jdbcType="INTEGER" />
+        <result column="cancel_vip_times" property="cancelVipTimes" jdbcType="INTEGER" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -12,7 +13,7 @@
         <if test="userId != null"> and user_id= #{userId}</if>
     </sql>
     <sql id="Base_Column_List">
-        id,user_id,vip_status,create_date,update_date
+        id,user_id,vip_status,cancel_vip_times,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -30,6 +31,7 @@
             <if test="id != null">id,</if>
             <if test="userId != null">user_id,</if>
             <if test="vipStatus != null">vip_status,</if>
+            <if test="cancelVipTimes != null">cancel_vip_times,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
@@ -42,6 +44,9 @@
             </if>
             <if test="vipStatus != null">
                 #{vipStatus,jdbcType=INTEGER},
+            </if>
+            <if test="cancelVipTimes != null">
+                #{cancelVipTimes,jdbcType=INTEGER},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
@@ -60,6 +65,9 @@
             </if>
             <if test="vipStatus != null">
                 vip_status = #{vipStatus,jdbcType=INTEGER},
+            </if>
+            <if test="cancelVipTimes != null">
+                cancel_vip_times = #{cancelVipTimes,jdbcType=INTEGER},
             </if>
             <if test="updateDate != null">
                 update_date= #{updateDate,jdbcType=TIMESTAMP},
