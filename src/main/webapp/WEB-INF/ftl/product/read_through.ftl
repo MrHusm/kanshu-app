@@ -38,7 +38,7 @@
 </div>
 </#if>
 
-<#if driveBooks??>
+<#if relatedBooks??>
 <div class="hr"></div>
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i>看了本书的用户还看了</div>
