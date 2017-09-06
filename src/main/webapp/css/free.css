@@ -107,8 +107,8 @@ aside{
     text-align: center;
 }
 aside > :nth-child(2){
-    border-left: 2px solid #e5e5e5;
-    border-right: 2px solid #e5e5e5;
+    border-left: 1px solid #e5e5e5;
+    border-right: 1px solid #e5e5e5;
 }
 .bookPopular{
     width: 33%;
@@ -130,7 +130,8 @@ aside > :nth-child(2){
     padding: 10px 6px;
 }
 .newbookImg{
-    height: 120px;
+    width:80px;
+    height:100px;
 }
 .freeDivisionNmae{
     font-size: 18px;

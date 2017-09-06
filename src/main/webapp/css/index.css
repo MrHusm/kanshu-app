@@ -11,8 +11,8 @@ aside{
     text-align: center;
 }
 aside > :nth-child(2){
-    border-left: 2px solid #e5e5e5;
-    border-right: 2px solid #e5e5e5;
+    border-left: 1px solid #e5e5e5;
+    border-right: 1px solid #e5e5e5;
 }
 .bookPopular{
     width: 33%;
@@ -31,7 +31,8 @@ aside > :nth-child(2){
     box-sizing: border-box;
 }
 .newbookImg{
-    height: 120px;
+    width:80px;
+    height:100px;
 }
 article{
     padding: 20px 10px 0;

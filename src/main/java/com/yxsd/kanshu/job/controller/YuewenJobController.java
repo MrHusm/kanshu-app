@@ -2,6 +2,7 @@ package com.yxsd.kanshu.job.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yxsd.kanshu.base.contants.Constants;
+import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.*;
@@ -269,8 +270,6 @@ public class YuewenJobController extends BaseController {
 					Book book = setBook(bookInfoResp);
 					//保存图书
 					bookService.save(book);
-					//创建搜索索引
-					//IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
 					//调用阅文获取书籍卷列表
 					List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
 					if (volumeInfoResps != null) {
@@ -378,10 +377,7 @@ public class YuewenJobController extends BaseController {
 											//保存图书
 											bookService.save(book);
 											//创建搜索索引
-											long start = System.currentTimeMillis();
 											//IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
-											long end = System.currentTimeMillis();
-											logger.info("start:"+start +",end:"+end+",diff:"+(end-start)/1000);
 											//调用阅文获取书籍卷列表
 											List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
 											if(volumeInfoResps != null){
@@ -448,6 +444,8 @@ public class YuewenJobController extends BaseController {
 						//创建线程池
 						updateBooksPool = new ThreadPoolExecutor(COREPOOL_SIZE + 6, COREPOOL_SIZE + 6, THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS,
 								new LinkedBlockingQueue<Runnable>(THREAD_POOL_QUEUE_SIZE + 10000), new CallerRunsPolicy());
+					}else{
+						logger.info("阅文图书更新线程池完成的任务数量："+updateBooksPool.getCompletedTaskCount()+",队列中的数量："+updateBooksPool.getQueue().size());
 					}
 					for (final String cbid : cbids) {
 						updateBooksPool.execute(new Runnable() {
@@ -468,6 +466,8 @@ public class YuewenJobController extends BaseController {
 										book.setBookId(beforeBook.getBookId());
 										//修改图书
 										bookService.update(book);
+										//创建搜索索引
+										//IndexManager.getManager().updateIndex(SearchContants.ID, SearchContants.TABLENAME, setIndexField(book));
 
 										//调用阅文获取书籍卷列表
 										List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
@@ -546,6 +546,10 @@ public class YuewenJobController extends BaseController {
 						if(book != null){
 							book.setShelfStatus(0);
 							bookService.update(book);
+							//删除搜索索引
+							Map<String,String> fieldMap = new HashMap<String,String>();
+							fieldMap.put(SearchContants.ID,String.valueOf(book.getBookId()));
+							//IndexManager.getManager().deleteIndex(fieldMap);
 							logger.info("unshelfBooks 图书下架成功："+cbid);
 						}else{
 							logger.info("unshelfBooks 图书不存在："+cbid);
@@ -618,9 +622,13 @@ public class YuewenJobController extends BaseController {
 								ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid);
 						if(beforeBook == null){
 							bookService.save(book);
+							//创建搜索索引
+							//IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
 						}else{
 							book.setBookId(beforeBook.getBookId());
 							bookService.update(book);
+							//修改搜索索引
+							//IndexManager.getManager().updateIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
 						}
 
 						//调用阅文获取书籍卷列表
@@ -727,7 +735,8 @@ public class YuewenJobController extends BaseController {
 										+ ",copyrightChapterId=" + chapterInfoResp.getcCID());
 								Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode",
 										ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
-										"copyrightChapterId", chapterInfoResp.getcCID().toString());
+										"copyrightChapterId", chapterInfoResp.getcCID().toString(),
+										"num",book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 								if(beforeChapter == null){
 									chapterService.saveChapter(chapter,book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 								}else{
@@ -812,12 +821,12 @@ public class YuewenJobController extends BaseController {
 				logger.info("beforeChapter params:copyrightBookId={},copyrightChapterId={}", cbid, ccid);
 				Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode",
 						ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
-						"copyrightChapterId", ccid);
+						"copyrightChapterId", ccid,"num",book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 				if(beforeChapter == null){
-					chapterService.saveChapter(chapter,volume.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+					chapterService.saveChapter(chapter,book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 				}else{
 					chapter.setChapterId(beforeChapter.getChapterId());
-					chapterService.updateChapter(chapter,volume.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+					chapterService.updateChapter(chapter,book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
 				}
 				int chapterPullStatus = 1;
 				String chapterPullFailureCause = "";
@@ -1578,7 +1587,8 @@ public class YuewenJobController extends BaseController {
 									cbid +", copyrightChapterId="+ chapterInfoResp.getcCID() +"]");
 
 							Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
-									"copyrightBookId", cbid, "copyrightChapterId", chapterInfoResp.getcCID().toString());
+									"copyrightBookId", cbid, "copyrightChapterId", chapterInfoResp.getcCID().toString(),
+									"num",bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 
 							int chapterPullStatus = 1;
 							String chapterPullFailureCause = "";
@@ -1628,7 +1638,8 @@ public class YuewenJobController extends BaseController {
 						//查询是否拉取过该章节
 						Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode",
 								ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
-								"copyrightChapterId", chapterInfoResp.getcCID().toString());
+								"copyrightChapterId", chapterInfoResp.getcCID().toString(),
+								"num",bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 						if(beforeChapter == null){
 							chapterService.saveChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 						}else{

@@ -1,35 +1,40 @@
-#阅文图书初始拉取job
-*/2 * * * * sh /usr/local/shell/pullBooks_online.sh
+#阅文图书初始拉取job 两分钟拉取一次
+*/2 * * * * sh /usr/local/shell/pullBooks/pullBooks.sh
 
-#阅文图书处理拉取失败图书job
+#阅文图书处理拉取失败图书job 每两小时处理拉取失败的图书
+0 */2 * * * sh /usr/local/shell/failbooks/failbooks.sh
 
-#阅文图书处理拉取失败卷job
+#阅文图书处理拉取失败卷job 每一小时处理拉取失败的卷
+0 */1 * * * sh /usr/local/shell/failvolumes/failvolumes.sh
 
-#阅文图书处理拉取失败章节job
+#阅文图书处理拉取失败章节job 每半小时处理拉取失败的章节
+*/30 * * * * sh /usr/local/shell/failchapters/failchapters.sh
 
-#阅文图书定时更新job
+#阅文图书定时更新job 每十分钟拉取更新前30分钟内更新的图书
+*/10 * * * * sh /usr/local/shell/updateBooks/updateBooks_one.sh
 
-#阅文图书定时下架job
+#阅文图书定时下架job 每两小时拉取更新前4小时内更新的图书
+0 */2 * * * sh /usr/local/shell/updateBooks/updateBooks_two.sh
 
 #首页驱动爬虫job
-0 4 * * * sh /usr/local/shell/climbIndexDrive.sh
+0 4 * * * sh /usr/local/shell/climbIndexDrive/climbIndexDrive.sh
 
 #首页二次元驱动爬虫job
-0 4 * * * sh /usr/local/shell/climbSecDrive.sh
+10 4 * * * sh /usr/local/shell/climbDrive/climbSecDrive.sh
 
 #首页男生驱动爬虫job
-0 4 * * * sh /usr/local/shell/climbBoyDrive.sh
+20 4 * * * sh /usr/local/shell/climbDrive/climbBoyDrive.sh
 
 #首页女生驱动爬虫job
-0 4 * * * sh /usr/local/shell/climbGirlDrive.sh
+30 4 * * * sh /usr/local/shell/climbDrive/climbGirlDrive.sh
 
 #全站畅销驱动爬虫job
-0 4 * * * sh /usr/local/shell/climbSaleDrive.sh
+40 4 * * * sh /usr/local/shell/climbDrive/climbSaleDrive.sh
 
 #完结精选驱动爬虫job
-0 4 * * * sh /usr/local/shell/climbFullDrive.sh
+50 4 * * * sh /usr/local/shell/climbDrive/climbFullDrive.sh
 
 #重磅新书驱动爬虫job
-0 4 * * * sh /usr/local/shell/climbNewDrive.sh
+0 5 * * * sh /usr/local/shell/climbDrive/climbNewDrive.sh
 
 
