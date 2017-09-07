@@ -10,23 +10,26 @@
     <script src="/js/jquery.min.js"></script>
 </head>
 <body class="newBg">
-<div id="classifyBoxTwo" class="classifyBox">
-    <div class="classifyBox2 newClassifyBox2 ">
+<div id="classifyBoxTwo" class="classifyBox newClassifyBox">
+    <div class="classifyBox1 newClassifyBox1">
+        <span id="selectType">${category.name}</span>、<span id="selectType2">不限</span><img class="classifyBoxImg" src="/img/icon/downIcon.png" alt="" onclick="userClick3()" />
+    </div>
+    <div class="classifyBox2 newClassifyBox2 none">
         <div class="newClear">
-            <div class="classifyBoxTit classifyBoxTit1 <#if !childCategoryId?? || childCategoryId==''>classifyBox2Active</#if>" data-id="tit1-1" onclick="userClick(this,${category.categoryId?c},'')">${category.name}</div>
+            <div class="classifyBoxTit classifyBoxTit1 <#if !childCategoryId?? || childCategoryId==''>classifyBox2Active</#if>" data-id="tit1-1" onclick="userClick(this,${category.categoryId?c},'',selectType)">${category.name}</div>
             <ul class="classifyBoxUl classifyBoxUl1 newClear">
                 <#if childCategorys??>
                     <#list childCategorys as childCategory>
-                        <li <#if  childCategoryId?? && childCategoryId == '${childCategory.categoryId?c}'>class="classifyBox2Active"</#if> data-id="tit1-${childCategory_index+2}" onclick="userClick(this,${category.categoryId?c},${childCategory.categoryId?c})">${childCategory.name}</li>
+                        <li <#if  childCategoryId?? && childCategoryId == '${childCategory.categoryId?c}'>class="classifyBox2Active"</#if> data-id="tit1-${childCategory_index+2}" onclick="userClick(this,${category.categoryId?c},${childCategory.categoryId?c},selectType)">${childCategory.name}</li>
                     </#list>
                 </#if>
             </ul>
         </div>
         <div class="newClear">
-            <div class="classifyBoxTit classifyBoxTit2 <#if !isFull?? || isFull==''>classifyBox2Active</#if>" data-id="tit2-1" onclick="userClick2(this,'')">不限</div>
+            <div class="classifyBoxTit classifyBoxTit2 <#if !isFull?? || isFull==''>classifyBox2Active</#if>" data-id="tit2-1" onclick="userClick2(this,'',selectType2)">不限</div>
             <ul class="classifyBoxUl classifyBoxUl2 newClear">
-                <li data-id="tit2-2" <#if isFull?? && isFull=='1'>class="classifyBox2Active"</#if> onclick="userClick2(this,1)">完结</li>
-                <li data-id="tit2-3" <#if isFull?? && isFull=='0'>class="classifyBox2Active"</#if> onclick="userClick2(this,0)">连载</li>
+                <li data-id="tit2-2" <#if isFull?? && isFull=='1'>class="classifyBox2Active"</#if> onclick="userClick2(this,1,selectType2)">完结</li>
+                <li data-id="tit2-3" <#if isFull?? && isFull=='0'>class="classifyBox2Active"</#if> onclick="userClick2(this,0,selectType2)">连载</li>
             </ul>
         </div>
     </div>
@@ -71,7 +74,7 @@
     var _childCategoryId = <#if childCategoryId??>${childCategoryId}<#else>null</#if>;
     var _isFull = <#if isFull??>${isFull}<#else>null</#if>;
 
-    function userClick(obj,categoryId,childCategoryId){
+    function userClick(obj,categoryId,childCategoryId,id){
         _categoryId = categoryId;
         _childCategoryId = childCategoryId;
         if ($(obj).is('.classifyBoxTit')) {
@@ -88,10 +91,13 @@
                 }
             })
         }
+        $(id).text();
+        $(id).text($(obj).text());
+
         var url = "/portal/categoryBooks.go?categoryId="+_categoryId+"&childCategoryId="+(_childCategoryId==null?'':_childCategoryId)+"&isFull="+(_isFull==null?"":_isFull);
         window.location.href=url;
     }
-    function userClick2(obj,isFull){
+    function userClick2(obj,isFull,id){
         _isFull = isFull;
         if ($(obj).is('.classifyBoxTit')) {
             $('.classifyBoxTit2').removeClass('classifyBox2Active');
@@ -107,9 +113,34 @@
                 }
             })
         }
+        $(id).text();
+        $(id).text($(obj).text());
+
         var url = "/portal/categoryBooks.go?categoryId="+_categoryId+"&childCategoryId="+(_childCategoryId==null?'':_childCategoryId)+"&isFull="+(_isFull==null?"":_isFull);
         window.location.href=url;
     }
+
+    function userClick3() {
+        $('.newClassifyBox2').show();
+        $('.newClassifyBox1').css('top','-41px');
+    }
+
+    $(function () {
+        $(window).scroll(function () {
+            var sum = $('#classifyBoxOne').height()+$('.bookHeader').outerHeight(false);
+            var scroll = $(window).scrollTop();
+            if (scroll > sum) {
+                $('#classifyBoxTwo').css('top','0');
+                $('.newClassifyBox2').hide();
+                $('.newClassifyBox1').css('top','0');
+            }
+            if (scroll < sum) {
+                $('#classifyBoxTwo').css('top','-41px');
+                $('.newClassifyBox2').hide();
+                $('.newClassifyBox1').css('top','-41px');
+            }
+        })
+    })
 
     function bookInfo(bookId,title) {
         var url = "/book/bookDetail.go?bookId="+bookId;

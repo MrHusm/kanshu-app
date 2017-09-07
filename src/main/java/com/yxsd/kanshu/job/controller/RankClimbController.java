@@ -389,7 +389,7 @@ public class RankClimbController extends BaseController {
                 for(Element ele : eles){
                     String title = ele.text();
                     logger.info("首页二次元第一个链接20本书名："+ title);
-                    saveDrive(title,1,0);
+                    saveDrive(title,4,0);
                 }
             }else{
                 logger.info("爬虫首页驱动二次元第一个链接20本未获取到数据");
@@ -414,7 +414,7 @@ public class RankClimbController extends BaseController {
                 for(Element ele : eles2){
                     String title = ele.child(0).child(0).text();
                     logger.info("首页二次元第二个链接10本书名："+ title);
-                    saveDrive(title,1,0);
+                    saveDrive(title,4,0);
                 }
             }else{
                 logger.error("爬虫首页驱动二次元第二个链接10本未获取到数据");
@@ -440,7 +440,7 @@ public class RankClimbController extends BaseController {
                     for (Element ele : eles3) {
                         String title = ele.text();
                         logger.info("首页二次元第三个链接100本书名：i_" + i + "_title_" + title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,4,0);
                     }
                 }else{
                     logger.error("爬虫首页驱动二次元第二个链接10本未获取到数据_i="+i);
@@ -477,7 +477,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("首页男生驱动20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,2,0);
                     }
                 }else{
                     logger.info("爬虫首页男生驱动未获取到数据i="+i);
@@ -513,7 +513,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("首页女生驱动20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,3,0);
                     }
                 }else{
                     logger.info("爬虫首页女生驱动未获取到数据i="+i);
@@ -552,7 +552,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第一个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,6,0);
                     }
                 }else{
                     logger.info("爬虫全站畅销驱动第一个链接未获取到数据i="+i);
@@ -576,7 +576,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第二个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,6,0);
                     }
                 }else{
                     logger.info("爬虫全站畅销驱动第二个链接未获取到数据i="+i);
@@ -600,7 +600,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第三个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,6,0);
                     }
                 }else{
                     logger.info("爬虫全站畅销驱动第三个链接未获取到数据i="+i);
@@ -624,7 +624,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第四个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,6,0);
                     }
                 }else{
                     logger.info("爬虫全站畅销驱动第四个链接未获取到数据i="+i);
@@ -648,7 +648,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("全站畅销驱动第五个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,6,0);
                     }
                 }else{
                     logger.info("爬虫全站畅销驱动第五个链接未获取到数据i="+i);
@@ -685,7 +685,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("完结精选驱动第一个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,7,0);
                     }
                 }else{
                     logger.error("爬虫完结精选驱动第一个链接未获取到数据i="+i);
@@ -709,7 +709,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("完结精选驱动第二个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,7,0);
                     }
                 }else{
                     logger.error("爬虫完结精选驱动第二个链接未获取到数据i="+i);
@@ -733,7 +733,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : eles){
                         String title = ele.child(0).child(0).text();
                         logger.info("完结精选驱动第三个链接10本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,7,0);
                     }
                 }else{
                     logger.error("爬虫完结精选驱动第三个链接未获取到数据i="+i);
@@ -777,7 +777,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第一个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.error("爬虫重磅新书驱动第一个链接未获取到数据i="+i);
@@ -801,7 +801,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第二个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.info("爬虫重磅新书驱动第二个链接未获取到数据i="+i);
@@ -825,7 +825,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第三个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.info("爬虫重磅新书驱动第三个链接未获取到数据i="+i);
@@ -849,7 +849,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第四个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.info("爬虫重磅新书驱动第四个链接未获取到数据i="+i);
@@ -873,7 +873,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第五个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.info("爬虫重磅新书驱动第五个链接未获取到数据i="+i);
@@ -897,7 +897,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第六个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.info("爬虫重磅新书驱动第六个链接未获取到数据i="+i);
@@ -921,7 +921,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第七个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.info("爬虫重磅新书驱动第七个链接未获取到数据i="+i);
@@ -945,7 +945,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第八个链接20本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.info("爬虫重磅新书驱动第八个链接未获取到数据i="+i);
@@ -969,7 +969,7 @@ public class RankClimbController extends BaseController {
                     for(Element ele : elements){
                         String title = ele.text();
                         logger.info("重磅新书驱动第九个链接10本书名：i_"+i+"_title_"+ title);
-                        saveDrive(title,1,0);
+                        saveDrive(title,8,0);
                     }
                 }else{
                     logger.info("爬虫重磅新书驱动第九个链接未获取到数据i="+i);
@@ -987,7 +987,9 @@ public class RankClimbController extends BaseController {
     /**
      * 将图书保存到驱动表
      * @param title  书名
-     * @param type   驱动类型   1：首页驱动 2：搜索榜 3：畅销榜
+     * @param type   驱动类型   1：首页驱动 2：首页男生最爱 3：首页女生频道
+     * 4：首页二次元 5：大家都在搜索 6：书库全站畅销
+     * 7：书库完结精选 8：书库重磅新书 9：限免 10：书籍相关图书
      * @param score  分数
      */
     public void saveDrive(String title,Integer type,Integer score) {
@@ -1025,7 +1027,7 @@ public class RankClimbController extends BaseController {
     public void onlineDrive(Integer type){
         logger.info("开始上线驱动type="+type);
         List<DriveBook> newDriveBooks = this.driveBookService.getDriveBooks(type,0);
-        if(newDriveBooks != null && newDriveBooks.size() > 50){
+        if(newDriveBooks != null && newDriveBooks.size() > 20){
             //查询出来放入缓存
             List<DriveBook> oldDriveBooks = this.driveBookService.getDriveBooks(type,1);
             if(CollectionUtils.isNotEmpty(oldDriveBooks)){

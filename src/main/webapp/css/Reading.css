@@ -29,7 +29,8 @@
     -webkit-flex-grow: 1;
     -ms-flex-grow: 1;
     flex-grow: 1;
-    width: 526px;
+    flex-shrink: 1;
+    -webkit-flex-shrink: 1;
 }
 .bookListImg{
     width: 75px;
@@ -49,7 +50,11 @@
     text-overflow: ellipsis;
 }
 .bookInfo{
-    margin: 9px 0;
+    margin: 10px 0 10px;
+    height:42px;
+    font-size: 15px;
+    overflow: hidden;
+    line-height: 1.45;
 }
 .authorNmae{
     line-height: 1.5;
@@ -57,6 +62,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 30%;
+    font-size: 15px;
 }
 .authorBox{
     display: -webkit-flex;
