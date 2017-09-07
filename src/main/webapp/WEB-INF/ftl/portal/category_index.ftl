@@ -39,7 +39,11 @@
             <#list map?keys as key>
                 <section class="freeDivision newClear">
                     <div class="freeDivisionNmae bdlColor">
-                        <i class="freeDivisionNmaeIcon freeDivisionNmaeColor1"></i>${key}
+                        <i class="freeDivisionNmaeIcon freeDivisionNmaeColor1"></i>
+                        <#if key == '男'>男频
+                        <#elseif key == '女'>女频
+                        <#else>${key}
+                        </#if>
                     </div>
                     <div class="tag newClear">
                         <#list map[key] as category>

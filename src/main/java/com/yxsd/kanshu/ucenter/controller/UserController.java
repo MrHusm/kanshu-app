@@ -625,4 +625,75 @@ public class UserController extends BaseController {
         }
     }
 
+    /**
+     * 取消领取VIP新手礼包 第三次取消自动领取
+     * @param response
+     * @param request
+     */
+    @RequestMapping("cancelNewUserVip")
+    public void cancelNewUserVip(HttpServletResponse response,HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String userId = request.getParameter("userId");
+        String days = request.getParameter("days");
+        String channel = request.getParameter("channel");
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_cancelNewUserVip：userId或days为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            sender.put("type",0);
+            sender.put("msg","取消成功");
+            UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
+            if(userReceive != null){
+                userReceive.setCancelVipTimes((userReceive.getCancelVipTimes() == null ? 0 : userReceive.getCancelVipTimes()) +1);
+                userReceive.setUpdateDate(new Date());
+                if(userReceive.getCancelVipTimes() >= 3
+                        && (userReceive.getVipStatus() == null || userReceive.getVipStatus() == 0)){
+                    //三次取消自动领取
+                    UserVip userVip = this.userVipService.findUniqueByParams("userId",userId);
+                    Calendar calendar = Calendar.getInstance();
+                    if(userVip != null){
+                        calendar.setTime(userVip.getEndDate());
+                        calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(days));
+                        userVip.setEndDate(calendar.getTime());
+                        userVip.setUpdateDate(new Date());
+                        this.userVipService.update(userVip);
+                    }else{
+                        userVip = new UserVip();
+                        calendar.setTime(new Date());
+                        calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(days));
+                        userVip.setEndDate(calendar.getTime());
+                        userVip.setUserId(Long.parseLong(userId));
+                        userVip.setUpdateDate(new Date());
+                        userVip.setCreateDate(new Date());
+                        if(StringUtils.isNotBlank(channel)){
+                            userVip.setChannel(Integer.parseInt(channel));
+                        }
+                        userVipService.save(userVip);
+                    }
+                    userReceive.setVipStatus(1);
+                    sender.put("type",1);
+                    sender.put("msg","取消三次，自动领取成功");
+                }
+                this.userReceiveService.update(userReceive);
+            }else{
+                userReceive = new UserReceive();
+                userReceive.setUserId(Long.parseLong(userId));
+                userReceive.setVipStatus(0);
+                userReceive.setCancelVipTimes(1);
+                userReceive.setUpdateDate(new Date());
+                userReceive.setCreateDate(new Date());
+                this.userReceiveService.save(userReceive);
+            }
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+    }
+
 }

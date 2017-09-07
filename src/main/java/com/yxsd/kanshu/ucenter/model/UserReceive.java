@@ -16,6 +16,11 @@ public class UserReceive implements Serializable{
      */
     private Integer vipStatus;
 
+    /**
+     * 取消领取新手礼包vip的次数
+     */
+    private Integer cancelVipTimes;
+
     private Date updateDate;
 
     private Date createDate;
@@ -42,6 +47,14 @@ public class UserReceive implements Serializable{
 
     public void setVipStatus(Integer vipStatus) {
         this.vipStatus = vipStatus;
+    }
+
+    public Integer getCancelVipTimes() {
+        return cancelVipTimes;
+    }
+
+    public void setCancelVipTimes(Integer cancelVipTimes) {
+        this.cancelVipTimes = cancelVipTimes;
     }
 
     public Date getUpdateDate() {
