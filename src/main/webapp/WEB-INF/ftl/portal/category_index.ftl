@@ -51,7 +51,6 @@
                         </#list>
                     </div>
                 </section>
-            <div class="hr"></div>
            </#list>
             </#list>
         </#if>
