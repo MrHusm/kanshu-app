@@ -6,9 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.controller.BaseController;
-import com.yxsd.kanshu.base.utils.DateUtil;
-import com.yxsd.kanshu.base.utils.JsonResultSender;
-import com.yxsd.kanshu.base.utils.ResultSender;
+import com.yxsd.kanshu.base.utils.*;
 import com.yxsd.kanshu.pay.model.AlipayResponse;
 import com.yxsd.kanshu.pay.service.IAlipayResponseService;
 import com.yxsd.kanshu.portal.model.DriveBook;
@@ -150,12 +148,20 @@ public class BookController extends BaseController {
         List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
 
         //用户还看了其他书
-        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(10,1);
-        if(CollectionUtils.isNotEmpty(driveBooks)){
-            if(driveBooks.size() > 10){
-                driveBooks = driveBooks.subList(0,10);
+        List<Book> relatedBooks = new ArrayList<Book>();
+        Query query = new Query();
+        query.setPage(1);
+        query.setPageSize(100);
+        Book condition = new Book();
+        condition.setCategorySecId(book.getCategorySecId());
+        PageFinder<Book> pageFinder = this.bookService.findPageFinderWithExpandObjs(condition, query);
+        if(pageFinder != null && CollectionUtils.isNotEmpty(pageFinder.getData())){
+            Collections.shuffle(pageFinder.getData());
+            if(pageFinder.getData().size() > 10){
+                relatedBooks = pageFinder.getData().subList(0,10);
+            }else{
+                relatedBooks = pageFinder.getData();
             }
-            Collections.shuffle(driveBooks);
         }
 
         List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
@@ -165,7 +171,7 @@ public class BookController extends BaseController {
         }
         model.addAttribute("tags",tags);
         model.addAttribute("authorBooks",authorBooks);
-        model.addAttribute("relatedBooks",driveBooks);
+        model.addAttribute("relatedBooks",relatedBooks);
         model.addAttribute("readBtn",readBtn);
         model.addAttribute("book",book);
         return "/product/book_detail";
@@ -244,17 +250,26 @@ public class BookController extends BaseController {
         List<Book> authorBooks = bookService.findListByParams("authorId",book.getAuthorId());
 
         //用户还看了其他书
-        List<DriveBook> driveBooks = this.driveBookService.getDriveBooks(10,1);
-        if(CollectionUtils.isNotEmpty(driveBooks)){
-            if(driveBooks.size() > 10){
-                driveBooks = driveBooks.subList(0,10);
+        List<Book> relatedBooks = new ArrayList<Book>();
+        Query query = new Query();
+        query.setPage(1);
+        query.setPageSize(100);
+        Book condition = new Book();
+        condition.setCategorySecId(book.getCategorySecId());
+        PageFinder<Book> pageFinder = this.bookService.findPageFinderWithExpandObjs(condition, query);
+        if(pageFinder != null && CollectionUtils.isNotEmpty(pageFinder.getData())){
+            Collections.shuffle(pageFinder.getData());
+            if(pageFinder.getData().size() > 10){
+                relatedBooks = pageFinder.getData().subList(0,10);
+            }else{
+                relatedBooks = pageFinder.getData();
             }
-            Collections.shuffle(driveBooks);
         }
 
         model.addAttribute("authorBooks",authorBooks);
-        model.addAttribute("relatedBooks",driveBooks);
-        //model.addAttribute("book",book.getIsFull());
+        model.addAttribute("relatedBooks",relatedBooks);
+        model.addAttribute("isFull",book.getIsFull());
+        model.addAttribute("bookId",book.getBookId());
         return "/product/read_through";
     }
 

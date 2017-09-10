@@ -617,6 +617,8 @@ public class UserController extends BaseController {
                 userReceive.setCreateDate(new Date());
                 this.userReceiveService.save(userReceive);
             }
+            //清除用户缓存
+            masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
             sender.success(response);
         }catch (Exception e){
             logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
@@ -677,6 +679,8 @@ public class UserController extends BaseController {
                     userReceive.setVipStatus(1);
                     sender.put("type",1);
                     sender.put("msg","取消三次，自动领取成功");
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
                 }
                 this.userReceiveService.update(userReceive);
             }else{

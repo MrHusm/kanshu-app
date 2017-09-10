@@ -178,7 +178,7 @@ var Lazy = {
             }
             var l = '正在载入&nbsp;<img src="/img/loading.gif">';
             //l="<p class=\"loading\"><span class=\"relative\"><b></b>正在加载更多...</span></p>";
-            l = "正在加载更多...";
+            l = "<img style='height:30px;' src='/img/loading.gif'>正在加载更多";
             c.html(l);
             d = 1;
             setTimeout(g,500);

@@ -145,15 +145,11 @@
                     <div class="bookName">${book.title}</div>
                     <div class="bookInfo">
                         <#if book.intro??>
-                            <#if book.intro?replace("　","")?replace("　","")?length gt 40>
-                                ${book.intro?replace("　","")?replace("　","")?substring(0,40)}...
-                            <#else>
-                                ${book.intro?replace("　","")?replace("　","")}
-                            </#if>
+                            ${book.intro?replace("　","")?replace("　","")}
                         </#if>
                     </div>
                     <div class="authorBox">
-                        <div class="authorNmae">作者：${book.authorPenname}</div>
+                        <div class="authorNmae">${book.authorPenname}</div>
                         <div class="bookGenre">
                             <div class="bookGenrePublic">${book.categorySecName}</div>
                             <div class="bookGenrePublic bookGenrePublicStyle">${book.categoryThrName}</div>

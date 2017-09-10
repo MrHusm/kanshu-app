@@ -25,15 +25,11 @@
                         <div class="bookName">${driveBook.book.title}</div>
                         <div class="bookInfo">
                             <#if driveBook.book.intro??>
-                                <#if driveBook.book.intro?replace("　","")?replace("　","")?length gt 40>
-                                    ${driveBook.book.intro?replace("　","")?replace("　","")?substring(0,40)}...
-                                <#else>
-                                    ${driveBook.book.intro?replace("　","")?replace("　","")}
-                                </#if>
+                                ${driveBook.book.intro?replace("　","")?replace("　","")}
                             </#if>
                         </div>
                         <div class="authorBox">
-                            <div class="authorNmae">作者：${driveBook.book.authorPenname}</div>
+                            <div class="authorNmae">${driveBook.book.authorPenname}</div>
                             <div class="bookGenre">
                                 <div class="bookGenrePublic">${driveBook.book.categorySecName}</div>
                                 <div class="bookGenrePublic bookGenrePublicStyle">${driveBook.book.categoryThrName}</div>

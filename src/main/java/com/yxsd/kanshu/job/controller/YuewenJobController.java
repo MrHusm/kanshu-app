@@ -1276,7 +1276,7 @@ public class YuewenJobController extends BaseController {
 		try {
 			//下载图书封面
 			String ext = bookInfoResp.getCoverurl().substring(bookInfoResp.getCoverurl().lastIndexOf("."));
-			String imgName = ConfigPropertieUtils.getString(YUEWEN_IMG_BASEPATH) + ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE) + File.separator + bookInfoResp.getcBID() % 100 + File.separator + bookInfoResp.getcBID()+ext;
+			String imgName = ConfigPropertieUtils.getString(YUEWEN_IMG_BASEPATH) + File.separator + ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE) + File.separator + bookInfoResp.getcBID() % 100 + File.separator + bookInfoResp.getcBID()+ext;
 			File img = new File(imgName);
 			FileUtils.copyURLToFile(new URL(bookInfoResp.getCoverurl()),img);
 		} catch (IOException e) {

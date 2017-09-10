@@ -42,6 +42,7 @@
                         <i class="freeDivisionNmaeIcon freeDivisionNmaeColor1"></i>
                         <#if key == '男'>男频
                         <#elseif key == '女'>女频
+                        <#elseif key == '其他'>出版物
                         <#else>${key}
                         </#if>
                     </div>
