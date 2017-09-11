@@ -65,11 +65,17 @@
     </#list>
 </div>
 </#if>
+<script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
     function bookInfo(bookId,title) {
         var url = "/book/bookDetail.go?bookId="+bookId;
         window.JSHandle.goToHtml(url,title,1,1);
     }
+
+    Echo.init({
+        offset: 0,
+        throttle: 0
+    });
 </script>
 </body>
 </html>
