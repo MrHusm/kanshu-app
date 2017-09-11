@@ -39,16 +39,18 @@
             <#list map?keys as key>
                 <section class="freeDivision newClear">
                     <div class="freeDivisionNmae bdlColor">
-                        <i class="freeDivisionNmaeIcon freeDivisionNmaeColor1"></i>
+                        <i class="freeDivisionNmaeIcon freeDivisionNmaeColor${(key_index % 4) + 1}"></i>
+                        <span style="vertical-align: middle;font-size: 22px;color: #000000;">
                         <#if key == '男'>男频
                         <#elseif key == '女'>女频
                         <#elseif key == '其他'>出版物
                         <#else>${key}
                         </#if>
+                        </span>
                     </div>
                     <div class="tag newClear">
                         <#list map[key] as category>
-                            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="categoryBooks(${category.categoryId?c},'${category.name}')">${category.name}</span></div>
+                            <div class="tagPub"><span class="tagCont tagPubStyle${(key_index % 4) + 1}" onclick="categoryBooks(${category.categoryId?c},'${category.name}')">${category.name}</span></div>
                         </#list>
                     </div>
                 </section>
