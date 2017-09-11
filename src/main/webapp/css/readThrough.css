@@ -9,12 +9,12 @@ body{
     margin-bottom: 5%;
 }
 .h6Icon{
-    height: 21px;
-    width: 4px;
-    margin-right: 2%;
+    height: 28.5px;
+    width: 3px;
+    margin-right: 3%;
     background: #0096ff;
     display: inline-block;
-    vertical-align: bottom;
+    vertical-align: middle;
 }
 .bookListBox{
     display: -webkit-flex;
