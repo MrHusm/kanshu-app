@@ -145,6 +145,7 @@ public class UserController extends BaseController {
                 userAccountService.save(userAccount);
             }
             sender.put("user",user);
+            sender.put("token",UserUtils.createToken(String.valueOf(user.getUserId())));
             sender.send(response);
         }catch (Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
@@ -162,20 +163,30 @@ public class UserController extends BaseController {
     public void findUserByCondition(HttpServletResponse response,HttpServletRequest request) {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String nickName = request.getParameter("nickName");
         String channel = request.getParameter("channel");
 
-        if(StringUtils.isBlank(userId) && StringUtils.isBlank(nickName)){
-            logger.error("UserController_findUserByCondition:userId和nickName为空");
+        if(StringUtils.isBlank(token) && StringUtils.isBlank(nickName)){
+            logger.error("UserController_findUserByCondition:token和nickName为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
         }
+
+
         try{
             User user = null;
-            if(StringUtils.isNotBlank(userId)){
-                user = userService.getUserByUserId(Long.parseLong(userId));
+            if(StringUtils.isNotBlank(token)){
+                String userId = UserUtils.getUserIdByToken(token);
+                if(StringUtils.isBlank(userId)){
+                    logger.error("UserController_findUserByCondition:token错误");
+                    sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                            ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
+                    return;
+                }else{
+                    user = userService.getUserByUserId(Long.parseLong(userId));
+                }
             }
             if(StringUtils.isNotBlank(nickName) && user == null){
                 user = userService.findUniqueByParams("nickName",nickName);
@@ -210,13 +221,20 @@ public class UserController extends BaseController {
     public void getSidebarInfo(HttpServletResponse response,HttpServletRequest request){
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String channel = request.getParameter("channel");
         String version = request.getParameter("version");
-        if(StringUtils.isBlank(userId) || StringUtils.isBlank(version) || StringUtils.isBlank(channel)){
-            logger.error("UserController_getSidebarInfo:userId或version或者channel为空");
+        if(StringUtils.isBlank(token) || StringUtils.isBlank(version) || StringUtils.isBlank(channel)){
+            logger.error("UserController_getSidebarInfo:token或version或者channel为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_getSidebarInfo:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -318,7 +336,8 @@ public class UserController extends BaseController {
     @RequestMapping("toUpdateNickName")
     public String toUpdateNickName(HttpServletResponse response,HttpServletRequest request,Model model){
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
+        String userId = UserUtils.getUserIdByToken(token);
         try{
             if(StringUtils.isBlank(userId)){
                 logger.error("UserController_toUpdateNickName:userId为空");
@@ -346,13 +365,20 @@ public class UserController extends BaseController {
     public void updateNickNameByUid(HttpServletResponse response,HttpServletRequest request) {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String nickName = request.getParameter("nickName");
 
-        if(StringUtils.isBlank(userId) || StringUtils.isBlank(nickName)){
-            logger.error("UserController_updateNickNameByUid：userId或者nickName为空");
+        if(StringUtils.isBlank(token) || StringUtils.isBlank(nickName)){
+            logger.error("UserController_updateNickNameByUid：token或者nickName为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_updateNickNameByUid:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -388,20 +414,27 @@ public class UserController extends BaseController {
     @RequestMapping("findUserAccountLog")
     public String findUserAccountLog(HttpServletResponse response,HttpServletRequest request,Model model) {
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String page = request.getParameter("page");
         //1：查询收入  2：查询书籍消费  3：查询其他消费（例如:购买VIP） 4:查询所有消费
         String type = request.getParameter("type");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
 
 
-        if(StringUtils.isBlank(userId) || StringUtils.isBlank(type)){
-            logger.error("UserController_findUserRechargeLog：userId或type为空");
+        if(StringUtils.isBlank(token) || StringUtils.isBlank(type)){
+            logger.error("UserController_findUserRechargeLog：token或type为空");
             return "error";
         }
+
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_findUserRechargeLog:token错误");
+            return "error";
+        }
+
         model.addAttribute("type",type);
         model.addAttribute("syn",syn);
-        model.addAttribute("userId",userId);
+        model.addAttribute("token",token);
         try{
             if("1".equals(type) || "3".equals(type)){
                 Query query = new Query();
@@ -475,17 +508,23 @@ public class UserController extends BaseController {
     @RequestMapping("findBookAccountLog")
     public String findBookAccountLog(HttpServletResponse response,HttpServletRequest request,Model model) {
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String bookId = request.getParameter("bookId");
         String page = request.getParameter("page");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
 
-        if(StringUtils.isBlank(userId) || StringUtils.isBlank(bookId)){
-            logger.error("UserController_findUserRechargeLog：userId或bookId为空");
+        if(StringUtils.isBlank(token) || StringUtils.isBlank(bookId)){
+            logger.error("UserController_findUserRechargeLog：token或bookId为空");
             return "error";
         }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_findUserRechargeLog:token错误");
+            return "error";
+        }
+
         model.addAttribute("syn",syn);
-        model.addAttribute("userId",userId);
+        model.addAttribute("token",token);
         model.addAttribute("bookId",bookId);
         try{
             Query query = new Query();
@@ -539,11 +578,18 @@ public class UserController extends BaseController {
     public void getNewUserVipInfo(HttpServletResponse response,HttpServletRequest request){
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String userId = request.getParameter("userId");
-        if(StringUtils.isBlank(userId)){
-            logger.error("UserController_getNewUserVipInfo：userId为空");
+        String token = request.getParameter("token");
+        if(StringUtils.isBlank(token)){
+            logger.error("UserController_getNewUserVipInfo：token为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_getNewUserVipInfo:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -572,13 +618,20 @@ public class UserController extends BaseController {
     public void receiveNewUserVip(HttpServletResponse response,HttpServletRequest request){
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String days = request.getParameter("days");
         String channel = request.getParameter("channel");
-        if(StringUtils.isBlank(userId)){
-            logger.error("UserController_getNewUserVipInfo：userId或days为空");
+        if(StringUtils.isBlank(token)){
+            logger.error("UserController_getNewUserVipInfo：token或days为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_getNewUserVipInfo:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -636,13 +689,20 @@ public class UserController extends BaseController {
     public void cancelNewUserVip(HttpServletResponse response,HttpServletRequest request){
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String days = request.getParameter("days");
         String channel = request.getParameter("channel");
-        if(StringUtils.isBlank(userId)){
-            logger.error("UserController_cancelNewUserVip：userId或days为空");
+        if(StringUtils.isBlank(token)){
+            logger.error("UserController_cancelNewUserVip：token或days为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("UserController_cancelNewUserVip:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{

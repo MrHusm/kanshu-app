@@ -1,12 +1,13 @@
 package com.yxsd.kanshu.product.controller;
 
 import com.yxsd.kanshu.base.controller.BaseController;
+import com.yxsd.kanshu.base.utils.UserUtils;
 import com.yxsd.kanshu.product.model.Vip;
 import com.yxsd.kanshu.product.service.IVipService;
 import com.yxsd.kanshu.ucenter.model.User;
+import com.yxsd.kanshu.ucenter.model.UserAccount;
 import com.yxsd.kanshu.ucenter.service.IUserAccountService;
 import com.yxsd.kanshu.ucenter.service.IUserService;
-import com.yxsd.kanshu.ucenter.model.UserAccount;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +41,16 @@ public class VipController extends BaseController {
 
     @RequestMapping("index")
     public String index(HttpServletResponse response, HttpServletRequest request,Model model) {
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         try {
+            if(StringUtils.isBlank(token)){
+                logger.error("VipController_index:token为空");
+                return "error";
+            }
+            String userId = UserUtils.getUserIdByToken(token);
             if(StringUtils.isBlank(userId)){
-                logger.error("VipController_index:userId为空");
-                response.sendRedirect("/user/login.go");
-                return null;
+                logger.error("VipController_index:token错误");
+                return "error";
             }
 
             User user = userService.getUserByUserId(Long.parseLong(userId));

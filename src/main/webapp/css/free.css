@@ -71,6 +71,7 @@
     float: right;
     padding: 3px;
     margin-left: 10px;
+    vertical-align: middle;
 }
 .bookGenrePublicStyle{
     border: 1px solid #82bce5;

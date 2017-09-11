@@ -84,6 +84,7 @@
     float: right;
     padding: 3px;
     margin-left: 10px;
+    vertical-align: middle;
 }
 .bookGenrePublicStyle{
     border: 1px solid #82bce5;
@@ -190,6 +191,7 @@ input.readingActive{
     display: inline-block;
     margin: 0 auto;
     box-sizing: inherit;
+    vertical-align: middle;
 }
 .tagPubStyle1{
     border: 1px solid #03a9fc;

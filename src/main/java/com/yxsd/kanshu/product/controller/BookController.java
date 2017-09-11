@@ -87,12 +87,19 @@ public class BookController extends BaseController {
         //入参
         String bookId = request.getParameter("bookId");
         String channel = request.getParameter("channel");
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
 
-        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(userId)){
-            logger.error("BookController_bookDetail:bookId或者userId为空");
+        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(token)){
+            logger.error("BookController_bookDetail:bookId或者token为空");
             return "error";
         }
+
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("BookController_bookDetail:token错误");
+            return "error";
+        }
+
         Book book = this.bookService.getBookById(Long.parseLong(bookId));
 
         //阅读按钮标识 0：免费试读 1：阅读
@@ -283,12 +290,19 @@ public class BookController extends BaseController {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String bookId = request.getParameter("bookId");
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
 
-        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(userId)){
-            logger.error("BookController_getBookCatalog:bookId或userId为空");
+        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(token)){
+            logger.error("BookController_getBookCatalog:bookId或token为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("BookController_getBookCatalog:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -404,13 +418,23 @@ public class BookController extends BaseController {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String chapterId = request.getParameter("chapterId");
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String bookId = request.getParameter("bookId");
+        //自动购买标识 1：自动购买 其他：非自动购买
+        String autoBuy = request.getParameter("autoBuy");
+        String channel = request.getParameter("channel");
 
-        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(userId)|| StringUtils.isBlank(bookId)){
-            logger.error("BookController_getChapterContent:chapterId或userId或bookId为空");
+        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(token)|| StringUtils.isBlank(bookId)){
+            logger.error("BookController_getChapterContent:chapterId或token或bookId为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("BookController_getChapterContent:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -491,12 +515,19 @@ public class BookController extends BaseController {
 
             //收费章节显示用户账号信息
             if(chapter.isLock()){
-                UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
+                if("1".equals(autoBuy)){
+                    //自动购买
+                    String buyUrl = "/book/buyChapter?chapterId="+chapterId+"&token="+token+"&bookId="+bookId+"&channel="+channel;
+                    response.sendRedirect(buyUrl);
+                }else{
+                    UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
 
-                chapter.setContent("");
-                //计费方式 1:按章 2:按本
-                sender.put("chargeType",book.getChargeType());
-                sender.put("money",userAccount.getMoney()+userAccount.getVirtualMoney());
+                    chapter.setContent("");
+                    //计费方式 1:按章 2:按本
+                    sender.put("chargeType",book.getChargeType());
+                    sender.put("money",userAccount.getMoney()+userAccount.getVirtualMoney());
+                    sender.put("unitPrice",book.getUnitPrice());
+                }
             }
 //            else{
 //                chapter.setContent(ZipUtils.gunzip(chapter.getContent()));
@@ -530,14 +561,21 @@ public class BookController extends BaseController {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String chapterId = request.getParameter("chapterId");
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String channel = request.getParameter("channel");
         String bookId = request.getParameter("bookId");
 
-        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(bookId) || StringUtils.isBlank(userId)){
-            logger.error("BookController_buyChapter:chapterId或userId或bookId为空");
+        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(bookId) || StringUtils.isBlank(token)){
+            logger.error("BookController_buyChapter:chapterId或token或bookId为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("BookController_buyChapter:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -579,13 +617,20 @@ public class BookController extends BaseController {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String chapterId = request.getParameter("chapterId");
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String bookId = request.getParameter("bookId");
 
-        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(bookId) || StringUtils.isBlank(userId)){
-            logger.error("BookController_toBuyBatchChapter:chapterId或userId或bookId为空");
+        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(bookId) || StringUtils.isBlank(token)){
+            logger.error("BookController_toBuyBatchChapter:chapterId或token或bookId为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("BookController_toBuyBatchChapter:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -680,16 +725,23 @@ public class BookController extends BaseController {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String chapterId = request.getParameter("chapterId");
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String bookId = request.getParameter("bookId");
         String channel = request.getParameter("channel");
         //-1：购买全部
         String count = request.getParameter("count");
 
-        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(bookId) || StringUtils.isBlank(userId)|| StringUtils.isBlank(count)){
-            logger.error("BookController_buyBatchChapter:chapterId或userId或count或bookId为空");
+        if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(bookId) || StringUtils.isBlank(token)|| StringUtils.isBlank(count)){
+            logger.error("BookController_buyBatchChapter:chapterId或token或count或bookId为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("BookController_buyBatchChapter:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{
@@ -750,14 +802,21 @@ public class BookController extends BaseController {
     public void buyBook(HttpServletResponse response, HttpServletRequest request) {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
-        String userId = request.getParameter("userId");
+        String token = request.getParameter("token");
         String bookId = request.getParameter("bookId");
         String channel = request.getParameter("channel");
 
-        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(userId)){
-            logger.error("BookController_buyBook:userId或count或bookId为空");
+        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(token)){
+            logger.error("BookController_buyBook:token或count或bookId为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("BookController_buyBook:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
             return;
         }
         try{

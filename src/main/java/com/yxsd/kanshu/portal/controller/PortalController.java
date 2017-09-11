@@ -23,7 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @Scope("prototype")
@@ -181,6 +185,7 @@ public class PortalController extends BaseController{
         String tag = null;
         try {
             tag = URLDecoder.decode(request.getParameter("tag"),"UTF-8");
+            model.addAttribute("tag", URLEncoder.encode(URLEncoder.encode(tag,"UTF-8"),"UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -202,7 +207,6 @@ public class PortalController extends BaseController{
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("page",page);
         model.addAttribute("syn",syn);
-        model.addAttribute("tag",tag);
         return "/portal/tag_books";
     }
 

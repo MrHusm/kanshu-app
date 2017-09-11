@@ -14,6 +14,7 @@ public enum ErrorCodeEnum {
     ERROR_CODE_10006(Integer.valueOf(10006), "参数内容不存在！"),
     ERROR_CODE_10007(Integer.valueOf(10007), "没有数据！"),
     ERROR_CODE_10008(Integer.valueOf(10008), "系统错误!"),
+    ERROR_CODE_10009(Integer.valueOf(10009), "token错误!"),
 
     ERROR_CODE_99999(Integer.valueOf(99999), "未定义错误");
 

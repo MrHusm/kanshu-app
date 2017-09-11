@@ -32,7 +32,7 @@
 </#if>
 <#if syn=='0'>
 </div>
-<div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/user/findUserAccountLog.go?userId=${userId}&page=${pageFinder.pageNo+1}&syn=1&type=${type}" style="display:none;"></div>
+<div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/user/findUserAccountLog.go?token=${token}&page=${pageFinder.pageNo+1}&syn=1&type=${type}" style="display:none;"></div>
 
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
