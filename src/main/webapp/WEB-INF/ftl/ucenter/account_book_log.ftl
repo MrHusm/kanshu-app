@@ -11,7 +11,7 @@
 <#if records??>
     <div class="pageLoad">
         <#list records as consume>
-            <div class="rechargeList">
+            <div class="rechargeList" <#if consume.type != -3>onclick="consumeDetail('${consume.bookId}','${consume.title}')" </#if>>
                 <div>${consume.title}</div>
                 <div class="rechargeTime">${consume.charge?c}钻&nbsp;|&nbsp;<time>${consume.createDate}</time></div>
             </div>
@@ -21,7 +21,10 @@
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
 <script>
-
+    function consumeDetail(bookId,title){
+        var url = "/user/findBookAccountLog.go?bookId="+bookId;
+        window.JSHandle.goToHtml(url,title,0,0);
+    }
 </script>
 </body>
 </html>

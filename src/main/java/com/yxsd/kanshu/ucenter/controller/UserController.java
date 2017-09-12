@@ -461,6 +461,7 @@ public class UserController extends BaseController {
                         map.put("charge",accountLog.getUnitMoney()+accountLog.getUnitVirtual());
                         map.put("createDate", DateUtil.formatDateByFormat(accountLog.getCreateDate(),DateUtil.DATE_PATTERN));
                         map.put("bookId",accountLog.getProductId());
+                        map.put("type",accountLog.getType());
                         //是否存在标识
                         int flag=0;
                         for (Map<String,Object> map1 : result) {
