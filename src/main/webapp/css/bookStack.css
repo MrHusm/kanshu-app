@@ -118,11 +118,15 @@ aside > :nth-child(2){
     flex-grow: 1;
     flex-shrink: 1;
     -webkit-flex-shrink: 1;
+    width: 85%;
+    text-align: justify;
 }
 .bookListImg{
     width: 75px;
     height: 100px;
     margin-right: 3%;
+    -webkit-flex-grow: 1;
+    -webkit-flex-shrink: 0;
 }
 .bookListImg img{
     width: 100%;
