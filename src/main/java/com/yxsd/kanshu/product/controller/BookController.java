@@ -515,13 +515,23 @@ public class BookController extends BaseController {
 
             //收费章节显示用户账号信息
             if(chapter.isLock()){
+                boolean flag = true;
                 if("1".equals(autoBuy)){
                     //自动购买
-                    String buyUrl = "/book/buyChapter?chapterId="+chapterId+"&token="+token+"&bookId="+bookId+"&channel="+channel;
-                    response.sendRedirect(buyUrl);
-                }else{
+                    String buyUrl = Constants.HOST_KANSHU + "book/buyChapter.go?chapterId="+chapterId+"&token="+token+"&bookId="+bookId+"&channel="+channel;
+                    String buyJson = HttpUtils.getContent(buyUrl,"UTF-8");
+                    Integer code = JSON.parseObject(buyJson).getJSONObject("data").getInteger("code");
+                    if(code != null && code == 0){
+                        sender.put("code",0);
+                        sender.put("message","自动购买成功");
+                        flag = false;
+                    }else{
+                        sender.put("code",-1);
+                        sender.put("message","自动购买失败");
+                    }
+                }
+                if(flag){
                     UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
-
                     chapter.setContent("");
                     //计费方式 1:按章 2:按本
                     sender.put("chargeType",book.getChargeType());
@@ -529,9 +539,7 @@ public class BookController extends BaseController {
                     sender.put("unitPrice",book.getUnitPrice());
                 }
             }
-//            else{
-//                chapter.setContent(ZipUtils.gunzip(chapter.getContent()));
-//            }
+
             //客户端需解压章节内容
             Map<String,Object> chapterMap = new HashMap<String, Object>();
             chapterMap.put("bookId",chapter.getBookId());

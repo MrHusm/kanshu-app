@@ -1,7 +1,6 @@
 package com.yxsd.kanshu.base.utils;
 
 import com.yxsd.kanshu.base.contants.Constants;
-import com.yxsd.kanshu.ucenter.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,8 +31,7 @@ public class UserUtils {
 
     /**
      * 通用参数链接
-     * @param req
-     * @param u
+     * @param request
      * @return
      */
     public static String getAppUrl(HttpServletRequest request) {

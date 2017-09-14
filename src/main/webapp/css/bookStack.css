@@ -118,7 +118,7 @@ aside > :nth-child(2){
     flex-grow: 1;
     flex-shrink: 1;
     -webkit-flex-shrink: 1;
-    width: 85%;
+    width: 72%;
     text-align: justify;
 }
 .bookListImg{
@@ -145,7 +145,7 @@ aside > :nth-child(2){
     height:42px;
     font-size: 15px;
     overflow: hidden;
-    line-height: 1.45;
+    line-height: 22px;
 }
 .authorNmae{
     line-height: 1.5;

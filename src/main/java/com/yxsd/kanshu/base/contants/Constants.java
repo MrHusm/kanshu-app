@@ -8,6 +8,9 @@ import java.util.regex.Pattern;
  * @date 2017/7/5.
  */
 public class Constants {
+    public static final String HOST_KANSHU = "http://47.94.174.25:8081/";
+    //public static final String HOST_KANSHU = "http://localhost:8080/";
+
     public static final String CMS_USER_INFO_STORED_IN_SESSION = "userSessionInfo";
     public static final String CMS_ERROR_MESSAGE = "cms_error_message";
     public static final String AJAX_REQUEST_RESULT_FAILURE = "failure";
@@ -18,7 +21,7 @@ public class Constants {
     public static final String ALL_FUNCTIONALITIES_SYSTEM = "all_functionalities_system";
     public static final String ALL_FUNCTIONALITIES_USER = "all_functionalities_user";
 
-    public static final String DES_KEY = "yxsd&kanshu&by*IP_read";
+    public static final String DES_KEY = "yxsd@kanshu&by@IP_read";
 
     public static final int CHAPTR_TABLE_NUM = 10;//章节表数量
 
