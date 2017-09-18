@@ -43,7 +43,7 @@ public class UserUtils {
     }
 
     public static void main(String[] args) {
-        String token = createToken("857");
+        String token = createToken("3342");
         System.out.println(token);
         System.out.println(getUserIdByToken(token));
 

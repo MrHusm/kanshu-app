@@ -1,11 +1,5 @@
 package com.yxsd.kanshu.search.service.impl;
 
-import javax.annotation.Resource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
@@ -14,6 +8,11 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.search.manager.IndexManager;
 import com.yxsd.kanshu.search.service.IndexService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 @Service(value = "indexService")
 public class IndexServiceImpl implements IndexService {
@@ -42,10 +41,8 @@ public class IndexServiceImpl implements IndexService {
 		}
 
 		int total = pageFinder.getRowCount();
-
 		if (total > pageFinder.getPageSize() && pageFinder.getPageNo() < end) {
-
-			for (int i = 2; i < end; i++) {
+			for (int i = start+1; i < end; i++) {
 				query.setPage(i);
 				query.setPageSize(1000);
 				pageFinder = bookService.findPageFinderObjs(null, query);
@@ -54,7 +51,6 @@ public class IndexServiceImpl implements IndexService {
 					return;
 				}
 			}
-
 		}
 	}
 
@@ -85,7 +81,7 @@ public class IndexServiceImpl implements IndexService {
 
 		if (total > pageFinder.getPageSize()) {
 
-			for (int i = 2; i < pageFinder.getPageCount(); i++) {
+			for (int i = start+1; i < pageFinder.getPageCount(); i++) {
 				query.setPage(i);
 				query.setPageSize(1000);
 				pageFinder = bookService.findPageFinderObjs(null, query);
@@ -136,9 +132,7 @@ public class IndexServiceImpl implements IndexService {
 		}
 
 		int total = pageFinder.getRowCount();
-
 		if (total > pageFinder.getPageSize()) {
-
 			for (int i = 2; i < pageFinder.getPageCount(); i++) {
 				query.setPage(i);
 				query.setPageSize(1000);
@@ -148,7 +142,6 @@ public class IndexServiceImpl implements IndexService {
 					return;
 				}
 			}
-
 		}
 	}
 

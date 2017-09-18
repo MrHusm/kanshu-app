@@ -68,16 +68,16 @@ aside > :nth-child(2){
     background: #e2f3fb;
 }
 .tagPubStyle2{
-    border: 1px solid #ffa85b;
-    background: #faf3ed;
-}
-.tagPubStyle3{
     border: 1px solid #91c46a;
     background: #f3f7e9;
 }
-.tagPubStyle4{
+.tagPubStyle3{
     border: 1px solid #fc9da4;
     background: #f9ebeb;
+}
+.tagPubStyle2{
+    border: 1px solid #ffa85b;
+    background: #faf3ed;
 }
 .freeDivisionNmaeIcon{
     display: inline-block;
