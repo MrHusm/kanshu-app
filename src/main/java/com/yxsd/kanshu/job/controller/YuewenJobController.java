@@ -15,6 +15,7 @@ import com.yxsd.kanshu.job.service.IPullVolumeService;
 import com.yxsd.kanshu.job.vo.*;
 import com.yxsd.kanshu.product.model.*;
 import com.yxsd.kanshu.product.service.*;
+import com.yxsd.kanshu.search.manager.IndexManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -377,7 +378,7 @@ public class YuewenJobController extends BaseController {
 											//保存图书
 											bookService.save(book);
 											//创建搜索索引
-											//IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+											IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
 											//调用阅文获取书籍卷列表
 											List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
 											if(volumeInfoResps != null){
@@ -467,7 +468,7 @@ public class YuewenJobController extends BaseController {
 										//修改图书
 										bookService.update(book);
 										//创建搜索索引
-										//IndexManager.getManager().updateIndex(SearchContants.ID, SearchContants.TABLENAME, setIndexField(book));
+										IndexManager.getManager().updateIndex(SearchContants.ID, SearchContants.TABLENAME, setIndexField(book));
 
 										//调用阅文获取书籍卷列表
 										List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
@@ -549,7 +550,7 @@ public class YuewenJobController extends BaseController {
 							//删除搜索索引
 							Map<String,String> fieldMap = new HashMap<String,String>();
 							fieldMap.put(SearchContants.ID,String.valueOf(book.getBookId()));
-							//IndexManager.getManager().deleteIndex(fieldMap);
+							IndexManager.getManager().deleteIndex(fieldMap);
 							logger.info("unshelfBooks 图书下架成功："+cbid);
 						}else{
 							logger.info("unshelfBooks 图书不存在："+cbid);
@@ -623,12 +624,12 @@ public class YuewenJobController extends BaseController {
 						if(beforeBook == null){
 							bookService.save(book);
 							//创建搜索索引
-							//IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+							IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
 						}else{
 							book.setBookId(beforeBook.getBookId());
 							bookService.update(book);
 							//修改搜索索引
-							//IndexManager.getManager().updateIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+							IndexManager.getManager().updateIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
 						}
 
 						//调用阅文获取书籍卷列表
