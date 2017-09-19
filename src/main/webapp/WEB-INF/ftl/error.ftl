@@ -8,12 +8,6 @@
     <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-<header class="addBxsh">
-    <div class="sreach">
-        <img class="sreachIcon" src="/img/icon/sreachIcon.png">
-        <input class="sreachInput" type="text" value="" placeholder="异世重生之无上巅峰">
-    </div>
-</header>
 <div class="pageBox">
     <img class="pageBoxImg" src="/img/icon/notIcon.png" alt="" />
     <div class="pageBoxTxt">

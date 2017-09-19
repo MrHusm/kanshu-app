@@ -11,6 +11,7 @@
 </head>
 <body>
     <aside class="newBookBox">
+    <#if boyImg??>
         <ul class="bookPopular" onclick="rankList(2,'男生')">
             <li class="newbook">男生最爱</li>
             <li class="newInfo">都市玄幻万本爽文</li>
@@ -18,6 +19,8 @@
                 <img class="newbookImg" data-echo="${boyImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </li>
         </ul>
+    </#if>
+    <#if girlImg??>
         <ul class="bookPopular" onclick="rankList(3,'女生')">
             <li class="newbook">女生频道</li>
             <li class="newInfo">言情后宫跌宕起伏</li>
@@ -25,6 +28,8 @@
                 <img class="newbookImg" data-echo="${girlImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </li>
         </ul>
+    </#if>
+    <#if secImg??>
         <ul class="bookPopular" onclick="rankList(4,'二次元')">
             <li class="newbook">二次元</li>
             <li class="newInfo">初音未来唯美世界</li>
@@ -32,6 +37,7 @@
                 <img class="newbookImg" data-echo="${secImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </li>
         </ul>
+    </#if>
     </aside>
     <div class="hr"></div>
     <article class="pageLoad">

@@ -11,26 +11,31 @@
 </head>
 <body>
     <aside class="newBookBox">
+    <#if saleImg??>
         <ul class="bookPopular" onclick="rankList(6,'全站畅销')">
             <li class="newbook">全站畅销</li>
             <li class="newbookBox">
                 <img class="newbookImg" data-echo="${saleImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </li>
         </ul>
+    </#if>
+    <#if fullImg??>
         <ul class="bookPopular" onclick="rankList(7,'完结精选')">
             <li class="newbook">完结精选</li>
             <li class="newImg">
                 <img class="newbookImg" data-echo="${fullImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </li>
         </ul>
+    </#if>
+    <#if newImg??>
         <ul class="bookPopular" onclick="rankList(8,'重磅新书')">
             <li class="newbook">重磅新书</li>
             <li class="newImg">
                 <img class="newbookImg" data-echo="${newImg}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
             </li>
         </ul>
+    </#if>
     </aside>
-
     <div class="hr"></div>
 
     <article>
@@ -40,7 +45,7 @@
                 <section class="freeDivision newClear">
                     <div class="freeDivisionNmae bdlColor">
                         <i class="freeDivisionNmaeIcon freeDivisionNmaeColor${(map_index % 4) + 1}"></i>
-                        <span style="vertical-align: middle;font-size: 22px;color: #000000;">
+                        <span style="vertical-align: middle;font-size: 18px;color: #000000;">
                         <#if key == '男'>男频
                         <#elseif key == '女'>女频
                         <#elseif key == '其他'>出版物

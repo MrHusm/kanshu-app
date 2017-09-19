@@ -21,7 +21,7 @@ aside > :nth-child(2){
 .newbook{
     color: #000000;
     font-size: 14px;
-    padding: 8px 8%;
+    padding: 0 8px 8%;
 }
 .newInfo{
     color: #666666;
@@ -81,10 +81,10 @@ aside > :nth-child(2){
 }
 .freeDivisionNmaeIcon{
     display: inline-block;
-    width: 4px;
-    height: 18px;
+    width: 3px;
+    height: 21px;
     vertical-align: bottom;
-    margin-right: 2%;
+    margin-right: 3.5%;
 }
 .freeDivisionNmaeColor1{
     background: #0096ff;

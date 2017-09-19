@@ -1007,7 +1007,7 @@ public class RankClimbController extends BaseController {
                         driveBook.setStatus(0);
                         driveBook.setCreateDate(new Date());
                         driveBookService.save(driveBook);
-                        logger.info("驱动保存成功书名_"+title+"_type+"+type+"_score"+score);
+                        logger.info("驱动保存成功书名_"+title+"_type+"+type+"_score_"+score);
                     }else{
                         logger.info("驱动图书已存在_"+title+"_type+"+type);
                     }
@@ -1026,10 +1026,10 @@ public class RankClimbController extends BaseController {
      */
     public void onlineDrive(Integer type){
         logger.info("开始上线驱动type="+type);
-        List<DriveBook> newDriveBooks = this.driveBookService.getDriveBooks(type,0);
-        if(newDriveBooks != null && newDriveBooks.size() > 20){
+        List<DriveBook> newDriveBooks = this.driveBookService.findListByParams("type",type,"status",0);
+        if(newDriveBooks != null && newDriveBooks.size() > 10){
             //查询出来放入缓存
-            List<DriveBook> oldDriveBooks = this.driveBookService.getDriveBooks(type,1);
+            List<DriveBook> oldDriveBooks = this.driveBookService.findListByParams("type",type,"status",1);
             if(CollectionUtils.isNotEmpty(oldDriveBooks)){
                 for(DriveBook oldDriveBook : oldDriveBooks){
                     //删除老的驱动

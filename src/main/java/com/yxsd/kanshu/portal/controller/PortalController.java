@@ -77,11 +77,11 @@ public class PortalController extends BaseController{
             model.addAttribute("boyImg",boyDriveBooks.get(0).getBook().getCoverUrl());
         }
         List<DriveBook> girlDriveBooks = this.driveBookService.getDriveBooks(3,1);
-        if(CollectionUtils.isNotEmpty(boyDriveBooks)){
+        if(CollectionUtils.isNotEmpty(girlDriveBooks)){
             model.addAttribute("girlImg",girlDriveBooks.get(0).getBook().getCoverUrl());
         }
         List<DriveBook> secDriveBooks = this.driveBookService.getDriveBooks(4,1);
-        if(CollectionUtils.isNotEmpty(boyDriveBooks)){
+        if(CollectionUtils.isNotEmpty(secDriveBooks)){
             model.addAttribute("secImg",secDriveBooks.get(0).getBook().getCoverUrl());
         }
         model.addAttribute("pageFinder",pageFinder);
