@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -98,5 +99,23 @@ public class ChapterServiceImpl extends ChapterBaseServiceImpl<Chapter, Long> im
         return this.chapterDao.updatedChapterCount(params);
 
 
+    }
+
+    @Override
+    public void clearChapterAllCache(Long chapterId) {
+        logger.info("开始清除章节"+chapterId+"相关缓存");
+        try{
+            //章节+内容key
+            Set<String> chapterTypeKeys = masterRedisTemplate.keys("chapter_content_cid_"+String.valueOf(chapterId)+"*");
+            if(CollectionUtils.isNotEmpty(chapterTypeKeys)){
+                for(String key : chapterTypeKeys){
+                    masterRedisTemplate.delete(key);
+                }
+            }
+        }catch (Exception e){
+            logger.info("清除章节"+chapterId+"相关缓存异常");
+            e.printStackTrace();
+        }
+        logger.info("结束清除章节"+chapterId+"相关缓存");
     }
 }

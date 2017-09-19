@@ -467,6 +467,8 @@ public class YuewenJobController extends BaseController {
 										book.setBookId(beforeBook.getBookId());
 										//修改图书
 										bookService.update(book);
+										//清除图书相关缓存
+										bookService.clearBookAllCache(book.getBookId());
 										//创建搜索索引
 										IndexManager.getManager().updateIndex(SearchContants.ID, SearchContants.TABLENAME, setIndexField(book));
 
@@ -547,6 +549,8 @@ public class YuewenJobController extends BaseController {
 						if(book != null){
 							book.setShelfStatus(0);
 							bookService.update(book);
+							//清除图书相关缓存
+							bookService.clearBookAllCache(book.getBookId());
 							//删除搜索索引
 							Map<String,String> fieldMap = new HashMap<String,String>();
 							fieldMap.put(SearchContants.ID,String.valueOf(book.getBookId()));
@@ -628,6 +632,8 @@ public class YuewenJobController extends BaseController {
 						}else{
 							book.setBookId(beforeBook.getBookId());
 							bookService.update(book);
+							//清除图书相关缓存
+							bookService.clearBookAllCache(book.getBookId());
 							//修改搜索索引
 							IndexManager.getManager().updateIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
 						}
@@ -743,6 +749,8 @@ public class YuewenJobController extends BaseController {
 								}else{
 									chapter.setChapterId(beforeChapter.getChapterId());
 									chapterService.updateChapter(chapter,book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+									//清除章节相关缓存
+									chapterService.clearChapterAllCache(chapter.getChapterId());
 								}
 								int chapterPullStatus = 1;
 								String chapterPullFailureCause = "";
@@ -828,6 +836,8 @@ public class YuewenJobController extends BaseController {
 				}else{
 					chapter.setChapterId(beforeChapter.getChapterId());
 					chapterService.updateChapter(chapter,book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+					//清除章节相关缓存
+					chapterService.clearChapterAllCache(chapter.getChapterId());
 				}
 				int chapterPullStatus = 1;
 				String chapterPullFailureCause = "";
@@ -1598,6 +1608,8 @@ public class YuewenJobController extends BaseController {
 							}else{
 								chapter.setChapterId(beforeChapter.getChapterId());
 								chapterService.updateChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
+								//清除章节相关缓存
+								chapterService.clearChapterAllCache(chapter.getChapterId());
 							}
 							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
 									chapterInfoResp.getcCID().toString(), chapterPullStatus, chapterPullFailureCause);
@@ -1646,6 +1658,8 @@ public class YuewenJobController extends BaseController {
 						}else{
 							chapter.setChapterId(beforeChapter.getChapterId());
 							chapterService.updateChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
+							//清除章节相关缓存
+							chapterService.clearChapterAllCache(chapter.getChapterId());
 						}
 					}
 				}

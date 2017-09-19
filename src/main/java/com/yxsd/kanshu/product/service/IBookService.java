@@ -24,4 +24,10 @@ public interface IBookService extends IBaseService<Book,Long> {
      * @return
      */
     PageFinder<Book> findPageFinderWithExpandObjs(Object params, Query query);
+
+    /**
+     * 清除图书相关缓存
+     * @param bookId
+     */
+    public void clearBookAllCache(Long bookId);
 }

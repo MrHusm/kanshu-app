@@ -49,4 +49,11 @@ public interface IChapterService extends IChapterBaseService<Chapter,Long> {
      */
     public Integer updatedChapterCount(Long bookId,Integer num,Integer index);
 
+
+    /**
+     * 清除章节相关缓存
+     * @param chapterId
+     */
+    public void clearChapterAllCache(Long chapterId);
+
 }
