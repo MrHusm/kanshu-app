@@ -20,7 +20,7 @@
             </ul>
         </div>
         <div class="readingBtn">
-            <input type="button" onclick="window.JSHandle.openRead(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="<#if readBtn == 0>免费试读<#else>阅读</#if>" class="readingBtnPub readingActive">
+            <input type="button" onclick="window.JSHandle.openRead(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="<#if readBtn == 0>免费试读<#else>免费阅读</#if>" class="readingBtnPub readingActive">
             <input type="button" onclick="window.JSHandle.addToShelf(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="+书架" class="readingBtnPub">
         </div>
         <div class="readingCont">

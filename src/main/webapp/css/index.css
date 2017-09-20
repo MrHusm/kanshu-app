@@ -44,8 +44,15 @@ article{
     -webkit-flex-wrap: nowrap;
     -ms-flex-wrap: nowrap;
     flex-wrap: nowrap;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dbdbdb;
 }
+
+.bookListBox:last-of-type{
+    border: none;
+}
+
 .bookList{
     color: #999999;
     font-size:14px;

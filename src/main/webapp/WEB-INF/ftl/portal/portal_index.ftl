@@ -66,9 +66,7 @@
         </#if>
 <#if syn=='0'>
     </article>
-    <div style="padding: 10px 0">
-        <div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/portalIndex.go?page=${pageFinder.pageNo+1}&syn=1&type=${type}" style="display:none;"></div>
-    </div>
+    <div class="bookLoad" id="autopbn" curpage="${pageFinder.pageNo+1}" totalpage="${pageFinder.pageCount}" rel="/portal/portalIndex.go?page=${pageFinder.pageNo+1}&syn=1&type=${type}" style="display:none;"></div>
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
 <script type="text/javascript" src="/js/echo.min.js"></script>
@@ -82,8 +80,6 @@
         var url = "/portal/rankList.go?type="+type;
         window.JSHandle.goToHtml(url,title,0,0);
     }
-
-
 </script>
 </#if>
 <script type="application/javascript">

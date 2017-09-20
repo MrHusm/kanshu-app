@@ -107,5 +107,5 @@ article{
     padding-bottom: 6%;
 }
 .bookListBox:last-of-type{
-    border-bottom: 0;
+    border: none;
 }
