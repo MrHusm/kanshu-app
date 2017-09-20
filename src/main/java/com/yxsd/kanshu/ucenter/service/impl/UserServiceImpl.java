@@ -68,7 +68,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
                         user.setVip(true);
                     }
                 }
-                masterRedisTemplate.opsForValue().set(key, user, 2, TimeUnit.HOURS);
+                masterRedisTemplate.opsForValue().set(key, user, 5, TimeUnit.HOURS);
             }
         }
         return user;
