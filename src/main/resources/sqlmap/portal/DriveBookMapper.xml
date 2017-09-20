@@ -30,11 +30,11 @@
   
     <sql id="Base_Where">
         <if test="id != null"> and d.id= #{id}</if>
-        <if test="bookId != null and bookId !=''"> and d.book_id= #{bookId}</if>
-        <if test="createDate != null and createDate !=''"> and d.type= #{createDate}</if>
+        <if test="bookId != null"> and d.book_id= #{bookId}</if>
+        <if test="createDate != null"> and d.type= #{createDate}</if>
         <if test="type != null"> and d.type= #{type}</if>
         <if test="score != null"> and d.score= #{score}</if>
-        <if test="status != null and status !=''"> and d.status= #{status}</if>
+        <if test="status != null"> and d.status= #{status}</if>
    </sql>
 
   <sql id="Base_Column_List" >
