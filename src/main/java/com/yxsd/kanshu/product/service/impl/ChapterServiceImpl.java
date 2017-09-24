@@ -52,6 +52,7 @@ public class ChapterServiceImpl extends ChapterBaseServiceImpl<Chapter, Long> im
                     Chapter chapter = chapters.get(i);
                     masterRedisTemplate.opsForList().rightPush(key,chapter);
                 }
+                masterRedisTemplate.expire(key,6L,TimeUnit.HOURS);
             }else{
                 return null;
             }
