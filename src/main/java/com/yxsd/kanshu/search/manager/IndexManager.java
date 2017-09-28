@@ -122,16 +122,17 @@ public class IndexManager {
 				if (SearchEnum.title.getSearchField().equals(key)) {
 					field.setBoost(10f);
 				} else if (SearchEnum.author_name.getSearchField().equals(key)) {
-					field.setBoost(4f);
-				} else if (SearchEnum.author_penname.getSearchField().equals(key)) {
-					field.setBoost(4f);
-				} else if (SearchEnum.category_sec_name.getSearchField().equals(key)) {
 					field.setBoost(3f);
+				} else if (SearchEnum.author_penname.getSearchField().equals(key)) {
+					field.setBoost(3f);
+				} else if (SearchEnum.category_sec_name.getSearchField().equals(key)) {
+					field.setBoost(2f);
 				} else if (SearchEnum.category_thr_name.getSearchField().equals(key)) {
-					field.setBoost(5f);
-				} else if (SearchEnum.intro.getSearchField().equals(key)) {
-					field.setBoost(1f);
+					field.setBoost(3f);
 				}
+//				else if (SearchEnum.intro.getSearchField().equals(key)) {
+//					field.setBoost(1f);
+//				}
 
 				document.add(field);
 			}
