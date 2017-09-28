@@ -587,27 +587,34 @@ public class BookController extends BaseController {
             return;
         }
         try{
-            Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId),0,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("bookId",bookId);
-            map.put("chapterId",chapterId);
-            map.put("channel",channel);
-            //购买
-            int code = 0;
-            if(chapter.getPrice() > 0){
-                code = this.userService.charge(Long.parseLong(userId),chapter.getPrice(),Constants.CONSUME_TYPE_S1,map);
+            Book book = this.bookService.getBookById(Long.parseLong(bookId));
+            if(book.getChargeType() == 2){
+                //按本购买图书重定向到按本购买方法
+                String url = "/book/buyBook.go?token="+token+"bookId="+bookId+"&channel="+StringUtils.trimToEmpty(channel);
+                response.sendRedirect(url);
+            }else {
+                Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId), 0, Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("bookId", bookId);
+                map.put("chapterId", chapterId);
+                map.put("channel", channel);
+                //购买
+                int code = 0;
+                if (chapter.getPrice() > 0) {
+                    code = this.userService.charge(Long.parseLong(userId), chapter.getPrice(), Constants.CONSUME_TYPE_S1, map);
+                }
+                if (code == 0) {
+                    sender.put("code", 0);
+                    sender.put("message", "购买成功");
+                } else if (code == -1) {
+                    //余额不足
+                    //跳转到充值首页
+                    //response.sendRedirect("/pay/index.go?userId="+userId);
+                    sender.put("code", -1);
+                    sender.put("message", "余额不足");
+                }
+                sender.success(response);
             }
-            if(code == 0){
-                sender.put("code",0);
-                sender.put("message","购买成功");
-            }else if(code == -1){
-                //余额不足
-                //跳转到充值首页
-                //response.sendRedirect("/pay/index.go?userId="+userId);
-                sender.put("code",-1);
-                sender.put("message","余额不足");
-            }
-            sender.success(response);
         }catch (Exception e){
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
