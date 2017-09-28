@@ -543,7 +543,6 @@ public class UserController extends BaseController {
                 Map<String,Object> comment = JSON.parseObject(userAccountLog.getComment());
                 if(userAccountLog.getType() == -1){
                     Long chapterId = Long.parseLong(comment.get("chapterId").toString());
-                    new Long(bookId).intValue();
                     Chapter chapter = this.chapterService.getChapterById(chapterId,0,(int)Long.parseLong(bookId) % Constants.CHAPTR_TABLE_NUM);
                     data.put("name",chapter.getTitle());
                     num = num+1;
