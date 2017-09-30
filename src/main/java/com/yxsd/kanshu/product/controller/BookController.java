@@ -642,7 +642,7 @@ public class BookController extends BaseController {
             return;
         }
         try{
-            Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId), 0,Integer.parseInt(bookId));
+            Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId), 0,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
             List<Chapter> notBuyChapters = getNotBuyChapters(chapter,Long.parseLong(userId));
             //计算批量购买价格
             int price10 = 0;
