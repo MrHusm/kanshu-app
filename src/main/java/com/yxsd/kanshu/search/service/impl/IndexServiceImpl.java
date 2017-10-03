@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Service(value = "indexService")
 public class IndexServiceImpl implements IndexService {
@@ -125,40 +123,12 @@ public class IndexServiceImpl implements IndexService {
 	@Override
 	public void createIndex() {
 		logger.info("开始全局创建索引");
-		if(createIndexPool==null){
-			//创建线程池
-			createIndexPool = new ThreadPoolExecutor(10, 10, THREAD_POOL_KEEP_ALIVE_TIME, TimeUnit.SECONDS,
-					new LinkedBlockingQueue<Runnable>(THREAD_POOL_QUEUE_SIZE + 800), new ThreadPoolExecutor.CallerRunsPolicy());
-		}
 		List<Book> books = this.bookService.findListByParamsObjs(null);
-		for (int i = 0; i< books.size(); i++) {
-			final Book book = books.get(i);
-			if(i % 1000 == 0){
-				System.out.println(books.size());
-				logger.info("索引线程池完成的任务数量：" + createIndexPool.getCompletedTaskCount() + ",队列中的数量：" + createIndexPool.getQueue().size());
-				if (createIndexPool.getQueue().size() < 600) {
-					logger.info("开始新的索引创建");
-				} else {
-					try {
-						logger.info("睡眠10秒等待索引创建结束");
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			createIndexPool.execute(new Runnable() {
-				@Override
-				public void run() {
-					try{
-						IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME,
-								YuewenJobController.setIndexField(book));
-					}catch (Exception e){
-						e.printStackTrace();
-						logger.info("图书创建索引失败："+book.getTitle());
-					}
-				}
-			});
+		for (int i = 0; i< books.size() ; i++) {
+			Book book = books.get(i);
+			logger.info("正在创建搜索索引：《"+book.getTitle()+"》");
+			IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME,
+					YuewenJobController.setIndexField(book));
 		}
 		logger.info("结束全局创建索引");
 	}

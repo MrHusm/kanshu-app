@@ -12,6 +12,8 @@
     </resultMap>
     <sql id="Base_Where">
         <if test="userId != null"> and user_id= #{userId}</if>
+        <if test="bookId != null"> and book_id= #{bookId}</if>
+        <if test="chapterId != null"> and chapter_id= #{chapterId}</if>
     </sql>
     <sql id="Base_Column_List">
         id ,`user_id`,order_no,book_id,chapter_id,create_date,update_date
