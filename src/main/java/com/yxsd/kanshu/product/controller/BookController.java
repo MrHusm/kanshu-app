@@ -649,7 +649,7 @@ public class BookController extends BaseController {
             return;
         }
         try{
-            Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId), 0,Integer.parseInt(bookId));
+            Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId), 0,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
             List<Chapter> notBuyChapters = getNotBuyChapters(chapter,Long.parseLong(userId));
             //计算批量购买价格
             int price10 = 0;
@@ -1041,7 +1041,7 @@ public class BookController extends BaseController {
      */
     private List<Chapter> getNotBuyChapters(Chapter chapter,Long userId){
         //获取该章后续所有章节
-        List<Chapter> chapters = this.chapterService.findListByParams("startIdx",chapter.getIdx(),"num",chapter.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+        List<Chapter> chapters = this.chapterService.findListByParams("bookId",chapter.getBookId(),"startIdx",chapter.getIdx(),"num",chapter.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
         //批量或整本购买的图书
         List<UserPayBook> userPayBooks = this.userPayBookService.findListByParams("userId",userId,"bookId",chapter.getBookId(),"type",1);
         //单章购买的图书
