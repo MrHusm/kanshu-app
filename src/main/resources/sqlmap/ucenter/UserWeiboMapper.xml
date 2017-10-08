@@ -4,6 +4,38 @@
     <resultMap id="BaseResultMap" type="com.yxsd.kanshu.ucenter.model.UserWeibo">
         <id column="id" property="id" jdbcType="BIGINT" />
         <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="weibo_id" property="weiboId" jdbcType="VARCHAR" />
+        <result column="screen_name" property="screenName" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="province" property="province" jdbcType="VARCHAR" />
+        <result column="city" property="city" jdbcType="VARCHAR" />
+        <result column="location" property="location" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="profile_image_url" property="profileImageUrl" jdbcType="VARCHAR" />
+        <result column="profile_url" property="profileUrl" jdbcType="VARCHAR" />
+        <result column="domain" property="domain" jdbcType="VARCHAR" />
+        <result column="weihao" property="weihao" jdbcType="VARCHAR" />
+        <result column="gender" property="gender" jdbcType="VARCHAR" />
+        <result column="followers_count" property="followersCount" jdbcType="INTEGER" />
+        <result column="friends_count" property="friendsCount" jdbcType="INTEGER" />
+        <result column="statuses_count" property="statusesCount" jdbcType="INTEGER" />
+        <result column="favourites_count" property="favouritesCount" jdbcType="INTEGER" />
+        <result column="created_at" property="createdAt" jdbcType="VARCHAR" />
+        <result column="following" property="following" jdbcType="INTEGER" />
+        <result column="allow_all_act_msg" property="allowAllActMsg" jdbcType="INTEGER" />
+        <result column="verified" property="verified" jdbcType="INTEGER" />
+        <result column="verified_type" property="verifiedType" jdbcType="INTEGER" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="LONGVARCHAR" />
+        <result column="allow_all_comment" property="allowAllComment" jdbcType="INTEGER" />
+        <result column="avatar_large" property="avatarLarge" jdbcType="VARCHAR" />
+        <result column="avatar_hd" property="avatarHd" jdbcType="VARCHAR" />
+        <result column="verified_reason" property="verifiedReason" jdbcType="VARCHAR" />
+        <result column="follow_me" property="followMe" jdbcType="INTEGER" />
+        <result column="online_status" property="onlineStatus" jdbcType="INTEGER" />
+        <result column="bi_followers_count" property="biFollowersCount" jdbcType="INTEGER" />
+        <result column="lang" property="lang" jdbcType="VARCHAR" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -11,7 +43,10 @@
         <if test="userId != null"> and user_id= #{userId}</if>
     </sql>
     <sql id="Base_Column_List">
-        id,user_id,create_date,update_date
+        id,user_id,`weibo_id`,`screen_name`,`name`,`province`,`city`,`location`,`description`,
+        `url`,`profile_image_url`,`profile_url`,`domain`,`weihao`,`gender`,`followers_count`,`friends_count`,`statuses_count`,`favourites_count`,
+        `created_at`,`following`,`allow_all_act_msg`,`verified`,`verified_type`,`remark`,`status`,`allow_all_comment`,`avatar_large`,
+        `avatar_hd`,`verified_reason`,`follow_me`,`online_status`,`bi_followers_count`,`lang`,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -28,6 +63,38 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="userId != null">user_id,</if>
+            <if test="weiboId != null and weiboId != ''">weibo_id,</if>
+            <if test="screenName != null and screenName != ''">screen_name,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="province != null and province != ''">province,</if>
+            <if test="city != null and city != ''">city,</if>
+            <if test="location != null and location != ''">location,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="url != null and url != ''">url,</if>
+            <if test="profileImageUrl != null and profileImageUrl != ''">profile_image_url,</if>
+            <if test="profileUrl != null and profileUrl != ''">profile_url,</if>
+            <if test="domain != null and domain != ''">domain,</if>
+            <if test="weihao != null and weihao != ''">weihao,</if>
+            <if test="gender != null and gender != ''">gender,</if>
+            <if test="followersCount != null">followers_count,</if>
+            <if test="friendsCount != null">friends_count,</if>
+            <if test="statusesCount != null">statuses_count,</if>
+            <if test="favouritesCount != null">favourites_count,</if>
+            <if test="createdAt != null and gender != ''">created_at,</if>
+            <if test="following != null">following,</if>
+            <if test="allowAllActMsg != null">allow_all_act_msg,</if>
+            <if test="verified != null">verified,</if>
+            <if test="verifiedType != null">verified_type,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="allowAllComment != null and allowAllComment != ''">allow_all_comment,</if>
+            <if test="avatarLarge != null and avatarLarge != ''">avatar_large,</if>
+            <if test="avatarHd != null and avatarHd != ''">avatar_hd,</if>
+            <if test="verifiedReason != null and verifiedReason != ''">verified_reason,</if>
+            <if test="followMe != null">follow_me,</if>
+            <if test="onlineStatus != null">online_status,</if>
+            <if test="biFollowersCount != null">bi_followers_count,</if>
+            <if test="lang != null and lang != ''">lang,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
@@ -37,6 +104,102 @@
             </if>
             <if test="userId != null">
                 #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="weiboId != null and weiboId != ''">
+                #{weiboId,jdbcType=VARCHAR},
+            </if>
+            <if test="screenName != null and screenName != ''">
+                #{screenName,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null and name != ''">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null and province != ''">
+                #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null and city != ''">
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="location != null and location != ''">
+                #{location,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description != ''">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null and url != ''">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="profileImageUrl != null and profileImageUrl != ''">
+                #{profileImageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="profileUrl != null and profileUrl != ''">
+                #{profileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="domain != null and domain != ''">
+                #{domain,jdbcType=VARCHAR},
+            </if>
+            <if test="weihao != null and weihao != ''">
+                #{weihao,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null and gender != ''">
+                #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="followersCount != null">
+                #{followersCount,jdbcType=INTEGER},
+            </if>
+            <if test="friendsCount != null">
+                #{friendsCount,jdbcType=INTEGER},
+            </if>
+            <if test="statusesCount != null">
+                #{statusesCount,jdbcType=INTEGER},
+            </if>
+            <if test="favouritesCount != null">
+                #{favouritesCount,jdbcType=INTEGER},
+            </if>
+            <if test="createdAt != null and gender != ''">
+                #{createdAt,jdbcType=VARCHAR},
+            </if>
+            <if test="following != null">
+                #{following,jdbcType=INTEGER},
+            </if>
+            <if test="allowAllActMsg != null">
+                #{allowAllActMsg,jdbcType=INTEGER},
+            </if>
+            <if test="verified != null">
+                #{verified,jdbcType=INTEGER},
+            </if>
+            <if test="verifiedType != null">
+                #{verifiedType,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null and remark != ''">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null and status != ''">
+                #{status,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="allowAllComment != null and allowAllComment != ''">
+                #{allowAllComment,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarLarge != null and avatarLarge != ''">
+                #{avatarLarge,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarHd != null and avatarHd != ''">
+                #{avatarHd,jdbcType=VARCHAR},
+            </if>
+            <if test="verifiedReason != null and verifiedReason != ''">
+                #{verifiedReason,jdbcType=VARCHAR},
+            </if>
+            <if test="followMe != null">
+                #{followMe,jdbcType=INTEGER},
+            </if>
+            <if test="onlineStatus != null">
+                #{onlineStatus,jdbcType=INTEGER},
+            </if>
+            <if test="biFollowersCount != null">
+                #{biFollowersCount,jdbcType=INTEGER},
+            </if>
+            <if test="lang != null and lang != ''">
+                #{lang,jdbcType=VARCHAR},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
@@ -52,6 +215,102 @@
         <set>
             <if test="userId != null">
                 user_id= #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="weiboId != null and weiboId != ''">
+                weibo_id = #{weiboId,jdbcType=VARCHAR},
+            </if>
+            <if test="screenName != null and screenName != ''">
+                screen_name = #{screenName,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null and province != ''">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null and city != ''">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="location != null and location != ''">
+                location = #{location,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null and url != ''">
+                url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="profileImageUrl != null and profileImageUrl != ''">
+                profile_image_url = #{profileImageUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="profileUrl != null and profileUrl != ''">
+                profile_url = #{profileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="domain != null and domain != ''">
+                domain = #{domain,jdbcType=VARCHAR},
+            </if>
+            <if test="weihao != null and weihao != ''">
+                weihao = #{weihao,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="followersCount != null">
+                followers_count = #{followersCount,jdbcType=INTEGER},
+            </if>
+            <if test="friendsCount != null">
+                friends_count = #{friendsCount,jdbcType=INTEGER},
+            </if>
+            <if test="statusesCount != null">
+                statuses_count = #{statusesCount,jdbcType=INTEGER},
+            </if>
+            <if test="favouritesCount != null">
+                favourites_count = #{favouritesCount,jdbcType=INTEGER},
+            </if>
+            <if test="createdAt != null and gender != ''">
+                created_at = #{createdAt,jdbcType=VARCHAR},
+            </if>
+            <if test="following != null">
+                following = #{following,jdbcType=INTEGER},
+            </if>
+            <if test="allowAllActMsg != null">
+                allow_all_act_msg = #{allowAllActMsg,jdbcType=INTEGER},
+            </if>
+            <if test="verified != null">
+                verified = #{verified,jdbcType=INTEGER},
+            </if>
+            <if test="verifiedType != null">
+                verified_type = #{verifiedType,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="allowAllComment != null and allowAllComment != ''">
+                allow_all_comment = #{allowAllComment,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarLarge != null and avatarLarge != ''">
+                avatar_large = #{avatarLarge,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarHd != null and avatarHd != ''">
+                avatar_hd = #{avatarHd,jdbcType=VARCHAR},
+            </if>
+            <if test="verifiedReason != null and verifiedReason != ''">
+                verified_reason = #{verifiedReason,jdbcType=VARCHAR},
+            </if>
+            <if test="followMe != null">
+                follow_me = #{followMe,jdbcType=INTEGER},
+            </if>
+            <if test="onlineStatus != null">
+                online_status = #{onlineStatus,jdbcType=INTEGER},
+            </if>
+            <if test="biFollowersCount != null">
+                bi_followers_count = #{biFollowersCount,jdbcType=INTEGER},
+            </if>
+            <if test="lang != null and lang != ''">
+                lang = #{lang,jdbcType=VARCHAR},
             </if>
             <if test="updateDate != null">
                 update_date= #{updateDate,jdbcType=TIMESTAMP},

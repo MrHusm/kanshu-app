@@ -4,14 +4,30 @@
     <resultMap id="BaseResultMap" type="com.yxsd.kanshu.ucenter.model.UserQq">
         <id column="id" property="id" jdbcType="BIGINT" />
         <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="openid" property="openid" jdbcType="VARCHAR" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="figureurl" property="figureurl" jdbcType="VARCHAR" />
+        <result column="figureurl_1" property="figureurl_1" jdbcType="VARCHAR" />
+        <result column="figureurl_2" property="figureurl_2" jdbcType="VARCHAR" />
+        <result column="figureurl_qq_1" property="figureurl_qq_1" jdbcType="VARCHAR" />
+        <result column="figureurl_qq_2" property="figureurl_qq_2" jdbcType="VARCHAR" />
+        <result column="gender" property="gender" jdbcType="VARCHAR" />
+        <result column="is_yellow_vip" property="is_yellow_vip" jdbcType="INTEGER" />
+        <result column="vip" property="vip" jdbcType="INTEGER" />
+        <result column="yellow_vip_level" property="yellow_vip_level" jdbcType="INTEGER" />
+        <result column="level" property="level" jdbcType="INTEGER" />
+        <result column="is_yellow_year_vip" property="is_yellow_year_vip" jdbcType="INTEGER" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
     <sql id="Base_Where">
         <if test="userId != null"> and user_id= #{userId}</if>
+        <if test="openid != null and openid != ''"> and openid= #{openid}</if>
+        <if test="nickname != null and nickname != ''"> and nickname= #{nickname}</if>
     </sql>
     <sql id="Base_Column_List">
-        id,user_id,create_date,update_date
+        `id`,`user_id`,`openid`,`nickname`,`figureurl`,`figureurl_1`,`figureurl_2`,`figureurl_qq_1`,
+        `figureurl_qq_2`,`gender`,`is_yellow_vip`,`vip`,`yellow_vip_level`,`level`,`is_yellow_year_vip`,`update_date`,`create_date`
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -28,6 +44,19 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="userId != null">user_id,</if>
+            <if test="openid != null and openid != ''">openid,</if>
+            <if test="nickname != null and nickname != ''">nickname,</if>
+            <if test="figureurl != null and figureurl != ''">figureurl,</if>
+            <if test="figureurl_1 != null and figureurl_1 != ''">figureurl_1,</if>
+            <if test="figureurl_2 != null and figureurl_2 != ''">figureurl_2,</if>
+            <if test="figureurl_qq_1 != null and figureurl_qq_1 != ''">figureurl_qq_1,</if>
+            <if test="figureurl_qq_2 != null and figureurl_qq_2 != ''">figureurl_qq_2,</if>
+            <if test="gender != null and gender != ''">gender,</if>
+            <if test="is_yellow_vip != null">is_yellow_vip,</if>
+            <if test="vip != null">vip,</if>
+            <if test="yellow_vip_level != null">yellow_vip_level,</if>
+            <if test="level != null">level,</if>
+            <if test="is_yellow_year_vip != null">is_yellow_year_vip,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
@@ -37,6 +66,45 @@
             </if>
             <if test="userId != null">
                 #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="openid != null and openid != ''">
+                #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl != null and figureurl != ''">
+                #{figureurl,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl_1 != null and figureurl_1 != ''">
+                #{figureurl_1,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl_2 != null and figureurl_2 != ''">
+                #{figureurl_2,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl_qq_1 != null and figureurl_qq_1 != ''">
+                #{figureurl_qq_1,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl_qq_2 != null and figureurl_qq_2 != ''">
+                #{figureurl_qq_2,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null and gender != ''">
+                #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="is_yellow_vip != null">
+                #{is_yellow_vip,jdbcType=INTEGER},
+            </if>
+            <if test="vip != null">
+                #{vip,jdbcType=INTEGER},
+            </if>
+            <if test="yellow_vip_level != null">
+                #{yellow_vip_level,jdbcType=INTEGER},
+            </if>
+            <if test="level != null">
+                #{level,jdbcType=INTEGER},
+            </if>
+            <if test="is_yellow_year_vip != null">
+                #{is_yellow_year_vip,jdbcType=INTEGER},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
@@ -51,7 +119,46 @@
         update user_qq
         <set>
             <if test="userId != null">
-                user_id= #{userId,jdbcType=BIGINT},
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="openid != null and openid != ''">
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl != null and figureurl != ''">
+                figureurl = #{figureurl,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl_1 != null and figureurl_1 != ''">
+                figureurl_1 = #{figureurl_1,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl_2 != null and figureurl_2 != ''">
+                figureurl_2 = #{figureurl_2,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl_qq_1 != null and figureurl_qq_1 != ''">
+                figureurl_qq_1 = #{figureurl_qq_1,jdbcType=VARCHAR},
+            </if>
+            <if test="figureurl_qq_2 != null and figureurl_qq_2 != ''">
+                figureurl_qq_2 = #{figureurl_qq_2,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="is_yellow_vip != null">
+                is_yellow_vip = #{is_yellow_vip,jdbcType=INTEGER},
+            </if>
+            <if test="vip != null">
+                vip = #{vip,jdbcType=INTEGER},
+            </if>
+            <if test="yellow_vip_level != null">
+                yellow_vip_level = #{yellow_vip_level,jdbcType=INTEGER},
+            </if>
+            <if test="level != null">
+                level = #{level,jdbcType=INTEGER},
+            </if>
+            <if test="is_yellow_year_vip != null">
+                is_yellow_year_vip = #{is_yellow_year_vip,jdbcType=INTEGER},
             </if>
             <if test="updateDate != null">
                 update_date= #{updateDate,jdbcType=TIMESTAMP},

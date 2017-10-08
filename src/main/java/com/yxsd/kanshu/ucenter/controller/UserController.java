@@ -87,10 +87,77 @@ public class UserController extends BaseController {
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate masterRedisTemplate;
 
-    @RequestMapping("index")
-    public String loginSubmit(Model model, User user, String captcha) {
-        User u = userService.getUserByUserId(1L);
-        return "main";
+    @RequestMapping("loginByWx")
+    public void loginByWx(HttpServletResponse response,HttpServletRequest request,UserWeixin userWeixin) {
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String token = request.getParameter("token");
+        String channel = request.getParameter("channel");
+        //0:安卓 1：ios 2:h5
+        String deviceType = request.getParameter("deviceType");
+        if(StringUtils.isBlank(deviceType)){
+            logger.error("UserController_loginByWx:deviceType为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+
+            User user = null;
+            UserWeixin userWeixin1 = this.userWeixinService.findUniqueByParams("unionid",userWeixin.getUnionid());
+            if(userWeixin1 == null){
+                if(StringUtils.isNotBlank(token)){
+                    //修改用户头像
+                    String userId = UserUtils.getUserIdByToken(token);
+                    user = this.userService.getUserByUserId(Long.parseLong(userId));
+                    user.setSex(userWeixin.getSex());
+                    user.setLogo(userWeixin.getHeadimgurl());
+                    userService.update(user);
+                }else{
+                    //注册新用户
+                    UserUuid userUuid = new UserUuid();
+                    userUuid.setCreateDate(new Date());
+                    userUuidService.save(userUuid);
+                    user = new User();
+                    user.setName("v"+userUuid.getId());
+                    user.setNickName("v"+userUuid.getId());
+                    user.setPassword("v"+Long.toHexString(System.currentTimeMillis()));
+                    user.setDeviceType(deviceType);
+                    user.setSex(userWeixin.getSex());
+                    user.setLogo(userWeixin.getHeadimgurl());
+                    if(StringUtils.isNotBlank(channel)){
+                        user.setChannel(Integer.parseInt(channel));
+                        user.setChannelNow(Integer.parseInt(channel));
+                    }
+                    user.setCreateDate(new Date());
+                    user.setUpdateDate(new Date());
+                    userService.save(user);
+                    //保存账号相关信息
+                    UserAccount userAccount = new UserAccount();
+                    userAccount.setUserId(user.getUserId());
+                    userAccount.setMoney(0);
+                    userAccount.setVirtualMoney(0);
+                    userAccount.setCreateDate(new Date());
+                    userAccount.setUpdateDate(new Date());
+                    userAccountService.save(userAccount);
+                }
+
+                //保存微信相关信息
+                userWeixin.setUserId(user.getUserId());
+                userWeixin.setUpdateDate(new Date());
+                userWeixin.setCreateDate(new Date());
+                userWeixinService.save(userWeixin);
+            }else{
+                user = this.userService.getUserByUserId(userWeixin1.getUserId());
+            }
+            sender.put("user",user);
+            sender.put("token",UserUtils.createToken(String.valueOf(user.getUserId())));
+            sender.send(response);
+        }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
     }
 
     /**
@@ -173,7 +240,6 @@ public class UserController extends BaseController {
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
         }
-
 
         try{
             User user = null;
