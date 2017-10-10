@@ -679,7 +679,7 @@ public class BookController extends BaseController {
                 sender.put("yhPrice100",(int)(price100 * 0.8));
                 sender.put("yhAll","7折");
                 sender.put("priceAll",priceAll);
-                sender.put("yhPriceAll",(int)(price100 * 0.7));
+                sender.put("yhPriceAll",(int)(priceAll * 0.7));
             }else if(notBuyChapters.size() == 100){
                 sender.put("price10",price10);
                 sender.put("yh50","9折");
@@ -690,7 +690,7 @@ public class BookController extends BaseController {
                 sender.put("yhPrice100",(int)(price100 * 0.8));
                 sender.put("yhAll","8折");
                 sender.put("priceAll",priceAll);
-                sender.put("yhPriceAll",(int)(price100 * 0.8));
+                sender.put("yhPriceAll",(int)(priceAll * 0.8));
             }else if(notBuyChapters.size() < 100 && notBuyChapters.size() > 50){
                 sender.put("price10",price10);
                 sender.put("yh50","9折");
@@ -698,7 +698,7 @@ public class BookController extends BaseController {
                 sender.put("yhPrice50",(int)(price50 * 0.9));
                 sender.put("yhAll","8折");
                 sender.put("priceAll",priceAll);
-                sender.put("yhPriceAll",(int)(price100 * 0.8));
+                sender.put("yhPriceAll",(int)(priceAll * 0.8));
             }else if(notBuyChapters.size() == 50){
                 sender.put("price10",price10);
                 sender.put("yh50","9折");
@@ -706,7 +706,7 @@ public class BookController extends BaseController {
                 sender.put("yhPrice50",(int)(price50 * 0.9));
                 sender.put("yhAll","9折");
                 sender.put("priceAll",priceAll);
-                sender.put("yhPriceAll",(int)(price100 * 0.9));
+                sender.put("yhPriceAll",(int)(priceAll * 0.9));
             }else if(notBuyChapters.size() < 50 && notBuyChapters.size() > 10){
                 sender.put("price10",price10);
                 sender.put("priceAll",priceAll);
