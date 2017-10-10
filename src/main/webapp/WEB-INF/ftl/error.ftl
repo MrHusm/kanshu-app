@@ -15,7 +15,7 @@
         请稍后重试，或者返回其他页面再次寻找
     </div>
     <div class="pageBoxBtn">
-        <input class="pageBtnPub" type="button" onclick="window.history.go(-1)" value="返回">
+        <input class="pageBtnPub" type="button" onclick="window.JSHandle.closePage();" value="关闭">
         <input class="pageBtnPub" onclick="window.location.reload()" type="button" value="重新加载">
     </div>
 </div>
