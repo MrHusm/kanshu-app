@@ -194,7 +194,7 @@ public class UserController extends BaseController {
                 user.setPassword("v"+Long.toHexString(System.currentTimeMillis()));
                 user.setDeviceType(deviceType);
                 user.setDeviceSerialNo(deviceSerialNo);
-                user.setLogo(Constants.HOST_KANSHU + "/img/user_logo_default.jpg");
+                user.setLogo(HttpUtils.getBasePath(request) + "/img/user_logo_default.jpg");
                 if(StringUtils.isNotBlank(channel)){
                     user.setChannel(Integer.parseInt(channel));
                     user.setChannelNow(Integer.parseInt(channel));
