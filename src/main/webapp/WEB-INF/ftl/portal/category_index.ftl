@@ -58,6 +58,7 @@
                             <div class="tagPub"><span class="tagCont tagPubStyle${(map_index % 4) + 1}" onclick="categoryBooks(${category.categoryId?c},'${category.name}')">${category.name}</span></div>
                         </#list>
                     </div>
+                    <div class="hr"></div>
                 </section>
            </#list>
             </#list>

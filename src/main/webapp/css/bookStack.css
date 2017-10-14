@@ -16,7 +16,8 @@ aside > :nth-child(2){
 }
 .bookPopular{
     width: 33%;
-    padding-bottom: 1.5%;
+    ppadding-bottom: 2%;
+    padding-top: 4%;
 }
 .newbook{
     color: #000000;
@@ -78,6 +79,10 @@ aside > :nth-child(2){
 .tagPubStyle2{
     border: 1px solid #ffa85b;
     background: #faf3ed;
+}
+
+.freeDivisionNmae{
+    padding-left: 11px;
 }
 .freeDivisionNmaeIcon{
     display: inline-block;
@@ -201,7 +206,6 @@ aside > :nth-child(2){
     font-size:16px;
     padding: 8px 0;
     color: #666666;
-    border-top: 1px solid #dbdbdb;
 }
 .classifyBox2Active{
     color: #ed0202;
@@ -229,8 +233,12 @@ aside > :nth-child(2){
     text-overflow: ellipsis;
 }
 article{
+    padding:0;
+}
+article .freeDivision{
     padding: 20px 10px 0;
 }
+
 footer{
     border-top: none;
     box-shadow: 0px -2px 6px 0px rgba(224, 224, 224, 0.75);
