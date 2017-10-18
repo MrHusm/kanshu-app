@@ -28,7 +28,7 @@ public class DecryptPropertyPlaceholderConfigurer extends PropertyPlaceholderCon
         this.locations = locations;
     }
     public void loadProperties(Properties props) throws IOException {
-    	String systemBasePath = "/etc/yxsd";
+    	String systemBasePath = "/etc/yxsd/read";
         if (this.locations != null) {
             PropertiesPersister propertiesPersister = new DefaultPropertiesPersister();
             for (int i = 0; i < this.locations.length; i++) {
