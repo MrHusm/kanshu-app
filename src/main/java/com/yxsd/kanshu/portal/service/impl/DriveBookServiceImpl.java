@@ -31,6 +31,12 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
     @Resource(name = "slaveRedisTemplate")
     private RedisTemplate<String,DriveBook> slaveRedisTemplate;
 
+    @Resource(name = "masterRedisTemplate")
+    private RedisTemplate<String,List<DriveBook>> listMasterRedisTemplate;
+
+    @Resource(name = "slaveRedisTemplate")
+    private RedisTemplate<String,List<DriveBook>> listSlaveRedisTemplate;
+
     @Override
     public IBaseDao<DriveBook> getBaseDao() {
         return driveBookDao;
@@ -40,18 +46,13 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
     public List<DriveBook> getDriveBooks(Integer type,Integer status) {
         String key =String.format(RedisKeyConstants.CACHE_DRIVE_BOOK_KEY, type, status);
         List<DriveBook> driveBooks = null;
-        if(masterRedisTemplate.hasKey(key)){
-            driveBooks = slaveRedisTemplate.opsForList().range(key,0,-1);
+        if(listMasterRedisTemplate.hasKey(key)){
+            driveBooks = listSlaveRedisTemplate.opsForValue().get(key);
         }
         if(CollectionUtils.isEmpty(driveBooks)){
             driveBooks = this.findListByParams("type",type,"status",status);
             if(CollectionUtils.isNotEmpty(driveBooks)){
-                for(int i = 0; i < driveBooks.size(); i++){
-                    masterRedisTemplate.opsForList().rightPush(key,driveBooks.get(i));
-                }
-                masterRedisTemplate.expire(key,1, TimeUnit.DAYS);
-            }else{
-                return null;
+                listMasterRedisTemplate.opsForValue().set(key,driveBooks,1,TimeUnit.DAYS);
             }
         }
         return driveBooks;

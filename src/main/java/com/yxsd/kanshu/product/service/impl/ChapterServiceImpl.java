@@ -33,6 +33,12 @@ public class ChapterServiceImpl extends ChapterBaseServiceImpl<Chapter, Long> im
     @Resource(name = "slaveRedisTemplate")
     private RedisTemplate<String,Chapter> slaveRedisTemplate;
 
+    @Resource(name = "masterRedisTemplate")
+    private RedisTemplate<String,List<Chapter>> listMasterRedisTemplate;
+
+    @Resource(name = "slaveRedisTemplate")
+    private RedisTemplate<String,List<Chapter>> listSlaveRedisTemplate;
+
     @Override
     public IChapterBaseDao<Chapter> getBaseDao() {
         return chapterDao;
@@ -42,19 +48,14 @@ public class ChapterServiceImpl extends ChapterBaseServiceImpl<Chapter, Long> im
     public List<Chapter> getChaptersByBookId(Long bookId,Integer num) {
         String key = RedisKeyConstants.CACHE_BOOK_CATALOG_KEY+bookId;
         List<Chapter> chapters = null;
-        if(masterRedisTemplate.hasKey(key)){
-            chapters = slaveRedisTemplate.opsForList().range(key,0,-1);
+        if(listMasterRedisTemplate.hasKey(key)){
+            chapters = listSlaveRedisTemplate.opsForValue().get(RedisKeyConstants.CACHE_BOOK_CATALOG_KEY + bookId) ;
+            return chapters;
         }
         if(CollectionUtils.isEmpty(chapters)){
             chapters = findListByParams("bookId",bookId,"shelfStatus",1,"num",num);
             if(CollectionUtils.isNotEmpty(chapters)){
-                for(int i = 0; i < chapters.size(); i++){
-                    Chapter chapter = chapters.get(i);
-                    masterRedisTemplate.opsForList().rightPush(key,chapter);
-                }
-                masterRedisTemplate.expire(key,6L,TimeUnit.HOURS);
-            }else{
-                return null;
+                listMasterRedisTemplate.opsForValue().set(RedisKeyConstants.CACHE_BOOK_CATALOG_KEY+bookId,chapters,6L,TimeUnit.HOURS);
             }
         }
         return chapters;

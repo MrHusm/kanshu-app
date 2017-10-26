@@ -29,6 +29,12 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> impleme
     @Resource(name = "slaveRedisTemplate")
     private RedisTemplate<String,Category> slaveRedisTemplate;
 
+    @Resource(name = "masterRedisTemplate")
+    private RedisTemplate<String,List<Category>> listMasterRedisTemplate;
+
+    @Resource(name = "slaveRedisTemplate")
+    private RedisTemplate<String,List<Category>> listSlaveRedisTemplate;
+
     @Override
     public IBaseDao<Category> getBaseDao() {
         return categoryDao;
@@ -39,17 +45,13 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> impleme
     public List<Category> getCategorysByPid(Long pid) {
         String key = RedisKeyConstants.CACHE_CATEGORY_LIST_PID_KEY + pid;
         List<Category> categories = null;
-        if(masterRedisTemplate.hasKey(key)){
-            categories = slaveRedisTemplate.opsForList().range(key,0,-1);
+        if(listMasterRedisTemplate.hasKey(key)){
+            categories = listSlaveRedisTemplate.opsForValue().get(key);
         }
         if(CollectionUtils.isEmpty(categories)){
             categories = findListByParams("pid",pid);
             if(CollectionUtils.isNotEmpty(categories)){
-                for(int i = 0; i < categories.size(); i++){
-                    Category category = categories.get(i);
-                    masterRedisTemplate.opsForList().rightPush(key,category);
-                }
-                masterRedisTemplate.expire(key,1, TimeUnit.DAYS);
+                listMasterRedisTemplate.opsForValue().set(key, categories, 1, TimeUnit.DAYS);
             }
         }
         return categories;
