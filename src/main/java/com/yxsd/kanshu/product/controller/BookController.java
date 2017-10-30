@@ -17,10 +17,7 @@ import com.yxsd.kanshu.product.model.Chapter;
 import com.yxsd.kanshu.product.service.IBookExpandService;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.IChapterService;
-import com.yxsd.kanshu.ucenter.model.User;
-import com.yxsd.kanshu.ucenter.model.UserAccount;
-import com.yxsd.kanshu.ucenter.model.UserPayBook;
-import com.yxsd.kanshu.ucenter.model.UserPayChapter;
+import com.yxsd.kanshu.ucenter.model.*;
 import com.yxsd.kanshu.ucenter.service.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -76,6 +73,9 @@ public class BookController extends BaseController {
 
     @Resource(name="userPayBookService")
     IUserPayBookService userPayBookService;
+
+    @Resource(name="userShelfService")
+    IUserShelfService userShelfService;
 
     /**
      * 获取图书详情
@@ -409,6 +409,75 @@ public class BookController extends BaseController {
     }
 
     /**
+     * 添加书架
+     * @param response
+     * @param request
+     * @return
+     */
+    @RequestMapping("addToShelf")
+    public void addToShelf(HttpServletResponse response, HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String bookId = request.getParameter("bookId");
+        String chapterId = request.getParameter("chapterId");
+        String autoBuy = request.getParameter("autoBuy");
+        String token = request.getParameter("token");
+
+        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(token) || StringUtils.isBlank(chapterId) || StringUtils.isBlank(autoBuy)){
+            logger.error("BookController_addToShelf:bookId或token或chapterId或autoBuy为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        String userId = UserUtils.getUserIdByToken(token);
+        if(StringUtils.isBlank(userId)){
+            logger.error("BookController_addToShelf:token错误");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10009.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10009.getErrorMessage(), response);
+            return;
+        }
+
+        try{
+            //获取章节列表
+            List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
+            UserShelf userShelf = this.userShelfService.findUniqueByParams("userId",userId,"bookId",bookId);
+            if(userShelf != null){
+                userShelf.setType(1);
+                userShelf.setAutoBuy(Integer.parseInt(autoBuy));
+
+                Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId),0,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
+                userShelf.setChapterId(chapter.getChapterId());
+                userShelf.setIdx(chapter.getIdx());
+                userShelf.setMaxChapterId(chapters.get(chapters.size() - 1).getChapterId());
+                userShelf.setMaxChapterIdx(chapters.get(chapters.size() - 1).getIdx());
+                userShelf.setUpdateDate(new Date());
+                this.userShelfService.update(userShelf);
+            }else{
+                userShelf = new UserShelf();
+                userShelf.setBookId(Long.parseLong(bookId));
+                userShelf.setUserId(Long.parseLong(userId));
+                userShelf.setType(1);
+                userShelf.setAutoBuy(Integer.parseInt(autoBuy));
+
+                Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId),0,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
+                userShelf.setChapterId(chapter.getChapterId());
+                userShelf.setIdx(chapter.getIdx());
+                userShelf.setMaxChapterId(chapters.get(chapters.size() - 1).getChapterId());
+                userShelf.setMaxChapterIdx(chapters.get(chapters.size() - 1).getIdx());
+                userShelf.setCreateDate(new Date());
+                userShelf.setUpdateDate(new Date());
+                userShelfService.save(userShelf);
+            }
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+    }
+
+    /**
      * 获取章节内容
      * @param response
      * @param request
@@ -420,8 +489,6 @@ public class BookController extends BaseController {
         String chapterId = request.getParameter("chapterId");
         String token = request.getParameter("token");
         String bookId = request.getParameter("bookId");
-        //自动购买标识 1：自动购买 其他：非自动购买
-        String autoBuy = request.getParameter("autoBuy");
         String channel = request.getParameter("channel");
 
         if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(token)|| StringUtils.isBlank(bookId)){
@@ -515,10 +582,11 @@ public class BookController extends BaseController {
 
             //收费章节显示用户账号信息
             if(chapter.isLock()){
+                UserShelf userShelf = this.userShelfService.findUniqueByParams("userId",userId,"bookId",bookId);
                 boolean flag = true;
-                if("1".equals(autoBuy)){
+                if(userShelf != null && userShelf.getAutoBuy() == 1){
                     //自动购买
-                    String buyUrl = Constants.HOST_KANSHU + "book/buyChapter.go?chapterId="+chapterId+"&token="+token+"&bookId="+bookId+"&channel="+channel;
+                    String buyUrl = Constants.HOST_KANSHU + "/book/buyChapter.go?chapterId="+chapterId+"&token="+token+"&bookId="+bookId+"&channel="+ StringUtils.trimToEmpty(channel);
                     String buyJson = HttpUtils.getContent(buyUrl,"UTF-8");
                     Integer code = JSON.parseObject(buyJson).getJSONObject("data").getInteger("code");
                     if(code != null && code == 0){
@@ -531,12 +599,19 @@ public class BookController extends BaseController {
                     }
                 }
                 if(flag){
+                    if(userShelf == null || userShelf.getAutoBuy() != 1){
+                        sender.put("code",-2);
+                        sender.put("message","未自动购买");
+                    }
                     UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
                     chapter.setContent("");
                     //计费方式 1:按章 2:按本
+                    int money = userAccount.getMoney()+userAccount.getVirtualMoney();
+                    int price = book.getChargeType() == 2 ? book.getPrice() : chapter.getPrice();
                     sender.put("chargeType",book.getChargeType());
-                    sender.put("money",userAccount.getMoney()+userAccount.getVirtualMoney());
+                    sender.put("money",money);
                     sender.put("unitPrice",book.getUnitPrice());
+                    sender.put("price",price);
                 }
             }
 
@@ -597,11 +672,13 @@ public class BookController extends BaseController {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("bookId", bookId);
                 map.put("chapterId", chapterId);
-                map.put("channel", channel);
+                if(StringUtils.isNotBlank(channel)){
+                    map.put("channel", channel);
+                }
                 //购买
                 int code = 0;
                 if (chapter.getPrice() > 0) {
-                    code = this.userService.charge(Long.parseLong(userId), chapter.getPrice(), Constants.CONSUME_TYPE_S1, map);
+                    code = this.userService.consume(Long.parseLong(userId), chapter.getPrice(), Constants.CONSUME_TYPE_S1, map);
                 }
                 if (code == 0) {
                     sender.put("code", 0);
@@ -788,7 +865,7 @@ public class BookController extends BaseController {
             map.put("channel",channel);
             map.put("num",size);
             //购买
-            int code = this.userService.charge(Long.parseLong(userId),price,Constants.CONSUME_TYPE_S2,map);
+            int code = this.userService.consume(Long.parseLong(userId),price,Constants.CONSUME_TYPE_S2,map);
             if(code == 0){
                 sender.put("code",0);
                 sender.put("message","购买成功");
@@ -839,11 +916,13 @@ public class BookController extends BaseController {
 
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("bookId",bookId);
-            map.put("channel",channel);
+            if(StringUtils.isNotBlank(channel)){
+                map.put("channel", channel);
+            }
             //购买
             int code = 0;
             if(book.getPrice() > 0){
-                code = this.userService.charge(Long.parseLong(userId),book.getPrice(),Constants.CONSUME_TYPE_S3,map);
+                code = this.userService.consume(Long.parseLong(userId), book.getPrice(), Constants.CONSUME_TYPE_S3, map);
             }
             if(code == 0){
                 sender.put("code",0);
@@ -981,7 +1060,7 @@ public class BookController extends BaseController {
                 price = book.getPrice();
             }
             //购买
-            int code = this.userService.charge(Long.parseLong(userId), price, Integer.parseInt(type), map);
+            int code = this.userService.consume(Long.parseLong(userId), price, Integer.parseInt(type), map);
             return code;
         }else{
             //充值还未到账

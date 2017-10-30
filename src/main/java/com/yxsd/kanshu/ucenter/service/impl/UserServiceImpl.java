@@ -5,6 +5,12 @@ import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
+import com.yxsd.kanshu.pay.model.RechargeItem;
+import com.yxsd.kanshu.pay.service.IRechargeItemService;
+import com.yxsd.kanshu.product.model.Book;
+import com.yxsd.kanshu.product.model.BookExpand;
+import com.yxsd.kanshu.product.service.IBookExpandService;
+import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.ucenter.dao.IUserDao;
 import com.yxsd.kanshu.ucenter.model.*;
 import com.yxsd.kanshu.ucenter.service.*;
@@ -33,6 +39,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
     @Resource(name="userVipService")
     private IUserVipService userVipService;
 
+    @Resource(name="userReceiveService")
+    private IUserReceiveService userReceiveService;
+
     @Resource(name="userAccountLogService")
     private IUserAccountLogService userAccountLogService;
 
@@ -41,6 +50,15 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
 
     @Resource(name="userPayBookService")
     IUserPayBookService userPayBookService;
+
+    @Resource(name="rechargeItemService")
+    IRechargeItemService rechargeItemService;
+
+    @Resource(name="bookExpandService")
+    IBookExpandService bookExpandService;
+
+    @Resource(name="bookService")
+    IBookService bookService;
 
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate<String,User> masterRedisTemplate;
@@ -68,6 +86,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
                         user.setVip(true);
                     }
                 }
+                UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
+                if(userReceive != null){
+                    //是否是游客账号
+                    if(userReceive.getTelStatus() == 1 || userReceive.getQqStatus() == 1
+                            || userReceive.getWeiboStatus() == 1 || userReceive.getWeixinStatus() == 1){
+                        user.setTourist(false);
+                    }
+                }
                 masterRedisTemplate.opsForValue().set(key, user, 5, TimeUnit.HOURS);
             }
         }
@@ -76,12 +102,12 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public int charge(Long userId, Integer price, Integer type, Map<String,Object> map) {
+    public int consume(Long userId, Integer price, Integer type, Map<String,Object> map) {
         UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
         UserAccountLog userAccountLog = new UserAccountLog();
+        Long bookId = Long.parseLong(map.get("bookId").toString());
         if(type == Constants.CONSUME_TYPE_S1){
             //单章购买
-            Long bookId = Long.parseLong(map.get("bookId").toString());
             Long chapterId = Long.parseLong(map.get("chapterId").toString());
             Integer channel = map.get("channel") == null ? null : Integer.parseInt(map.get("channel").toString());
             if((userAccount.getMoney() + userAccount.getVirtualMoney()) >= price){
@@ -105,7 +131,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
             }
         }else if(type == Constants.CONSUME_TYPE_S2) {
             //批量购买
-            Long bookId = Long.parseLong(map.get("bookId").toString());
             Long startChapterId = Long.parseLong(map.get("startChapterId").toString());
             Integer startChapterIdx = Integer.parseInt(map.get("startChapterIdx").toString());
             Long endChapterId = Long.parseLong(map.get("endChapterId").toString());
@@ -136,8 +161,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
                 return -1;
             }
         }else if(type == Constants.CONSUME_TYPE_S3){
-            //批量购买
-            Long bookId = Long.parseLong(map.get("bookId").toString());
+            //全本购买
             Integer channel = map.get("channel") == null ? null : Integer.parseInt(map.get("channel").toString());
             if((userAccount.getMoney() + userAccount.getVirtualMoney()) >= price) {
                 UserPayBook userPayBook = new UserPayBook();
@@ -160,23 +184,18 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
                 return -1;
             }
         }
-        if(type < 0){
-            //消费
-            if(userAccount.getVirtualMoney() >= price){
-                userAccount.setVirtualMoney(userAccount.getVirtualMoney() - price);
+        //消费
+        if(userAccount.getVirtualMoney() >= price){
+            userAccount.setVirtualMoney(userAccount.getVirtualMoney() - price);
 
-                userAccountLog.setUnitMoney(0);
-                userAccountLog.setUnitVirtual(price);
-            }else{
-                userAccountLog.setUnitMoney(price - userAccount.getVirtualMoney());
-                userAccountLog.setUnitVirtual(userAccount.getVirtualMoney());
-
-                userAccount.setMoney(userAccount.getMoney() - (price - userAccount.getVirtualMoney()));
-                userAccount.setVirtualMoney(0);
-            }
+            userAccountLog.setUnitMoney(0);
+            userAccountLog.setUnitVirtual(price);
         }else{
-            //充钱
-            //TODO
+            userAccountLog.setUnitMoney(price - userAccount.getVirtualMoney());
+            userAccountLog.setUnitVirtual(userAccount.getVirtualMoney());
+
+            userAccount.setMoney(userAccount.getMoney() - (price - userAccount.getVirtualMoney()));
+            userAccount.setVirtualMoney(0);
         }
 
         userAccountLog.setUserId(userId);
@@ -188,6 +207,53 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
         //保存账户日志数据
         userAccountLogService.save(userAccountLog);
 
+        //统计销量
+        BookExpand bookExpand = this.bookExpandService.findUniqueByParams("bookId",bookId);
+        if(bookExpand == null){
+            Book book = this.bookService.getBookById(bookId);
+            bookExpand = new BookExpand();
+            bookExpand.setBookId(bookId);
+            bookExpand.setBookName(book.getTitle());
+            bookExpand.setSaleNum(1L);
+            bookExpand.setCreateDate(new Date());
+            bookExpand.setUpdateDate(new Date());
+            bookExpandService.save(bookExpand);
+        }else{
+            bookExpand.setSaleNum((bookExpand.getSaleNum() ==  null ? 0 : bookExpand.getSaleNum()) + 1);
+            bookExpand.setUpdateDate(new Date());
+            bookExpandService.update(bookExpand);
+        }
+
         return 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void charge(Long userId, Integer type, Integer channel, String orderNo, Long rechargeItemId) {
+        UserAccountLog accountLog = new UserAccountLog();
+        accountLog.setUserId(userId);
+        accountLog.setChannel(channel);
+        accountLog.setOrderNo(orderNo);
+        accountLog.setType(type);
+        accountLog.setCreateDate(new Date());
+
+        //充值
+        RechargeItem rechargeItem = this.rechargeItemService.get(rechargeItemId);
+        //用户账户充值
+        UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
+        userAccount.setMoney(userAccount.getMoney() + rechargeItem.getMoney());
+        if(rechargeItem.getVirtual() != null){
+            userAccount.setVirtualMoney(userAccount.getVirtualMoney() + rechargeItem.getVirtual());
+        }
+        userAccount.setUpdateDate(new Date());
+        this.userAccountService.update(userAccount);
+
+        accountLog.setUnitMoney(rechargeItem.getMoney());
+        accountLog.setUnitVirtual(rechargeItem.getVirtual());
+        accountLog.setComment(String.valueOf(rechargeItem.getPrice().intValue()));
+
+        //保存消费日志表
+        userAccountLogService.save(accountLog);
+
     }
 }

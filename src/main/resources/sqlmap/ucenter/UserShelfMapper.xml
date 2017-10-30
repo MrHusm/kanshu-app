@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UserShelfMapper">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.ucenter.model.UserShelf">
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="book_id" property="bookId" jdbcType="BIGINT" />
+        <result column="chapter_id" property="chapterId" jdbcType="BIGINT" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="auto_buy" property="autoBuy" jdbcType="INTEGER" />
+        <result column="idx" property="idx" jdbcType="INTEGER" />
+        <result column="max_chapter_id" property="maxChapterId" jdbcType="BIGINT" />
+        <result column="max_chapter_idx" property="maxChapterIdx" jdbcType="INTEGER" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <resultMap id="withBookInfoMap" type="com.yxsd.kanshu.ucenter.model.UserShelf" extends="BaseResultMap" >
+        <collection property="book" ofType="com.yxsd.kanshu.product.model.Book">
+            <id column="book_id" property="bookId" jdbcType="BIGINT" />
+            <result column="title" property="title" jdbcType="VARCHAR" />
+            <result column="cover_url" property="coverUrl" jdbcType="VARCHAR" />
+            <result column="author_penname" property="authorPenname" jdbcType="VARCHAR" />
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Where">
+        <if test="userId != null"> and s.user_id= #{userId}</if>
+        <if test="bookId != null"> and s.book_id= #{bookId}</if>
+        <if test="chapterId != null"> and s.chapter_id= #{chapterId}</if>
+        <if test="maxChapterId != null"> and s.max_chapter_id= #{maxChapterId}</if>
+        <if test="type != null"> and s.type= #{type}</if>
+        <if test="autoBuy != null"> and s.auto_buy = #{autoBuy}</if>
+    </sql>
+
+    <sql id="Base_Column_List">
+        id,user_id,book_id,chapter_id,type,auto_buy,idx,max_chapter_id,max_chapter_idx,create_date,update_date
+    </sql>
+
+    <sql id="Column_With_Book">
+        s.*,b.book_id,b.title,b.cover_url,b.author_penname
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" />
+        from user_shelf where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from user_shelf where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yxsd.kanshu.ucenter.model.UserShelf">
+        insert into user_shelf
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="bookId != null">book_id,</if>
+            <if test="chapterId != null">chapter_id,</if>
+            <if test="type != null">type,</if>
+            <if test="autoBuy != null">auto_buy,</if>
+            <if test="idx != null">idx,</if>
+            <if test="maxChapterId != null">max_chapter_id,</if>
+            <if test="maxChapterIdx != null">max_chapter_idx,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="bookId != null">
+                #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="chapterId != null">
+                #{chapterId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="autoBuy != null">
+                #{autoBuy,jdbcType=INTEGER},
+            </if>
+            <if test="idx != null">
+                #{idx,jdbcType=INTEGER},
+            </if>
+            <if test="maxChapterId != null">
+                #{maxChapterId,jdbcType=BIGINT},
+            </if>
+            <if test="maxChapterIdx != null">
+                #{maxChapterIdx,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.ucenter.model.UserShelf">
+        update user_shelf
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="bookId != null">
+                book_id = #{bookId,jdbcType=BIGINT},
+            </if>
+            <if test="chapterId != null">
+                chapter_id = #{chapterId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="autoBuy != null">
+                auto_buy = #{autoBuy,jdbcType=INTEGER},
+            </if>
+            <if test="idx != null">
+                idx = #{idx,jdbcType=INTEGER},
+            </if>
+            <if test="maxChapterId != null">
+                max_chapter_id = #{maxChapterId,jdbcType=BIGINT},
+            </if>
+            <if test="maxChapterIdx != null">
+                max_chapter_idx = #{maxChapterIdx,jdbcType=INTEGER},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where
+        id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="getAll" resultMap="withBookInfoMap" parameterType="map">
+        select
+        <include refid="Column_With_Book" />
+        from user_shelf s LEFT JOIN book b on s.book_id = b.book_id  where  1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from user_shelf s where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="withBookInfoMap" parameterType="map">
+        select
+        <include refid="Column_With_Book" />
+        from user_shelf s LEFT JOIN book b on s.book_id = b.book_id  where 1=1
+        <include refid="Base_Where" />
+        order by update_date desc
+    </select>
+</mapper>

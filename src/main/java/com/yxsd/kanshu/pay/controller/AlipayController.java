@@ -11,11 +11,6 @@ import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.JsonResultSender;
 import com.yxsd.kanshu.base.utils.ResultSender;
-import com.yxsd.kanshu.product.service.IVipService;
-import com.yxsd.kanshu.ucenter.model.UserAccountLog;
-import com.yxsd.kanshu.ucenter.service.IUserAccountLogService;
-import com.yxsd.kanshu.ucenter.service.IUserAccountService;
-import com.yxsd.kanshu.ucenter.service.IUserService;
 import com.yxsd.kanshu.pay.config.AlipayConfig;
 import com.yxsd.kanshu.pay.model.AlipayOrder;
 import com.yxsd.kanshu.pay.model.AlipayResponse;
@@ -24,8 +19,10 @@ import com.yxsd.kanshu.pay.service.IAlipayOrderService;
 import com.yxsd.kanshu.pay.service.IAlipayResponseService;
 import com.yxsd.kanshu.pay.service.IRechargeItemService;
 import com.yxsd.kanshu.product.model.Vip;
-import com.yxsd.kanshu.ucenter.model.UserAccount;
-import com.yxsd.kanshu.ucenter.model.UserVip;
+import com.yxsd.kanshu.product.service.IVipService;
+import com.yxsd.kanshu.ucenter.service.IUserAccountLogService;
+import com.yxsd.kanshu.ucenter.service.IUserAccountService;
+import com.yxsd.kanshu.ucenter.service.IUserService;
 import com.yxsd.kanshu.ucenter.service.IUserVipService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -40,7 +37,10 @@ import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 @Controller
 @Scope("prototype")
@@ -254,64 +254,14 @@ public class AlipayController extends BaseController {
 				//——请根据您的业务逻辑来编写程序（以下代码仅作参考）——
 				if(trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")){
 					if(alipayResponse.getStatus() == null || alipayResponse.getStatus() != 1){
-						//购买业务
+						//支付成功充值
 						AlipayOrder order = this.alipayOrderService.findUniqueByParams("WIDoutTradeNo",out_trade_no);
-						//消费日志
-						UserAccountLog accountLog = new UserAccountLog();
-						accountLog.setUserId(order.getUserId());
-						accountLog.setChannel(order.getChannel());
-						accountLog.setOrderNo(out_trade_no);
-						accountLog.setType(order.getType());
-						accountLog.setCreateDate(new Date());
 						if(order.getType() == Constants.CONSUME_TYPE_S4){
-							Vip vip = this.vipService.get(order.getProductId());
-							accountLog.setUnitMoney((int)(order.getWIDtotalAmount()*100));
-							accountLog.setUnitVirtual(0);
-							//vip购买
-							//保存用户vip数据
-							UserVip userVip = this.userVipService.findUniqueByParams("userId",order.getUserId());
-							if(userVip == null){
-								userVip = new UserVip();
-								userVip.setChannel(order.getChannel());
-								userVip.setUserId(order.getUserId());
-								Calendar cal = Calendar.getInstance();
-								cal.add(Calendar.DAY_OF_MONTH, vip.getDays());
-								userVip.setEndDate(cal.getTime());
-								userVip.setUpdateDate(new Date());
-								userVip.setCreateDate(new Date());
-								this.userVipService.save(userVip);
-							}else{
-								Calendar cal = Calendar.getInstance();
-								Date now = new Date();
-								userVip.setChannel(order.getChannel());
-								if(userVip.getEndDate().getTime() > now.getTime()){
-									cal.setTime(userVip.getEndDate());
-									cal.add(Calendar.DAY_OF_MONTH, vip.getDays());
-									userVip.setEndDate(cal.getTime());
-								}else{
-									cal.add(Calendar.DAY_OF_MONTH, vip.getDays());
-									userVip.setEndDate(cal.getTime());
-								}
-								userVip.setUpdateDate(new Date());
-								this.userVipService.update(userVip);
-							}
-						}else{
+							//购买VIP
+						}else if(order.getType() == Constants.CONSUME_TYPE_1){
 							//充值
-							RechargeItem rechargeItem = this.rechargeItemService.get(order.getProductId());
-							//用户账户充值
-							UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",order.getUserId());
-							userAccount.setMoney(userAccount.getMoney() + rechargeItem.getMoney());
-							if(rechargeItem.getVirtual() != null){
-								userAccount.setVirtualMoney(userAccount.getVirtualMoney() + rechargeItem.getVirtual());
-							}
-							userAccount.setUpdateDate(new Date());
-							this.userAccountService.update(userAccount);
-
-							accountLog.setUnitMoney(rechargeItem.getMoney());
-							accountLog.setUnitVirtual(rechargeItem.getVirtual());
+							this.userService.charge(order.getUserId(), 1, order.getChannel(), out_trade_no, order.getProductId());
 						}
-						//保存消费日志表
-						userAccountLogService.save(accountLog);
 						alipayResponse.setStatus(1);
 					}
 				}else{

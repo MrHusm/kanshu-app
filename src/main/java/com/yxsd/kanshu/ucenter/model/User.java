@@ -73,6 +73,11 @@ public class User implements Serializable {
     private boolean isVip = false;
 
     /**
+     * 是否是游客账号
+     */
+    private boolean isTourist = true;
+
+    /**
      * 创建时间
      */
     private Date createDate;
@@ -154,7 +159,6 @@ public class User implements Serializable {
         this.email = email;
     }
 
-
     public Date getCreateDate() {
         return createDate;
     }
@@ -201,5 +205,13 @@ public class User implements Serializable {
 
     public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
+    }
+
+    public boolean isTourist() {
+        return isTourist;
+    }
+
+    public void setTourist(boolean tourist) {
+        isTourist = tourist;
     }
 }

@@ -311,21 +311,6 @@ public class UserController extends BaseController {
             }
             UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
 
-            UserQq userQq = this.userQqService.getUserQqByUserId(Long.parseLong(userId));
-            sender.put("bindStatus",0);
-            if(userQq != null){
-                sender.put("bindStatus",1);
-            }else{
-                UserWeixin userWeixin = this.userWeixinService.getUserWeixinByUserId(Long.parseLong(userId));
-                if(userWeixin != null){
-                    sender.put("bindStatus",1);
-                }else{
-                    UserWeibo userWeibo = this.userWeiboService.getUserWeiboByUserId(Long.parseLong(userId));
-                    if(userWeibo != null){
-                        sender.put("bindStatus",1);
-                    }
-                }
-            }
             VersionInfo versionInfo = this.versionInfoService.getVersionInfoByChannel(Integer.parseInt(channel));
             sender.put("versionStatus",0);
             if(versionInfo != null){
@@ -342,7 +327,7 @@ public class UserController extends BaseController {
             if(bookExpand != null){
                 sender.put("searchBook",bookExpand.getBookName());
             }
-
+           sender.put("bindStatus",user.isTourist() ? 0 : 1);
            sender.put("user",user);
            sender.put("userAccount",userAccount);
            sender.success(response);
