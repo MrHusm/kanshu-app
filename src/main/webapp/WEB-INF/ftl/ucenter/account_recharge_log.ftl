@@ -14,11 +14,8 @@
 <#if pageFinder.data??>
   <#list pageFinder.data as userAccountLog>
       <div class="rechargeList">
-          <#if userAccountLog.type==1>
-            <div>支付宝充值${userAccountLog.unitMoney?c}钻&nbsp;&nbsp;|&nbsp;&nbsp;赠送${userAccountLog.unitVirtual?c}钻</div>
-          </#if>
-          <#if userAccountLog.type==2>
-              <div>微信充值${userAccountLog.unitMoney?c}钻&nbsp;&nbsp;|&nbsp;&nbsp;赠送${userAccountLog.unitVirtual?c}钻</div>
+          <#if userAccountLog.type==1 || userAccountLog.type==2>
+              <div>充值${userAccountLog.comment}元&nbsp;&nbsp;|&nbsp;&nbsp;${userAccountLog.unitMoney?c}钻<#if userAccountLog.unitVirtual gt 0>+${userAccountLog.unitVirtual?c}钻</#if></div>
           </#if>
           <#if userAccountLog.type==11>
               <div>客服赠送${userAccountLog.unitMoney?c+userAccountLog.unitVirtual?c}钻</div>

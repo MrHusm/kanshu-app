@@ -3,6 +3,7 @@ package com.yxsd.kanshu.ucenter.service;
 import com.yxsd.kanshu.base.service.IBaseService;
 import com.yxsd.kanshu.ucenter.model.User;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -16,6 +17,15 @@ public interface IUserService extends IBaseService<User,Long> {
      * @return
      */
     public User getUserByUserId(Long userId);
+
+    /**
+     * 注册用户
+     * @param channel 渠道号
+     * @param deviceType 0:安卓 1：ios 2:h5
+     * @param deviceSerialNo imei->android_id->serialNunber ->UUID生成的
+     * @return
+     */
+    public User register(String channel,String deviceType,String deviceSerialNo,HttpServletRequest request);
 
     /**
      * 消费
@@ -34,4 +44,5 @@ public interface IUserService extends IBaseService<User,Long> {
      * @return
      */
     public void charge(Long userId, Integer type, Integer channel, String orderNo,Long rechargeItemId);
+
 }

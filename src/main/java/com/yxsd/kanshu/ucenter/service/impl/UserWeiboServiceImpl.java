@@ -3,13 +3,16 @@ package com.yxsd.kanshu.ucenter.service.impl;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
+import com.yxsd.kanshu.base.utils.BeanUtils;
 import com.yxsd.kanshu.ucenter.dao.IUserWeiboDao;
+import com.yxsd.kanshu.ucenter.model.UserWb;
 import com.yxsd.kanshu.ucenter.model.UserWeibo;
 import com.yxsd.kanshu.ucenter.service.IUserWeiboService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,6 +45,23 @@ public class UserWeiboServiceImpl extends BaseServiceImpl<UserWeibo, Long> imple
                 masterRedisTemplate.opsForValue().set(key, userWeibo, 2, TimeUnit.DAYS);
             }
         }
+        return userWeibo;
+    }
+
+    @Override
+    public UserWeibo saveUserWeibo(UserWb userWb, Long userId) {
+        UserWeibo userWeibo = new UserWeibo();
+        BeanUtils.copyProperties(userWeibo, userWb);
+        userWeibo.setFollowing(userWb.isFollowing() ? 1 : 0);
+        userWeibo.setAllowAllActMsg(userWb.isAllowAllActMsg() ? 1 : 0);
+        userWeibo.setVerified(userWb.isVerified() ? 1 : 0);
+        userWeibo.setStatus(userWb.getStatus() == null ? null : userWb.getStatus().toString());
+        userWeibo.setAllowAllComment(userWb.isAllowAllComment() ? 1 : 0);
+        userWeibo.setFollowMe(userWb.isFollowMe() ? 1 : 0);
+        userWeibo.setUserId(userId);
+        userWeibo.setCreateDate(new Date());
+        userWeibo.setUpdateDate(new Date());
+        save(userWeibo);
         return userWeibo;
     }
 }

@@ -5,6 +5,7 @@ import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
+import com.yxsd.kanshu.base.utils.HttpUtils;
 import com.yxsd.kanshu.pay.model.RechargeItem;
 import com.yxsd.kanshu.pay.service.IRechargeItemService;
 import com.yxsd.kanshu.product.model.Book;
@@ -14,12 +15,14 @@ import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.ucenter.dao.IUserDao;
 import com.yxsd.kanshu.ucenter.model.*;
 import com.yxsd.kanshu.ucenter.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +63,9 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
     @Resource(name="bookService")
     IBookService bookService;
 
+    @Resource(name="userUuidService")
+    private IUserUuidService userUuidService;
+
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate<String,User> masterRedisTemplate;
 
@@ -97,6 +103,36 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
                 masterRedisTemplate.opsForValue().set(key, user, 5, TimeUnit.HOURS);
             }
         }
+        return user;
+    }
+
+    @Override
+    public User register(String channel,String deviceType,String deviceSerialNo,HttpServletRequest request) {
+        UserUuid userUuid = new UserUuid();
+        userUuid.setCreateDate(new Date());
+        userUuidService.save(userUuid);
+        User user = new User();
+        user.setName("v"+userUuid.getId());
+        user.setNickName("v"+userUuid.getId());
+        user.setPassword("v"+Long.toHexString(System.currentTimeMillis()));
+        user.setDeviceType(deviceType);
+        user.setDeviceSerialNo(deviceSerialNo);
+        user.setLogo(HttpUtils.getBasePath(request) + "/img/user_logo_default.jpg");
+        if(StringUtils.isNotBlank(channel)){
+            user.setChannel(Integer.parseInt(channel));
+            user.setChannelNow(Integer.parseInt(channel));
+        }
+        user.setCreateDate(new Date());
+        user.setUpdateDate(new Date());
+        save(user);
+        //保存账号相关信息
+        UserAccount userAccount = new UserAccount();
+        userAccount.setUserId(user.getUserId());
+        userAccount.setMoney(0);
+        userAccount.setVirtualMoney(0);
+        userAccount.setCreateDate(new Date());
+        userAccount.setUpdateDate(new Date());
+        userAccountService.save(userAccount);
         return user;
     }
 
@@ -256,4 +292,6 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
         userAccountLogService.save(accountLog);
 
     }
+
+
 }

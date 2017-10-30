@@ -1,6 +1,7 @@
 package com.yxsd.kanshu.ucenter.service;
 
 import com.yxsd.kanshu.base.service.IBaseService;
+import com.yxsd.kanshu.ucenter.model.UserWb;
 import com.yxsd.kanshu.ucenter.model.UserWeibo;
 
 /**
@@ -13,4 +14,12 @@ public interface IUserWeiboService extends IBaseService<UserWeibo,Long> {
      * @return
      */
     public UserWeibo getUserWeiboByUserId(Long userId);
+
+    /**
+     * 保存微博信息
+     * @param userWb
+     * @param userId
+     * @return
+     */
+    public UserWeibo saveUserWeibo(UserWb userWb, Long userId);
 }

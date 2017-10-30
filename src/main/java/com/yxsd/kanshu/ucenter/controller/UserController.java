@@ -1,6 +1,7 @@
 package com.yxsd.kanshu.ucenter.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
@@ -41,7 +42,6 @@ public class UserController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    
     @Resource(name="userService")
     IUserService userService;
 
@@ -86,6 +86,193 @@ public class UserController extends BaseController {
 
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate masterRedisTemplate;
+
+    /**
+     * 手机号登录
+     * @param response
+     * @param request
+     */
+    @RequestMapping("loginByMobile")
+    public void loginByMobile(HttpServletResponse response,HttpServletRequest request) {
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String token = request.getParameter("token");
+        String channel = request.getParameter("channel");
+        //imei->android_id->serialNunber ->UUID生成的
+        String deviceSerialNo = request.getParameter("deviceSerialNo");
+        //0:安卓 1：ios 2:h5
+        String deviceType = request.getParameter("deviceType");
+        String mobile = request.getParameter("mobile");
+        String verifyCode = request.getParameter("verifyCode");
+        if(StringUtils.isBlank(mobile) || StringUtils.isBlank(verifyCode)
+                || StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)){
+            logger.error("UserController_loginByMobile:mobile或verifyCode或deviceType或deviceSerialNo为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            //校验验证码
+            Map<String,String> result = UserUtils.verifyCode(mobile, verifyCode);
+            if("200".equals(result.get("code"))){
+                String currentUid = "";
+                User user = this.userService.findUniqueByParams("tel",mobile);
+                if(StringUtils.isNotBlank(token)){
+                    //用户当前已经登录
+                    currentUid = UserUtils.getUserIdByToken(token);
+                    if(user != null){
+                        //该手机号已经被用户绑定
+                        if(String.valueOf(user.getUserId()).equals(currentUid)){
+                            //当前用户和绑定手机号的用户相同
+                            sender.put("code",0);
+                        }else{
+                            //当前用户和绑定手机号的用户不同
+                            sender.put("code",1);
+                            sender.put("nToken",UserUtils.createToken(String.valueOf(user.getUserId())));
+                            UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",currentUid);
+                            if(userAccount.getMoney() > 0 || userAccount.getVirtualMoney() > 0){
+                                sender.put("moneyFlag",true);
+                            }else{
+                                sender.put("moneyFlag",false);
+                            }
+                        }
+                    }else{
+                        //该手机号没有被用户绑定过
+                        sender.put("code",0);
+                        user = this.userService.getUserByUserId(Long.parseLong(currentUid));
+                        user.setTel(mobile);
+                        userService.update(user);
+                        //清除用户缓存
+                        masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+                        //设置用户第三方账号绑定状态
+                        this.userReceiveService.userThirdBind(user.getUserId(),1);
+                    }
+                }else{
+                    //用户当前未登录
+                    sender.put("code",2);
+                    if(user != null){
+                        sender.put("token",UserUtils.createToken(String.valueOf(user.getUserId())));
+                        sender.put("user",user);
+                    }else{
+                        //自动注册
+                        user = userService.register(channel,deviceType,deviceSerialNo,request);
+                        Long userId = user.getUserId();
+                        user.setTel(mobile);
+                        userService.update(user);
+                        //清除用户缓存
+                        masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+                        //设置用户第三方账号绑定状态
+                        this.userReceiveService.userThirdBind(user.getUserId(),1);
+
+                        sender.put("token",UserUtils.createToken(String.valueOf(userId)));
+                        sender.put("user",user);
+                    }
+                }
+            }else{
+                sender.put("code", -1);
+            }
+            sender.put("message", result.get("msg"));
+            sender.send(response);
+        }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+    }
+
+    /**
+     * QQ登录
+     * @param response
+     * @param request
+     * @return
+     */
+    @RequestMapping("loginByQQ")
+    public void loginByQQ(HttpServletResponse response,HttpServletRequest request) {
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String token = request.getParameter("token");
+        String channel = request.getParameter("channel");
+        //imei->android_id->serialNunber ->UUID生成的
+        String deviceSerialNo = request.getParameter("deviceSerialNo");
+        //0:安卓 1：ios 2:h5
+        String deviceType = request.getParameter("deviceType");
+        String openID = request.getParameter("openID");
+        String json = request.getParameter("json");
+        if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)
+                || StringUtils.isBlank(openID) || StringUtils.isBlank(json)){
+            logger.error("UserController_register:deviceType或deviceSerialNo或openID或json为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try {
+            JSONObject qqJson = JSON.parseObject(json);
+            String currentUid = "";
+            UserQq userQq = this.userQqService.findUniqueByParams("openid",openID);
+            if(StringUtils.isNotBlank(token)){
+                //用户当前已经登录
+                currentUid = UserUtils.getUserIdByToken(token);
+                if(userQq != null){
+                    //该QQ号已经被用户绑定
+                    if(String.valueOf(userQq.getUserId()).equals(currentUid)){
+                        //当前用户和绑定QQ号的用户相同
+                        sender.put("code",0);
+                    }else{
+                        //当前用户和绑定QQ号的用户不同
+                        sender.put("code",1);
+                        sender.put("nToken",UserUtils.createToken(String.valueOf(userQq.getUserId())));
+                        UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",currentUid);
+                        if(userAccount.getMoney() > 0 || userAccount.getVirtualMoney() > 0){
+                            sender.put("moneyFlag",true);
+                        }else{
+                            sender.put("moneyFlag",false);
+                        }
+                    }
+                }else{
+                    //该QQ号没有被用户绑定过
+                    //修改用户头像
+                    User user = this.userService.getUserByUserId(Long.parseLong(currentUid));
+                    user.setSex("男".equals(qqJson.getString("gender")) ? 1 : 2 );
+                    user.setLogo(qqJson.getString("figureurl_qq_1"));
+                    userService.update(user);
+                    //保存QQ相关信息
+                    userQq = userQqService.saveUserQq(qqJson, openID, user.getUserId());
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+                    //设置用户第三方账号绑定状态
+                    this.userReceiveService.userThirdBind(user.getUserId(),2);
+                    sender.put("code",0);
+                }
+            }else{
+                //用户当前未登录
+                sender.put("code",2);
+                User user = null;
+                if(userQq != null){
+                    user = this.userService.getUserByUserId(userQq.getUserId());
+                    sender.put("token",UserUtils.createToken(String.valueOf(userQq.getUserId())));
+                    sender.put("user",user);
+                }else{
+                    //自动注册
+                    user = userService.register(channel,deviceType,deviceSerialNo,request);
+                    Long userId = user.getUserId();
+                    user.setSex("男".equals(qqJson.getString("gender")) ? 1 : 2 );
+                    user.setLogo(qqJson.getString("figureurl_qq_1"));
+                    userService.update(user);
+                    //保存QQ相关信息
+                    userQq = userQqService.saveUserQq(qqJson, openID, userId);
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+                    //设置用户第三方账号绑定状态
+                    this.userReceiveService.userThirdBind(user.getUserId(),1);
+
+                    sender.put("token",UserUtils.createToken(String.valueOf(userId)));
+                    sender.put("user",user);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @RequestMapping("loginByWx")
     public void loginByWx(HttpServletResponse response,HttpServletRequest request,UserWeixin userWeixin) {
@@ -161,6 +348,99 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 微博登录
+     * @param response
+     * @param request
+     * @return
+     */
+    @RequestMapping("loginByWeibo")
+    public void loginByWeibo(HttpServletResponse response,HttpServletRequest request,UserWb userWb) {
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String token = request.getParameter("token");
+        String channel = request.getParameter("channel");
+        //imei->android_id->serialNunber ->UUID生成的
+        String deviceSerialNo = request.getParameter("deviceSerialNo");
+        //0:安卓 1：ios 2:h5
+        String deviceType = request.getParameter("deviceType");
+        if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)){
+            logger.error("UserController_loginByWeibo:deviceType或deviceSerialNo为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+
+        try {
+            String currentUid = "";
+            UserWeibo userWeibo = this.userWeiboService.findUniqueByParams("weiboId",userWb.getId());
+            if(StringUtils.isNotBlank(token)){
+                //用户当前已经登录
+                currentUid = UserUtils.getUserIdByToken(token);
+                if(userWeibo != null){
+                    //该微博号已经被用户绑定
+                    if(String.valueOf(userWeibo.getUserId()).equals(currentUid)){
+                        //当前用户和绑定微博号的用户相同
+                        sender.put("code",0);
+                    }else{
+                        //当前用户和绑定微博号的用户不同
+                        sender.put("code",1);
+                        sender.put("nToken",UserUtils.createToken(String.valueOf(userWeibo.getUserId())));
+                        UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",currentUid);
+                        if(userAccount.getMoney() > 0 || userAccount.getVirtualMoney() > 0){
+                            sender.put("moneyFlag",true);
+                        }else{
+                            sender.put("moneyFlag",false);
+                        }
+                    }
+                }else{
+                    //该微博号没有被用户绑定过
+                    //修改用户头像
+                    User user = this.userService.getUserByUserId(Long.parseLong(currentUid));
+                    user.setSex("m".equals(userWb.getGender()) ? 1 : 2);
+                    user.setLogo(userWb.getProfileImageUrl());
+                    userService.update(user);
+                    //保存微博相关信息
+                    userWeibo = userWeiboService.saveUserWeibo(userWb, user.getUserId());
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+                    //设置用户第三方账号绑定状态
+                    this.userReceiveService.userThirdBind(user.getUserId(),2);
+                    sender.put("code",0);
+                }
+            }else{
+                //用户当前未登录
+                sender.put("code",2);
+                User user = null;
+                if(userWeibo != null){
+                    user = this.userService.getUserByUserId(userWeibo.getUserId());
+                    sender.put("token",UserUtils.createToken(String.valueOf(userWeibo.getUserId())));
+                    sender.put("user",user);
+                }else{
+                    //自动注册
+                    user = userService.register(channel,deviceType,deviceSerialNo,request);
+                    Long userId = user.getUserId();
+                    user.setSex("m".equals(userWb.getGender()) ? 1 : 2);
+                    user.setLogo(userWb.getProfileImageUrl());
+                    userService.update(user);
+                    //保存微博相关信息
+                    userWeibo = userWeiboService.saveUserWeibo(userWb, user.getUserId());
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+                    //设置用户第三方账号绑定状态
+                    this.userReceiveService.userThirdBind(user.getUserId(),1);
+
+                    sender.put("token",UserUtils.createToken(String.valueOf(userId)));
+                    sender.put("user",user);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    /**
      * 用户注册
      * @param response
      * @param request
@@ -185,31 +465,7 @@ public class UserController extends BaseController {
             User user =  userService.findUniqueByParams("deviceSerialNo",deviceSerialNo.toLowerCase());
 
             if(user == null){
-                UserUuid userUuid = new UserUuid();
-                userUuid.setCreateDate(new Date());
-                userUuidService.save(userUuid);
-                user = new User();
-                user.setName("v"+userUuid.getId());
-                user.setNickName("v"+userUuid.getId());
-                user.setPassword("v"+Long.toHexString(System.currentTimeMillis()));
-                user.setDeviceType(deviceType);
-                user.setDeviceSerialNo(deviceSerialNo);
-                user.setLogo(HttpUtils.getBasePath(request) + "/img/user_logo_default.jpg");
-                if(StringUtils.isNotBlank(channel)){
-                    user.setChannel(Integer.parseInt(channel));
-                    user.setChannelNow(Integer.parseInt(channel));
-                }
-                user.setCreateDate(new Date());
-                user.setUpdateDate(new Date());
-                userService.save(user);
-                //保存账号相关信息
-                UserAccount userAccount = new UserAccount();
-                userAccount.setUserId(user.getUserId());
-                userAccount.setMoney(0);
-                userAccount.setVirtualMoney(0);
-                userAccount.setCreateDate(new Date());
-                userAccount.setUpdateDate(new Date());
-                userAccountService.save(userAccount);
+                user = this.userService.register(channel,deviceType,deviceSerialNo,request);
             }
             sender.put("user",user);
             sender.put("token",UserUtils.createToken(String.valueOf(user.getUserId())));
