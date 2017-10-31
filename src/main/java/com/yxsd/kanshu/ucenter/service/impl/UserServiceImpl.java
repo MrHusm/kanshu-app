@@ -95,8 +95,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
                 UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
                 if(userReceive != null){
                     //是否是游客账号
-                    if(userReceive.getTelStatus() == 1 || userReceive.getQqStatus() == 1
-                            || userReceive.getWeiboStatus() == 1 || userReceive.getWeixinStatus() == 1){
+                    if((userReceive.getTelStatus() != null && userReceive.getTelStatus() == 1)
+                            || (userReceive.getQqStatus() != null && userReceive.getQqStatus() == 1)
+                            || (userReceive.getWeiboStatus() != null && userReceive.getWeiboStatus() == 1)
+                            || (userReceive.getWeixinStatus() != null && userReceive.getWeixinStatus() == 1)){
                         user.setTourist(false);
                     }
                 }

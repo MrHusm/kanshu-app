@@ -100,7 +100,7 @@ public class UserController extends BaseController {
         String channel = request.getParameter("channel");
         //imei->android_id->serialNunber ->UUID生成的
         String deviceSerialNo = request.getParameter("deviceSerialNo");
-        //0:安卓 1：ios 2:h5
+        //Android或IOS或H5
         String deviceType = request.getParameter("deviceType");
         String mobile = request.getParameter("mobile");
         String verifyCode = request.getParameter("verifyCode");
@@ -194,10 +194,11 @@ public class UserController extends BaseController {
         String channel = request.getParameter("channel");
         //imei->android_id->serialNunber ->UUID生成的
         String deviceSerialNo = request.getParameter("deviceSerialNo");
-        //0:安卓 1：ios 2:h5
+        //Android或IOS或H5
         String deviceType = request.getParameter("deviceType");
         String openID = request.getParameter("openID");
         String json = request.getParameter("json");
+        logger.info("json:" + json);
         if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)
                 || StringUtils.isBlank(openID) || StringUtils.isBlank(json)){
             logger.error("UserController_register:deviceType或deviceSerialNo或openID或json为空");
@@ -217,6 +218,12 @@ public class UserController extends BaseController {
                     if(String.valueOf(userQq.getUserId()).equals(currentUid)){
                         //当前用户和绑定QQ号的用户相同
                         sender.put("code",0);
+                        User currUser = this.userService.getUserByUserId(Long.parseLong(currentUid));
+                        currUser.setSex("男".equals(qqJson.getString("gender")) ? 1 : 2 );
+                        currUser.setLogo(qqJson.getString("figureurl_qq_1"));
+                        userService.update(currUser);
+                        //清除用户缓存
+                        masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + currentUid);
                     }else{
                         //当前用户和绑定QQ号的用户不同
                         sender.put("code",1);
@@ -249,6 +256,11 @@ public class UserController extends BaseController {
                 User user = null;
                 if(userQq != null){
                     user = this.userService.getUserByUserId(userQq.getUserId());
+                    user.setSex("男".equals(qqJson.getString("gender")) ? 1 : 2 );
+                    user.setLogo(qqJson.getString("figureurl_qq_1"));
+                    userService.update(user);
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
                     sender.put("token",UserUtils.createToken(String.valueOf(userQq.getUserId())));
                     sender.put("user",user);
                 }else{
@@ -263,14 +275,17 @@ public class UserController extends BaseController {
                     //清除用户缓存
                     masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
                     //设置用户第三方账号绑定状态
-                    this.userReceiveService.userThirdBind(user.getUserId(),1);
+                    this.userReceiveService.userThirdBind(user.getUserId(),2);
 
                     sender.put("token",UserUtils.createToken(String.valueOf(userId)));
                     sender.put("user",user);
                 }
             }
+            sender.success(response);
         } catch (Exception e) {
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
     }
 
@@ -280,67 +295,99 @@ public class UserController extends BaseController {
         //入参
         String token = request.getParameter("token");
         String channel = request.getParameter("channel");
-        //0:安卓 1：ios 2:h5
+        //imei->android_id->serialNunber ->UUID生成的
+        String deviceSerialNo = request.getParameter("deviceSerialNo");
+        //Android或IOS或H5
         String deviceType = request.getParameter("deviceType");
-        if(StringUtils.isBlank(deviceType)){
-            logger.error("UserController_loginByWx:deviceType为空");
+        if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)){
+            logger.error("UserController_loginByWx:deviceType或deviceSerialNo为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
         }
-        try{
-
-            User user = null;
-            UserWeixin userWeixin1 = this.userWeixinService.findUniqueByParams("unionid",userWeixin.getUnionid());
-            if(userWeixin1 == null){
-                if(StringUtils.isNotBlank(token)){
+        try {
+            String currentUid = "";
+            UserWeixin userWx = this.userWeixinService.findUniqueByParams("unionid",userWeixin.getUnionid());
+            if(StringUtils.isNotBlank(token)){
+                //用户当前已经登录
+                currentUid = UserUtils.getUserIdByToken(token);
+                if(userWx != null){
+                    //该QQ号已经被用户绑定
+                    if(String.valueOf(userWx.getUserId()).equals(currentUid)){
+                        //当前用户和绑定微信号的用户相同
+                        sender.put("code",0);
+                        User currUser = this.userService.getUserByUserId(Long.parseLong(currentUid));
+                        currUser.setSex(userWeixin.getSex());
+                        currUser.setLogo(userWeixin.getHeadimgurl());
+                        userService.update(currUser);
+                        //清除用户缓存
+                        masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + currUser.getUserId());
+                    }else{
+                        //当前用户和绑定微信号的用户不同
+                        sender.put("code",1);
+                        sender.put("nToken",UserUtils.createToken(String.valueOf(userWx.getUserId())));
+                        UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",currentUid);
+                        if(userAccount.getMoney() > 0 || userAccount.getVirtualMoney() > 0){
+                            sender.put("moneyFlag",true);
+                        }else{
+                            sender.put("moneyFlag",false);
+                        }
+                    }
+                }else{
+                    //该微信号没有被用户绑定过
                     //修改用户头像
-                    String userId = UserUtils.getUserIdByToken(token);
-                    user = this.userService.getUserByUserId(Long.parseLong(userId));
+                    User user = this.userService.getUserByUserId(Long.parseLong(currentUid));
                     user.setSex(userWeixin.getSex());
                     user.setLogo(userWeixin.getHeadimgurl());
                     userService.update(user);
-                }else{
-                    //注册新用户
-                    UserUuid userUuid = new UserUuid();
-                    userUuid.setCreateDate(new Date());
-                    userUuidService.save(userUuid);
-                    user = new User();
-                    user.setName("v"+userUuid.getId());
-                    user.setNickName("v"+userUuid.getId());
-                    user.setPassword("v"+Long.toHexString(System.currentTimeMillis()));
-                    user.setDeviceType(deviceType);
+                    //保存微信相关信息
+                    userWeixin.setUserId(Long.parseLong(currentUid));
+                    userWeixin.setUpdateDate(new Date());
+                    userWeixin.setCreateDate(new Date());
+                    userWeixinService.save(userWeixin);
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+                    //设置用户第三方账号绑定状态
+                    this.userReceiveService.userThirdBind(user.getUserId(),3);
+                    sender.put("code",0);
+                }
+            }else{
+                //用户当前未登录
+                sender.put("code",2);
+                User user = null;
+                if(userWeixin != null){
+                    user = this.userService.getUserByUserId(userWeixin.getUserId());
                     user.setSex(userWeixin.getSex());
                     user.setLogo(userWeixin.getHeadimgurl());
-                    if(StringUtils.isNotBlank(channel)){
-                        user.setChannel(Integer.parseInt(channel));
-                        user.setChannelNow(Integer.parseInt(channel));
-                    }
-                    user.setCreateDate(new Date());
-                    user.setUpdateDate(new Date());
-                    userService.save(user);
-                    //保存账号相关信息
-                    UserAccount userAccount = new UserAccount();
-                    userAccount.setUserId(user.getUserId());
-                    userAccount.setMoney(0);
-                    userAccount.setVirtualMoney(0);
-                    userAccount.setCreateDate(new Date());
-                    userAccount.setUpdateDate(new Date());
-                    userAccountService.save(userAccount);
-                }
+                    userService.update(user);
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
 
-                //保存微信相关信息
-                userWeixin.setUserId(user.getUserId());
-                userWeixin.setUpdateDate(new Date());
-                userWeixin.setCreateDate(new Date());
-                userWeixinService.save(userWeixin);
-            }else{
-                user = this.userService.getUserByUserId(userWeixin1.getUserId());
+                    sender.put("token",UserUtils.createToken(String.valueOf(userWeixin.getUserId())));
+                    sender.put("user",user);
+                }else{
+                    //自动注册
+                    user = userService.register(channel,deviceType,deviceSerialNo,request);
+                    Long userId = user.getUserId();
+                    user.setSex(userWeixin.getSex());
+                    user.setLogo(userWeixin.getHeadimgurl());
+                    userService.update(user);
+                    //保存微信相关信息
+                    userWeixin.setUserId(userId);
+                    userWeixin.setUpdateDate(new Date());
+                    userWeixin.setCreateDate(new Date());
+                    userWeixinService.save(userWeixin);
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+                    //设置用户第三方账号绑定状态
+                    this.userReceiveService.userThirdBind(user.getUserId(),3);
+
+                    sender.put("token",UserUtils.createToken(String.valueOf(userId)));
+                    sender.put("user",user);
+                }
             }
-            sender.put("user",user);
-            sender.put("token",UserUtils.createToken(String.valueOf(user.getUserId())));
-            sender.send(response);
-        }catch (Exception e){
+            sender.success(response);
+        } catch (Exception e) {
             logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
@@ -361,7 +408,7 @@ public class UserController extends BaseController {
         String channel = request.getParameter("channel");
         //imei->android_id->serialNunber ->UUID生成的
         String deviceSerialNo = request.getParameter("deviceSerialNo");
-        //0:安卓 1：ios 2:h5
+        //Android或IOS或H5
         String deviceType = request.getParameter("deviceType");
         if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)){
             logger.error("UserController_loginByWeibo:deviceType或deviceSerialNo为空");
@@ -381,6 +428,12 @@ public class UserController extends BaseController {
                     if(String.valueOf(userWeibo.getUserId()).equals(currentUid)){
                         //当前用户和绑定微博号的用户相同
                         sender.put("code",0);
+                        User currUser = this.userService.getUserByUserId(Long.parseLong(currentUid));
+                        currUser.setSex("m".equals(userWb.getGender()) ? 1 : 2);
+                        currUser.setLogo(userWb.getProfileImageUrl());
+                        userService.update(currUser);
+                        //清除用户缓存
+                        masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + currUser.getUserId());
                     }else{
                         //当前用户和绑定微博号的用户不同
                         sender.put("code",1);
@@ -404,7 +457,7 @@ public class UserController extends BaseController {
                     //清除用户缓存
                     masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
                     //设置用户第三方账号绑定状态
-                    this.userReceiveService.userThirdBind(user.getUserId(),2);
+                    this.userReceiveService.userThirdBind(user.getUserId(),4);
                     sender.put("code",0);
                 }
             }else{
@@ -413,6 +466,12 @@ public class UserController extends BaseController {
                 User user = null;
                 if(userWeibo != null){
                     user = this.userService.getUserByUserId(userWeibo.getUserId());
+                    user.setSex("m".equals(userWb.getGender()) ? 1 : 2);
+                    user.setLogo(userWb.getProfileImageUrl());
+                    userService.update(user);
+                    //清除用户缓存
+                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
+
                     sender.put("token",UserUtils.createToken(String.valueOf(userWeibo.getUserId())));
                     sender.put("user",user);
                 }else{
@@ -427,14 +486,17 @@ public class UserController extends BaseController {
                     //清除用户缓存
                     masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
                     //设置用户第三方账号绑定状态
-                    this.userReceiveService.userThirdBind(user.getUserId(),1);
+                    this.userReceiveService.userThirdBind(user.getUserId(),4);
 
                     sender.put("token",UserUtils.createToken(String.valueOf(userId)));
                     sender.put("user",user);
                 }
             }
+            sender.success(response);
         } catch (Exception e) {
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
             e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
     }
 
@@ -452,7 +514,7 @@ public class UserController extends BaseController {
         String channel = request.getParameter("channel");
         //imei->android_id->serialNunber ->UUID生成的
         String deviceSerialNo = request.getParameter("deviceSerialNo");
-        //0:安卓 1：ios 2:h5
+        //Android或IOS或H5
         String deviceType = request.getParameter("deviceType");
         if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)){
             logger.error("UserController_register:deviceType或deviceSerialNo为空");

@@ -21,7 +21,7 @@ public interface IUserService extends IBaseService<User,Long> {
     /**
      * 注册用户
      * @param channel 渠道号
-     * @param deviceType 0:安卓 1：ios 2:h5
+     * @param deviceType Android或IOS或H5
      * @param deviceSerialNo imei->android_id->serialNunber ->UUID生成的
      * @return
      */
