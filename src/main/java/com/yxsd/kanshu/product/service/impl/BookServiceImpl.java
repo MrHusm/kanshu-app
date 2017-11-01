@@ -61,6 +61,11 @@ public class BookServiceImpl extends BaseServiceImpl<Book, Long> implements IBoo
     }
 
     @Override
+    public Book selectOneBookByCategerySecId(Long categerySecId) {
+        return getBaseDao().selectOne(getPrefix()+"selectOneBookByCategerySecId",categerySecId);
+    }
+
+    @Override
     public void clearBookAllCache(Long bookId) {
         logger.info("开始清除图书"+bookId+"相关缓存");
         try{

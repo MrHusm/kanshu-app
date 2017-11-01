@@ -19,11 +19,17 @@ public interface IBookService extends IBaseService<Book,Long> {
 
     /**
      * 分页获取图书信息
-     * @param book
      * @param query
      * @return
      */
     PageFinder<Book> findPageFinderWithExpandObjs(Object params, Query query);
+
+    /**
+     * 根据二级分类查询图书
+     * @param categerySecId
+     * @return
+     */
+    Book selectOneBookByCategerySecId(Long categerySecId);
 
     /**
      * 清除图书相关缓存

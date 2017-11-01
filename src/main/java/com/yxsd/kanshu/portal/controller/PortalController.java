@@ -98,11 +98,11 @@ public class PortalController extends BaseController{
      */
     @RequestMapping("categoryIndex")
     public String categoryIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
-        List<Category> parentCategorys = this.categoryService.getCategorysByPid(0L);
+        List<Category> parentCategorys = this.categoryService.getCategorysByPid(0L,0);
         List<Map<String,List<Category>>> data = new ArrayList<Map<String,List<Category>>>();
         for(Category parentCategory : parentCategorys){
             Map<String,List<Category>> map = new HashMap<String, List<Category>>();
-            List<Category> categories = this.categoryService.getCategorysByPid(parentCategory.getCategoryId());
+            List<Category> categories = this.categoryService.getCategorysByPid(parentCategory.getCategoryId(),1);
             map.put(parentCategory.getName(),categories);
             data.add(map);
         }
@@ -140,7 +140,7 @@ public class PortalController extends BaseController{
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
 
         Category category = this.categoryService.findUniqueByParams("categoryId",categoryId);
-        List<Category> childCategorys = this.categoryService.getCategorysByPid(Long.parseLong(categoryId));
+        List<Category> childCategorys = this.categoryService.getCategorysByPid(Long.parseLong(categoryId),1);
 
         Query query = new Query();
         if(StringUtils.isNotBlank(page)){

@@ -645,7 +645,16 @@ public class UserController extends BaseController {
             if(bookExpand != null){
                 sender.put("searchBook",bookExpand.getBookName());
             }
-           sender.put("bindStatus",user.isTourist() ? 0 : 1);
+            UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
+            if(userReceive != null){
+                sender.put("qqStatus", userReceive.getQqStatus() != null && userReceive.getQqStatus() == 1 ? 1 : 0);
+                sender.put("weiboStatus", userReceive.getWeiboStatus() != null && userReceive.getWeiboStatus() == 1 ? 1 : 0);
+                sender.put("weixinStatus", userReceive.getWeixinStatus() != null && userReceive.getWeixinStatus() == 1 ? 1 : 0);
+            }else{
+                sender.put("qqStatus", userReceive.getQqStatus() != null && userReceive.getQqStatus() == 1 ? 1 : 0);
+                sender.put("weiboStatus", userReceive.getWeiboStatus() != null && userReceive.getWeiboStatus() == 1 ? 1 : 0);
+                sender.put("weixinStatus", userReceive.getWeixinStatus() != null && userReceive.getWeixinStatus() == 1 ? 1 : 0);
+            }
            sender.put("user",user);
            sender.put("userAccount",userAccount);
            sender.success(response);

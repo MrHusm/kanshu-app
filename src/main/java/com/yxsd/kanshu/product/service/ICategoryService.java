@@ -13,7 +13,8 @@ public interface ICategoryService extends IBaseService<Category,Long> {
     /**
      * 根据父ID获取分类信息
      * @param pid
+     * @param type 0:不过滤没有书的分类 1：过滤没有书的分类
      * @return
      */
-    public List<Category> getCategorysByPid(Long pid);
+    public List<Category> getCategorysByPid(Long pid,int type);
 }
