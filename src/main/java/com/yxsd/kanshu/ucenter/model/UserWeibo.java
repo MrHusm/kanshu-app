@@ -32,7 +32,9 @@ public class UserWeibo implements Serializable {
 
     private String profileImageUrl;       //自定义图像
 
-    private String userDomain;            //用户个性化URL
+    private String profileUrl;          //用户的微博统一URL地址
+
+    private String domain;            //用户个性化URL
 
     private String gender;                //性别,m--男，f--女,n--未知
 
@@ -58,6 +60,8 @@ public class UserWeibo implements Serializable {
 
     private Integer followMe;             //此用户是否关注我
 
+    private String avatarHd;           //大头像地址
+
     private String avatarLarge;           //大头像地址
 
     private Integer onlineStatus;             //用户在线状态
@@ -73,8 +77,6 @@ public class UserWeibo implements Serializable {
     private String verifiedReason;		  //认证原因
 
     private String weihao;				  //微號
-
-    private String statusId;
 
     private Date updateDate;
 
@@ -168,12 +170,20 @@ public class UserWeibo implements Serializable {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public String getUserDomain() {
-        return userDomain;
+    public String getProfileUrl() {
+        return profileUrl;
     }
 
-    public void setUserDomain(String userDomain) {
-        this.userDomain = userDomain;
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String userDomain) {
+        this.domain = domain;
     }
 
     public String getGender() {
@@ -336,14 +346,6 @@ public class UserWeibo implements Serializable {
         this.weihao = weihao;
     }
 
-    public String getStatusId() {
-        return statusId;
-    }
-
-    public void setStatusId(String statusId) {
-        this.statusId = statusId;
-    }
-
     public Date getUpdateDate() {
         return updateDate;
     }
@@ -358,5 +360,13 @@ public class UserWeibo implements Serializable {
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+
+    public String getAvatarHd() {
+        return avatarHd;
+    }
+
+    public void setAvatarHd(String avatarHd) {
+        this.avatarHd = avatarHd;
     }
 }

@@ -52,6 +52,8 @@ public class UserWeiboServiceImpl extends BaseServiceImpl<UserWeibo, Long> imple
     public UserWeibo saveUserWeibo(UserWb userWb, Long userId) {
         UserWeibo userWeibo = new UserWeibo();
         BeanUtils.copyProperties(userWeibo, userWb);
+        userWeibo.setId(null);
+        userWeibo.setWeiboId(userWb.getId());
         userWeibo.setFollowing(userWb.isFollowing() ? 1 : 0);
         userWeibo.setAllowAllActMsg(userWb.isAllowAllActMsg() ? 1 : 0);
         userWeibo.setVerified(userWb.isVerified() ? 1 : 0);
