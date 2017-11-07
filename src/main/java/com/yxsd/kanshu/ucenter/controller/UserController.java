@@ -226,7 +226,9 @@ public class UserController extends BaseController {
                         masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + currentUid);
                     }else{
                         //当前用户和绑定QQ号的用户不同
+                        User nUser = this.userService.getUserByUserId(userQq.getUserId());
                         sender.put("code",1);
+                        sender.put("nUser",nUser);
                         sender.put("nToken",UserUtils.createToken(String.valueOf(userQq.getUserId())));
                         UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",currentUid);
                         if(userAccount.getMoney() > 0 || userAccount.getVirtualMoney() > 0){
@@ -324,7 +326,9 @@ public class UserController extends BaseController {
                         masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + currUser.getUserId());
                     }else{
                         //当前用户和绑定微信号的用户不同
+                        User nUser = this.userService.getUserByUserId(userWx.getUserId());
                         sender.put("code",1);
+                        sender.put("nUser",nUser);
                         sender.put("nToken",UserUtils.createToken(String.valueOf(userWx.getUserId())));
                         UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",currentUid);
                         if(userAccount.getMoney() > 0 || userAccount.getVirtualMoney() > 0){
@@ -401,7 +405,7 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping("loginByWeibo")
-    public void loginByWeibo(HttpServletResponse response,HttpServletRequest request,UserWb userWb) {
+    public void loginByWeibo(HttpServletResponse response,HttpServletRequest request) {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String token = request.getParameter("token");
@@ -410,14 +414,17 @@ public class UserController extends BaseController {
         String deviceSerialNo = request.getParameter("deviceSerialNo");
         //Android或IOS或H5
         String deviceType = request.getParameter("deviceType");
-        if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)){
-            logger.error("UserController_loginByWeibo:deviceType或deviceSerialNo为空");
+        String json = request.getParameter("json");
+        logger.info("json:" + json);
+        if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo) || StringUtils.isBlank(json)){
+            logger.error("UserController_loginByWeibo:deviceType或deviceSerialNo或json为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
         }
 
         try {
+            UserWb userWb = JSON.parseObject(json,UserWb.class);
             String currentUid = "";
             UserWeibo userWeibo = this.userWeiboService.findUniqueByParams("weiboId",userWb.getId());
             if(StringUtils.isNotBlank(token)){
@@ -436,7 +443,9 @@ public class UserController extends BaseController {
                         masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + currUser.getUserId());
                     }else{
                         //当前用户和绑定微博号的用户不同
+                        User nUser = this.userService.getUserByUserId(userWeibo.getUserId());
                         sender.put("code",1);
+                        sender.put("nUser",nUser);
                         sender.put("nToken",UserUtils.createToken(String.valueOf(userWeibo.getUserId())));
                         UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",currentUid);
                         if(userAccount.getMoney() > 0 || userAccount.getVirtualMoney() > 0){
@@ -651,9 +660,9 @@ public class UserController extends BaseController {
                 sender.put("weiboStatus", userReceive.getWeiboStatus() != null && userReceive.getWeiboStatus() == 1 ? 1 : 0);
                 sender.put("weixinStatus", userReceive.getWeixinStatus() != null && userReceive.getWeixinStatus() == 1 ? 1 : 0);
             }else{
-                sender.put("qqStatus", userReceive.getQqStatus() != null && userReceive.getQqStatus() == 1 ? 1 : 0);
-                sender.put("weiboStatus", userReceive.getWeiboStatus() != null && userReceive.getWeiboStatus() == 1 ? 1 : 0);
-                sender.put("weixinStatus", userReceive.getWeixinStatus() != null && userReceive.getWeixinStatus() == 1 ? 1 : 0);
+                sender.put("qqStatus", 0);
+                sender.put("weiboStatus",0);
+                sender.put("weixinStatus",0);
             }
            sender.put("user",user);
            sender.put("userAccount",userAccount);
