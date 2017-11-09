@@ -31,6 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -379,7 +383,7 @@ public class BookController extends BaseController {
                             chapterMap.put("lock",false);
                             continue;
                         }else if(userPayBook.getType() == 1){
-                            if(userPayBook.getStartChapterIdx() < chapter.getIdx() && userPayBook.getEndChapterIdx() > chapter.getIdx()){
+                            if(userPayBook.getStartChapterIdx() <= chapter.getIdx() && userPayBook.getEndChapterIdx() >= chapter.getIdx()){
                                 //批量购买过
                                 chapter.setLock(false);
                                 chapterMap.put("lock",false);
@@ -554,7 +558,7 @@ public class BookController extends BaseController {
                             //全本购买过
                             chapter.setLock(false);
                         }else if(userPayBook.getType() == 1){
-                            if(userPayBook.getStartChapterIdx() < chapter.getIdx() && userPayBook.getEndChapterIdx() > chapter.getIdx()){
+                            if(userPayBook.getStartChapterIdx() <= chapter.getIdx() && userPayBook.getEndChapterIdx() >= chapter.getIdx()){
                                 //批量购买过
                                 chapter.setLock(false);
                             }
@@ -1159,5 +1163,56 @@ public class BookController extends BaseController {
             notBuyChapters.add(c);
         }
         return notBuyChapters;
+    }
+
+
+    /**
+     * 导出章节文件
+     * @param response
+     * @param request
+     */
+    @RequestMapping("exportChapterContent")
+    public void exportChapterContent(HttpServletResponse response, HttpServletRequest request) {
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        String bookId = request.getParameter("bookId");
+        String num = request.getParameter("num");
+
+        if(StringUtils.isBlank(bookId) || StringUtils.isBlank(num)){
+            logger.error("BookController_exportChapterContent:bookId或者num为空");
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            Book book = this.bookService.getBookById(Long.parseLong(bookId));
+            if(book != null){
+                File wDir = new File("/var/www/result/"+ book.getTitle() + "_" + bookId);
+                if(!wDir.exists()){
+                    wDir.mkdir();
+                }
+                //获取图书所有章节
+                List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
+                int size = Integer.parseInt(num) > chapters.size() ? chapters.size() : Integer.parseInt(num);
+                BufferedWriter bufferedWriter = null;
+                for(int i = 0; i < size; i++){
+                    Chapter chapter = this.chapterService.getChapterById(chapters.get(i).getChapterId(),1,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
+                    File wFile = new File(wDir,chapter.getChapterId() + ".txt");
+                    if(!wFile.exists()){
+                        wFile.createNewFile();
+                    }
+                    bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(wFile),"utf-8"));
+                    bufferedWriter.write(ZipUtils.gunzip(chapter.getContent()));
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                }
+            }
+
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误："+ request.getRequestURL()+"?"+request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
     }
 }

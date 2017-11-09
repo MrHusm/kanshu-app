@@ -8,6 +8,8 @@ import com.yxsd.kanshu.ucenter.dao.IUserWeiboDao;
 import com.yxsd.kanshu.ucenter.model.UserWb;
 import com.yxsd.kanshu.ucenter.model.UserWeibo;
 import com.yxsd.kanshu.ucenter.service.IUserWeiboService;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.converters.DateConverter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,7 @@ public class UserWeiboServiceImpl extends BaseServiceImpl<UserWeibo, Long> imple
     @Override
     public UserWeibo saveUserWeibo(UserWb userWb, Long userId) {
         UserWeibo userWeibo = new UserWeibo();
+        ConvertUtils.register(new DateConverter(null), java.util.Date.class);
         BeanUtils.copyProperties(userWeibo, userWb);
         userWeibo.setId(null);
         userWeibo.setWeiboId(userWb.getId());
