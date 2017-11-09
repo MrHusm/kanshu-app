@@ -773,6 +773,7 @@ public class UserController extends BaseController {
             if(StringUtils.isBlank(nickName)){
                 sender.fail(-1, "昵称不能为空", response);
             }else{
+                //过滤表情符号
                 nickName = nickName.replaceAll("[\\ud800\\udc00-\\udbff\\udfff\\ud800-\\udfff]", "");
                 if(StringUtils.isBlank(nickName)){
                     sender.fail(-1, "昵称不能为空", response);
