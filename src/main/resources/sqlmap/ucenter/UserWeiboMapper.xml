@@ -41,6 +41,7 @@
     </resultMap>
     <sql id="Base_Where">
         <if test="userId != null"> and user_id= #{userId}</if>
+        <if test="weiboId != null and weiboId != ''"> and weibo_id= #{weiboId}</if>
     </sql>
     <sql id="Base_Column_List">
         id,user_id,`weibo_id`,`screen_name`,`name`,`province`,`city`,`location`,`description`,

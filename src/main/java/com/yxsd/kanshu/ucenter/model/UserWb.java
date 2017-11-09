@@ -1,8 +1,6 @@
 package com.yxsd.kanshu.ucenter.model;
 
 
-import java.util.Date;
-
 /**
  * A data class representing Basic user information element
  */
@@ -42,13 +40,13 @@ public class UserWb{
 
 	private Integer favourites_count;          //收藏数
 
-	private Date created_at;               //创建时间
+	private String created_at;               //创建时间
 
-	private Integer following;            //保留字段,是否已关注(此特性暂不支持)
+	private Boolean following;            //保留字段,是否已关注(此特性暂不支持)
 
-	private Integer allow_all_act_msg;       //是否允许所有人给我发私信
+	private Boolean allow_all_act_msg;       //是否允许所有人给我发私信
 
-	private Integer verified;             //加V标示，是否微博认证用户
+	private Boolean verified;             //加V标示，是否微博认证用户
 
 	private Integer verified_type;             //认证类型
 
@@ -56,13 +54,13 @@ public class UserWb{
 
 	private String status = null;         //用户最新一条微博
 
-	private Integer allow_all_comment;      //是否允许所有人对我的微博进行评论
+	private Boolean allow_all_comment;      //是否允许所有人对我的微博进行评论
 
 	private String avatar_large;           //大头像地址
 
 	private String avatar_hd;           //大头像地址
 
-	private Integer follow_me;             //此用户是否关注我
+	private Boolean follow_me;             //此用户是否关注我
 
 	private Integer online_status;             //用户在线状态
 
@@ -71,10 +69,6 @@ public class UserWb{
 	private String lang;                  //用户语言版本
 
 	private String verified_reason;		  //认证原因
-
-	private Date updateDate;
-
-	private Date createDate;
 
 	public String getId() {
 		return id;
@@ -212,35 +206,35 @@ public class UserWb{
 		this.favourites_count = favourites_count;
 	}
 
-	public Date getCreated_at() {
+	public String getCreated_at() {
 		return created_at;
 	}
 
-	public void setCreated_at(Date created_at) {
+	public void setCreated_at(String created_at) {
 		this.created_at = created_at;
 	}
 
-	public Integer getFollowing() {
+	public Boolean getFollowing() {
 		return following;
 	}
 
-	public void setFollowing(Integer following) {
+	public void setFollowing(Boolean following) {
 		this.following = following;
 	}
 
-	public Integer getAllow_all_act_msg() {
+	public Boolean getAllow_all_act_msg() {
 		return allow_all_act_msg;
 	}
 
-	public void setAllow_all_act_msg(Integer allow_all_act_msg) {
+	public void setAllow_all_act_msg(Boolean allow_all_act_msg) {
 		this.allow_all_act_msg = allow_all_act_msg;
 	}
 
-	public Integer getVerified() {
+	public Boolean getVerified() {
 		return verified;
 	}
 
-	public void setVerified(Integer verified) {
+	public void setVerified(Boolean verified) {
 		this.verified = verified;
 	}
 
@@ -268,11 +262,11 @@ public class UserWb{
 		this.status = status;
 	}
 
-	public Integer getAllow_all_comment() {
+	public Boolean getAllow_all_comment() {
 		return allow_all_comment;
 	}
 
-	public void setAllow_all_comment(Integer allow_all_comment) {
+	public void setAllow_all_comment(Boolean allow_all_comment) {
 		this.allow_all_comment = allow_all_comment;
 	}
 
@@ -292,11 +286,11 @@ public class UserWb{
 		this.avatar_hd = avatar_hd;
 	}
 
-	public Integer getFollow_me() {
+	public Boolean getFollow_me() {
 		return follow_me;
 	}
 
-	public void setFollow_me(Integer follow_me) {
+	public void setFollow_me(Boolean follow_me) {
 		this.follow_me = follow_me;
 	}
 
@@ -330,21 +324,5 @@ public class UserWb{
 
 	public void setVerified_reason(String verified_reason) {
 		this.verified_reason = verified_reason;
-	}
-
-	public Date getUpdateDate() {
-		return updateDate;
-	}
-
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
-
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
 	}
 }

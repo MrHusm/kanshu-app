@@ -437,7 +437,7 @@ public class UserController extends BaseController {
                         sender.put("code",0);
                         User currUser = this.userService.getUserByUserId(Long.parseLong(currentUid));
                         currUser.setSex("m".equals(userWb.getGender()) ? 1 : 2);
-                        currUser.setLogo(userWb.getProfileImageUrl());
+                        currUser.setLogo(userWb.getProfile_image_url());
                         userService.update(currUser);
                         //清除用户缓存
                         masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + currUser.getUserId());
@@ -459,7 +459,7 @@ public class UserController extends BaseController {
                     //修改用户头像
                     User user = this.userService.getUserByUserId(Long.parseLong(currentUid));
                     user.setSex("m".equals(userWb.getGender()) ? 1 : 2);
-                    user.setLogo(userWb.getProfileImageUrl());
+                    user.setLogo(userWb.getProfile_image_url());
                     userService.update(user);
                     //保存微博相关信息
                     userWeibo = userWeiboService.saveUserWeibo(userWb, user.getUserId());
@@ -476,7 +476,7 @@ public class UserController extends BaseController {
                 if(userWeibo != null){
                     user = this.userService.getUserByUserId(userWeibo.getUserId());
                     user.setSex("m".equals(userWb.getGender()) ? 1 : 2);
-                    user.setLogo(userWb.getProfileImageUrl());
+                    user.setLogo(userWb.getProfile_image_url());
                     userService.update(user);
                     //清除用户缓存
                     masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + user.getUserId());
@@ -488,7 +488,7 @@ public class UserController extends BaseController {
                     user = userService.register(channel,deviceType,deviceSerialNo,request);
                     Long userId = user.getUserId();
                     user.setSex("m".equals(userWb.getGender()) ? 1 : 2);
-                    user.setLogo(userWb.getProfileImageUrl());
+                    user.setLogo(userWb.getProfile_image_url());
                     userService.update(user);
                     //保存微博相关信息
                     userWeibo = userWeiboService.saveUserWeibo(userWb, user.getUserId());
@@ -770,20 +770,29 @@ public class UserController extends BaseController {
         }
         try{
             logger.info("修改昵称为："+nickName);
-            if(nickName.length() > 8){
-                sender.fail(-1, "昵称不能超过8个字", response);
+            if(StringUtils.isBlank(nickName)){
+                sender.fail(-1, "昵称不能为空", response);
             }else{
-                User user = userService.findUniqueByParams("nickName",nickName);
-                if(user != null && user.getUserId() != Long.parseLong(userId)){
-                    sender.fail(-1, "昵称已存在", response);
+                nickName = nickName.replaceAll("[\\ud800\\udc00-\\udbff\\udfff\\ud800-\\udfff]", "");
+                if(StringUtils.isBlank(nickName)){
+                    sender.fail(-1, "昵称不能为空", response);
                 }else{
-                    user = userService.getUserByUserId(Long.parseLong(userId));
-                    user.setNickName(nickName);
-                    userService.update(user);
-                    //清除用户缓存
-                    masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
-                    sender.put("user", user);
-                    sender.send(response);
+                    if(nickName.length() > 8){
+                        sender.fail(-1, "昵称不能超过8个字", response);
+                    }else{
+                        User user = userService.findUniqueByParams("nickName",nickName);
+                        if(user != null && user.getUserId() != Long.parseLong(userId)){
+                            sender.fail(-1, "昵称已存在", response);
+                        }else{
+                            user = userService.getUserByUserId(Long.parseLong(userId));
+                            user.setNickName(nickName);
+                            userService.update(user);
+                            //清除用户缓存
+                            masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
+                            sender.put("user", user);
+                            sender.send(response);
+                        }
+                    }
                 }
             }
         }catch (Exception e){
