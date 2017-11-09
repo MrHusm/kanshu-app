@@ -859,6 +859,13 @@ public class BookController extends BaseController {
                 Chapter c = notBuyChapters.get(i);
                 price += c.getPrice();
             }
+            if(size == 50){
+                price = (int)(price * 0.9);
+            }else if(size > 50 && size <= 100){
+                price = (int)(price * 0.8);
+            }else if(size > 100){
+                price = (int)(price * 0.7);
+            }
 
             Map<String,Object> map = new HashMap<String,Object>();
             map.put("bookId",bookId);
