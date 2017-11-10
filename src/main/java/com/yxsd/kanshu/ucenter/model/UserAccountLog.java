@@ -36,6 +36,7 @@ public class UserAccountLog implements Serializable {
 
     /**
      * 消费类型 type>0 收入  type<0 消费
+     * 1：支付宝充值 2：微信充值 11：客服赠送 12：签到赠送 -1:单章购买 -2：批量购买 -3：全本购买 -4：VIP消费
      */
     private Integer type;
 

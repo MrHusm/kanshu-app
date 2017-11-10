@@ -27,6 +27,8 @@ public class Constants {
 
     public static final int CONSUME_TYPE_1 = 1;//支付宝充值
     public static final int CONSUME_TYPE_2 = 2;//微信充值
+    public static final int CONSUME_TYPE_11 = 11;//客服赠送
+    public static final int CONSUME_TYPE_12 = 12;//签到赠送
     public static final int CONSUME_TYPE_S1 = -1;//单章购买
     public static final int CONSUME_TYPE_S2 = -2;//批量购买
     public static final int CONSUME_TYPE_S3 = -3;//全本购买

@@ -735,7 +735,7 @@ public class UserController extends BaseController {
             model.addAttribute("user",user);
             return "/ucenter/toUpdateNickName";
         }catch (Exception e){
-            logger.error("系统错误："+ request.getRequestURL()+request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
         }
 
@@ -797,7 +797,7 @@ public class UserController extends BaseController {
                 }
             }
         }catch (Exception e){
-            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
@@ -883,7 +883,7 @@ public class UserController extends BaseController {
                 }
             }
         }catch (Exception e){
-            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
             return "error";
         }
@@ -959,7 +959,7 @@ public class UserController extends BaseController {
             model.addAttribute("pageNo",pageFinder.getPageNo());
             model.addAttribute("pageCount",pageFinder.getPageCount());
         }catch (Exception e){
-            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
             return "error";
         }
@@ -1000,7 +1000,7 @@ public class UserController extends BaseController {
             }
             sender.success(response);
         }catch (Exception e){
-            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
@@ -1035,7 +1035,12 @@ public class UserController extends BaseController {
             UserVip userVip = this.userVipService.findUniqueByParams("userId",userId);
             Calendar calendar = Calendar.getInstance();
             if(userVip != null){
-                calendar.setTime(userVip.getEndDate());
+                Date now = new Date();
+                if(now.getTime() > userVip.getEndDate().getTime()){
+                    calendar.setTime(now);
+                }else{
+                    calendar.setTime(userVip.getEndDate());
+                }
                 calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(days));
                 userVip.setEndDate(calendar.getTime());
                 userVip.setUpdateDate(new Date());
@@ -1071,7 +1076,7 @@ public class UserController extends BaseController {
             masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
             sender.success(response);
         }catch (Exception e){
-            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
@@ -1151,7 +1156,7 @@ public class UserController extends BaseController {
             }
             sender.success(response);
         }catch (Exception e){
-            logger.error("系统错误：" + request.getRequestURL() + request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }

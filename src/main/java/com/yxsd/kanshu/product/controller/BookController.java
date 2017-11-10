@@ -474,7 +474,7 @@ public class BookController extends BaseController {
             }
             sender.success(response);
         }catch (Exception e){
-            logger.error("系统错误："+ request.getRequestURL()+request.getQueryString());
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
