@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,7 +62,13 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> impleme
                 if(type == 1){
                     List<Category> list = new ArrayList<Category>();
                     for(Category category : categories){
-                        Book book = this.bookService.selectOneBookByCategerySecId(category.getCategoryId());
+                        Map<String,Object> condition = new HashMap<String,Object>();
+                        if(category.getLevel() == 2){
+                            condition.put("categorySecId",category.getCategoryId());
+                        }else if(category.getLevel() == 3){
+                            condition.put("categoryThrId",category.getCategoryId());
+                        }
+                        Book book = this.bookService.selectOneBookCondition(condition);
                         if(book != null){
                             list.add(category);
                         }

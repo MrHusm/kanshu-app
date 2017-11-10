@@ -5,6 +5,8 @@ import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.product.model.Book;
 
+import java.util.Map;
+
 /**
  * Created by lenovo on 2017/8/7.
  */
@@ -25,11 +27,11 @@ public interface IBookService extends IBaseService<Book,Long> {
     PageFinder<Book> findPageFinderWithExpandObjs(Object params, Query query);
 
     /**
-     * 根据二级分类查询图书
-     * @param categerySecId
+     * 根据条件查询单个图书
+     * @param condition
      * @return
      */
-    Book selectOneBookByCategerySecId(Long categerySecId);
+    Book selectOneBookCondition(Map<String,Object> condition);
 
     /**
      * 清除图书相关缓存
