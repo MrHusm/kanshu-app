@@ -2,12 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="DriveBookMapper" >
   <resultMap id="BaseResultMap" type="com.yxsd.kanshu.portal.model.DriveBook" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="book_id" property="bookId" jdbcType="BIGINT" />
-    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="type" property="type" jdbcType="INTEGER" />
-    <result column="score" property="score" jdbcType="INTEGER" />
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="book_id" property="bookId" jdbcType="BIGINT" />
+      <result column="type" property="type" jdbcType="INTEGER" />
+      <result column="score" property="score" jdbcType="INTEGER" />
       <result column="status" property="status" jdbcType="INTEGER" />
+      <result column="man_type" property="manType" jdbcType="INTEGER" />
+      <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+      <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <resultMap id="withBookInfoMap" type="com.yxsd.kanshu.portal.model.DriveBook"  extends="BaseResultMap" >
    		<collection property="book" ofType="com.yxsd.kanshu.product.model.Book">
@@ -31,14 +33,15 @@
     <sql id="Base_Where">
         <if test="id != null"> and d.id= #{id}</if>
         <if test="bookId != null"> and d.book_id= #{bookId}</if>
-        <if test="createDate != null"> and d.type= #{createDate}</if>
         <if test="type != null"> and d.type= #{type}</if>
         <if test="score != null"> and d.score= #{score}</if>
         <if test="status != null"> and d.status= #{status}</if>
+        <if test="manType != null"> and d.man_type= #{manType}</if>
+        <if test="createDate != null"> and d.type= #{createDate}</if>
    </sql>
 
   <sql id="Base_Column_List" >
-    id, book_id, create_date, type, score,status
+    id, book_id, create_date, type, score,status,man_type,update_date
   </sql>
   
   <sql id="Column_With_Book_List" >
@@ -76,6 +79,12 @@
       <if test="status != null" >
         status,
       </if>
+      <if test="manType != null" >
+        man_type,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="bookId != null" >
@@ -93,6 +102,12 @@
       <if test="status != null" >
         #{status,jdbcType=INTEGER},
       </if>
+      <if test="manType != null" >
+        #{manType,jdbcType=INTEGER},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.portal.model.DriveBook" >
@@ -104,6 +119,9 @@
       <if test="createDate != null" >
         create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
       <if test="type != null" >
         type = #{type,jdbcType=INTEGER},
       </if>
@@ -113,6 +131,9 @@
       <if test="status != null" >
         status = #{status,jdbcType=INTEGER},
       </if>
+      <if test="manType != null" >
+        man_type = #{manType,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -120,9 +141,11 @@
     update drive_book
     set book_id = #{bookId,jdbcType=BIGINT},
       create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
       type = #{type,jdbcType=INTEGER},
       score = #{score,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER}
+      man_type = #{manType,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
   
@@ -133,7 +156,7 @@
 		LEFT JOIN book b 
 		ON d.book_id = b.book_id where 1=1
         <include refid="Base_Where" />
-        order by d.score desc,d.create_date asc
+        order by d.man_type desc,d.score desc,d.create_date asc
     </select>
     <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
           select count(1)  from drive_book d

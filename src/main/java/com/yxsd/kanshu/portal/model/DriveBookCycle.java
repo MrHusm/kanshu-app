@@ -1,17 +1,20 @@
 package com.yxsd.kanshu.portal.model;
 
-import com.yxsd.kanshu.product.model.Book;
-
 import java.io.Serializable;
 import java.util.Date;
 
-public class DriveBook implements Serializable{
+public class DriveBookCycle implements Serializable{
     private Long id;
 
     /**
      * 图书id
      */
     private Long bookId;
+
+    /**
+     * 图书名称
+     */
+    private String bookName;
 
 
     /**
@@ -21,20 +24,21 @@ public class DriveBook implements Serializable{
      */
     private Integer type;
 
+
+    /**
+     * 开始时间
+     */
+    private Date startDate;
+
+    /**
+     * 结束时间
+     */
+    private Date endDate;
+
     /**
      * 排序分数
      */
     private Integer score;
-
-    /***
-     * 1:上线 0：未上线
-     */
-    private Integer status;
-
-    /**
-     * 1:手工配置 0：网站抓取
-     */
-    private Integer manType;
 
     /**
      * 创建时间
@@ -45,19 +49,8 @@ public class DriveBook implements Serializable{
      * 修改时间
      */
     private Date updateDate;
-    
-    
-    private Book book;
 
-    public Book getBook() {
-		return book;
-	}
-
-	public void setBook(Book book) {
-		this.book = book;
-	}
-
-	public Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -73,12 +66,12 @@ public class DriveBook implements Serializable{
         this.bookId = bookId;
     }
 
-    public Date getCreateDate() {
-        return createDate;
+    public String getBookName() {
+        return bookName;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
     }
 
     public Integer getType() {
@@ -89,6 +82,22 @@ public class DriveBook implements Serializable{
         this.type = type;
     }
 
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     public Integer getScore() {
         return score;
     }
@@ -97,20 +106,12 @@ public class DriveBook implements Serializable{
         this.score = score;
     }
 
-    public Integer getStatus() {
-        return status;
+    public Date getCreateDate() {
+        return createDate;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Integer getManType() {
-        return manType;
-    }
-
-    public void setManType(Integer manType) {
-        this.manType = manType;
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
     public Date getUpdateDate() {

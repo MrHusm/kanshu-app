@@ -985,14 +985,24 @@ public class RankClimbController extends BaseController {
     }
 
     /**
+     * 手工驱动job
+     */
+    @RequestMapping("manDriveBook")
+    public void manDriveBook() {
+        logger.info("开始执行手工配置驱动");
+
+    }
+
+    /**
      * 将图书保存到驱动表
      * @param title  书名
      * @param type   驱动类型   1：首页驱动 2：首页男生最爱 3：首页女生频道
      * 4：首页二次元 5：大家都在搜索 6：书库全站畅销
      * 7：书库完结精选 8：书库重磅新书 9：限免 10：书籍相关图书
      * @param score  分数
+     * @param manType  1:手工配置 0：网站抓取
      */
-    public void saveDrive(String title,Integer type,Integer score) {
+    public void saveDrive(String title,Integer type,Integer score,Integer manType) {
         if (StringUtils.isNotBlank(title)) {
             List<Book> books = bookService.findListByParams("title", title);
             if (CollectionUtils.isNotEmpty(books)) {
@@ -1005,6 +1015,7 @@ public class RankClimbController extends BaseController {
                         driveBook.setType(type);
                         driveBook.setScore(score);
                         driveBook.setStatus(0);
+                        driveBook.setManType(manType == null ? 0 : manType);
                         driveBook.setCreateDate(new Date());
                         driveBookService.save(driveBook);
                         logger.info("驱动保存成功书名_"+title+"_type+"+type+"_score_"+score);
@@ -1018,6 +1029,10 @@ public class RankClimbController extends BaseController {
         }
     }
 
+    public void saveDrive(String title,Integer type,Integer score){
+        saveDrive(title,type,score,0);
+    }
+
     /**
      * 上线新驱动
      * @param type 类型 1：首页驱动 2：首页男生最爱 3：首页女生频道
@@ -1026,10 +1041,10 @@ public class RankClimbController extends BaseController {
      */
     public void onlineDrive(Integer type){
         logger.info("开始上线驱动type="+type);
-        List<DriveBook> newDriveBooks = this.driveBookService.findListByParams("type",type,"status",0);
+        List<DriveBook> newDriveBooks = this.driveBookService.findListByParams("type",type,"status",0,"manType",0);
         if(newDriveBooks != null && newDriveBooks.size() > 10){
             //查询出来放入缓存
-            List<DriveBook> oldDriveBooks = this.driveBookService.findListByParams("type",type,"status",1);
+            List<DriveBook> oldDriveBooks = this.driveBookService.findListByParams("type",type,"status",1,"manType",0);
             if(CollectionUtils.isNotEmpty(oldDriveBooks)){
                 for(DriveBook oldDriveBook : oldDriveBooks){
                     //删除老的驱动
