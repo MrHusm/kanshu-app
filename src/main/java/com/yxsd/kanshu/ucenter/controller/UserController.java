@@ -244,6 +244,8 @@ public class UserController extends BaseController {
                     user.setSex("男".equals(qqJson.getString("gender")) ? 1 : 2 );
                     user.setLogo(qqJson.getString("figureurl_qq_1"));
                     userService.update(user);
+                    //删除已绑定的QQ
+                    userQqService.deleteByByParams("userId",user.getUserId());
                     //保存QQ相关信息
                     userQq = userQqService.saveUserQq(qqJson, openID, user.getUserId());
                     //清除用户缓存
@@ -292,7 +294,7 @@ public class UserController extends BaseController {
     }
 
     @RequestMapping("loginByWx")
-    public void loginByWx(HttpServletResponse response,HttpServletRequest request,UserWeixin userWeixin) {
+    public void loginByWx(HttpServletResponse response,HttpServletRequest request) {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String token = request.getParameter("token");
@@ -301,13 +303,16 @@ public class UserController extends BaseController {
         String deviceSerialNo = request.getParameter("deviceSerialNo");
         //Android或IOS或H5
         String deviceType = request.getParameter("deviceType");
-        if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo)){
-            logger.error("UserController_loginByWx:deviceType或deviceSerialNo为空");
+        String json = request.getParameter("json");
+        logger.info("weixin_json:" + json);
+        if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo) || StringUtils.isBlank(json)){
+            logger.error("UserController_loginByWx:deviceType或deviceSerialNo或json为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
                     ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
             return;
         }
         try {
+            UserWeixin userWeixin = JSON.parseObject(json,UserWeixin.class);
             String currentUid = "";
             UserWeixin userWx = this.userWeixinService.findUniqueByParams("unionid",userWeixin.getUnionid());
             if(StringUtils.isNotBlank(token)){
@@ -344,6 +349,8 @@ public class UserController extends BaseController {
                     user.setSex(userWeixin.getSex());
                     user.setLogo(userWeixin.getHeadimgurl());
                     userService.update(user);
+                    //删除已绑定的微博
+                    userWeixinService.deleteByByParams("userId",user.getUserId());
                     //保存微信相关信息
                     userWeixin.setUserId(Long.parseLong(currentUid));
                     userWeixin.setUpdateDate(new Date());
@@ -415,7 +422,7 @@ public class UserController extends BaseController {
         //Android或IOS或H5
         String deviceType = request.getParameter("deviceType");
         String json = request.getParameter("json");
-        logger.info("json:" + json);
+        logger.info("weibo_json:" + json);
         if(StringUtils.isBlank(deviceType) || StringUtils.isBlank(deviceSerialNo) || StringUtils.isBlank(json)){
             logger.error("UserController_loginByWeibo:deviceType或deviceSerialNo或json为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
@@ -461,6 +468,8 @@ public class UserController extends BaseController {
                     user.setSex("m".equals(userWb.getGender()) ? 1 : 2);
                     user.setLogo(userWb.getProfile_image_url());
                     userService.update(user);
+                    //删除已绑定的微博
+                    userWeiboService.deleteByByParams("userId",user.getUserId());
                     //保存微博相关信息
                     userWeibo = userWeiboService.saveUserWeibo(userWb, user.getUserId());
                     //清除用户缓存

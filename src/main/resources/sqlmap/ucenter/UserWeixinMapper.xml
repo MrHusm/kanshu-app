@@ -35,6 +35,11 @@
         delete from user_weixin where id = #{id,jdbcType=BIGINT}
     </delete>
 
+    <delete id="deleteByMap" parameterType="map">
+        delete from user_weixin where 1=1
+        <include refid="Base_Where" />
+    </delete>
+
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yxsd.kanshu.ucenter.model.UserWeixin">
         insert into user_weixin
         <trim prefix="(" suffix=")" suffixOverrides=",">
