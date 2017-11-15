@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class Volume implements Serializable{
 
+    private static final long serialVersionUID = -1096775560767223779L;
+
     private Long volumeId;
 
     /**

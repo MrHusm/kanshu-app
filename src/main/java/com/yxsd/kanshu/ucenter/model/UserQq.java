@@ -7,6 +7,9 @@ import java.util.Date;
  * Created by lenovo on 2017/8/19.
  */
 public class UserQq implements Serializable{
+
+    private static final long serialVersionUID = 1997847155833982298L;
+
     private Long id;
 
     private Long userId;

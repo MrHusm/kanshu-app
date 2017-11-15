@@ -10,6 +10,8 @@ import java.util.Date;
  */
 public class PullVolume implements Serializable{
 
+    private static final long serialVersionUID = -7221632973931670701L;
+
     private Long id;
 
     /**

@@ -7,6 +7,9 @@ import java.util.Date;
  * Created by lenovo on 2017/8/19.
  */
 public class UserWeixin implements Serializable {
+
+    private static final long serialVersionUID = -6245027332980512020L;
+
     private Long id;
 
     private Long userId;

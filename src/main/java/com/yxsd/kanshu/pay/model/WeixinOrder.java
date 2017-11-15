@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class WeixinOrder implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5447498236487725829L;
 
     private Long wxOrderId;
 

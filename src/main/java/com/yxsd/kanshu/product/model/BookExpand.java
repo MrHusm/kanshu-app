@@ -8,6 +8,8 @@ import java.util.Date;
  */
 public class BookExpand implements Serializable{
 
+    private static final long serialVersionUID = 7364367664356766260L;
+
     private Long id;
 
     /**

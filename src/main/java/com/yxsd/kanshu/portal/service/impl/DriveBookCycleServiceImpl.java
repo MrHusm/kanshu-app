@@ -10,7 +10,6 @@ import com.yxsd.kanshu.portal.model.DriveBook;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by hushengmeng on 2017/7/4.
  */
-@Service(value="driveBookService")
+//@Service(value="driveBookService")
 public class DriveBookCycleServiceImpl extends BaseServiceImpl<DriveBook, Long> implements IDriveBookService {
 
     @Resource(name="driveBookDao")

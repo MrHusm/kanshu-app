@@ -110,6 +110,7 @@ aside > :nth-child(2){
     margin-bottom: 10px;
     padding-bottom: 10px;
     border-bottom: 1px solid #dbdbdb;
+    padding: 10px;
 }
 .bookListBox:last-of-type{
     border: none;

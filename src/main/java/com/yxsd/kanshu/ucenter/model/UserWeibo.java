@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class UserWeibo implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7974977371254925245L;
 
     private Long id;
 

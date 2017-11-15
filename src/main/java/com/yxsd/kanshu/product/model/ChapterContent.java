@@ -8,6 +8,7 @@ import java.util.Date;
  */
 public class ChapterContent implements Serializable{
 
+    private static final long serialVersionUID = -4046648085076027338L;
     /**
      * 章节id
      */
