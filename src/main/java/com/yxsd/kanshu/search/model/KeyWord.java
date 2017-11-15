@@ -1,8 +1,11 @@
 package com.yxsd.kanshu.search.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class KeyWord {
+public class KeyWord implements Serializable{
+
+	private static final long serialVersionUID = -6332305497734131105L;
 
 	private String id;
 

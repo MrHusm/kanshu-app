@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class DriveBook implements Serializable{
+
+    private static final long serialVersionUID = -6853995961040030538L;
+
     private Long id;
 
     /**

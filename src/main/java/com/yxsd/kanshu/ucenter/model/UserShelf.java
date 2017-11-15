@@ -9,6 +9,9 @@ import java.util.Date;
  * Created by lenovo on 2017/8/19.
  */
 public class UserShelf implements Serializable{
+
+    private static final long serialVersionUID = -6449455004005019683L;
+
     private Long id;
 
     /**

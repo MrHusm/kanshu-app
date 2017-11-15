@@ -3,6 +3,9 @@ package com.yxsd.kanshu.ucenter.model;
 import java.util.Date;
 
 public class UserUuid implements java.io.Serializable {
+
+    private static final long serialVersionUID = -1292255304555476613L;
+
     public static final String TABLE_NAME="user_uuid";
 
     private Integer id;

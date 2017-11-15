@@ -1,8 +1,11 @@
 package com.yxsd.kanshu.search.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class SearchHeat {
+public class SearchHeat implements Serializable{
+
+	private static final long serialVersionUID = -6573264087917908197L;
 
 	private String id;
 

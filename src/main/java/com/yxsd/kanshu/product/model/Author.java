@@ -8,6 +8,8 @@ import java.util.Date;
  */
 public class Author implements Serializable{
 
+    private static final long serialVersionUID = 4315581872069555423L;
+
     private Long authorId;
 
     /**

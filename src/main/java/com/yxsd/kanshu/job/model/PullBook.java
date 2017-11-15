@@ -10,6 +10,8 @@ import java.util.Date;
  */
 public class PullBook implements Serializable{
 
+    private static final long serialVersionUID = 192806954559789298L;
+
     private Long id;
 
     /**

@@ -10,6 +10,8 @@ import java.util.Date;
  */
 public class PullChapter implements Serializable{
 
+    private static final long serialVersionUID = 7802408586688963423L;
+
     private Long id;
 
     /**

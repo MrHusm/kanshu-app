@@ -7,6 +7,9 @@ import java.util.Date;
  * Created by lenovo on 2017/8/20.
  */
 public class UserReceive implements Serializable {
+
+    private static final long serialVersionUID = 2610573846866395815L;
+
     private Long id;
 
     private Long userId;

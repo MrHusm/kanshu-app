@@ -7,6 +7,9 @@ import java.util.Date;
  * Created by lenovo on 2017/8/19.
  */
 public class VersionInfo implements Serializable{
+
+    private static final long serialVersionUID = 3759547023441293337L;
+
     private Long id;
 
     /**

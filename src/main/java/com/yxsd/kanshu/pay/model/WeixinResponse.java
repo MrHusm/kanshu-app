@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class WeixinResponse implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 731436183817208692L;
 
     private Long wxResponseId;
 
