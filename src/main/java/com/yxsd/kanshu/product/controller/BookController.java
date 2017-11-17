@@ -844,10 +844,7 @@ public class BookController extends BaseController {
             Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId),0,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
             List<Chapter> notBuyChapters = this.getNotBuyChapters(chapter,Long.parseLong(userId));
             int size = 0;
-            if("-1".equals(count)){
-                size = notBuyChapters.size();
-            }
-            if(Integer.parseInt(count) > notBuyChapters.size()){
+            if("-1".equals(count) || Integer.parseInt(count) > notBuyChapters.size()){
                 size = notBuyChapters.size();
             }else{
                 size = Integer.parseInt(count);
