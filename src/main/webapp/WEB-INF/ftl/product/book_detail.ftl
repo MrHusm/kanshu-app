@@ -51,7 +51,7 @@
         </div>
     </div>
 </figure>
-<#if (authorBooks?size>1)>
+<#if authorBooks?size gt 1>
 <div class="hr"></div>
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i><span style="vertical-align: middle;font-size: 22px">本书作者还写了</span></div>

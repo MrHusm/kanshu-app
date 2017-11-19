@@ -11,28 +11,30 @@
     window.JSHandle.setBookIsOver(${isFull});
 </script>
 <body>
-<#if authorBooks??>
+<#if authorBooks?? && authorBooks?size gt 1>
 <div class="pd1Box">
     <div class="h6"><i class="h6Icon"></i><span style="vertical-align: middle;font-size: 22px">本书作者还写了</span></div>
     <#list authorBooks as authorBook >
-        <section class="bookListBox" onclick="bookInfo(${authorBook.bookId?c},'${authorBook.title}')">
-            <img class="bookListImg" data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-            <div class="bookList">
-                <div class="bookName">${authorBook.title}</div>
-                <div class="bookInfo">
-                    <#if authorBook.intro??>
-                        ${authorBook.intro?replace("　","")?replace("　","")}
-                    </#if>
-                </div>
-                <div class="authorBox">
-                    <div class="authorNmae">${authorBook.authorPenname}</div>
-                    <div class="bookGenre">
-                        <div class="bookGenrePublic">${authorBook.categorySecName}</div>
-                        <div class="bookGenrePublic bookGenrePublicStyle">${authorBook.categoryThrName}</div>
+        <#if authorBook.bookId != bookId>
+            <section class="bookListBox" onclick="bookInfo(${authorBook.bookId?c},'${authorBook.title}')">
+                <img class="bookListImg" data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+                <div class="bookList">
+                    <div class="bookName">${authorBook.title}</div>
+                    <div class="bookInfo">
+                        <#if authorBook.intro??>
+                            ${authorBook.intro?replace("　","")?replace("　","")}
+                        </#if>
+                    </div>
+                    <div class="authorBox">
+                        <div class="authorNmae">${authorBook.authorPenname}</div>
+                        <div class="bookGenre">
+                            <div class="bookGenrePublic">${authorBook.categorySecName}</div>
+                            <div class="bookGenrePublic bookGenrePublicStyle">${authorBook.categoryThrName}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </#if>
     </#list>
 </div>
 </#if>
