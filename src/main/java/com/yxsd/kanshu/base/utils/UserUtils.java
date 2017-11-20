@@ -122,7 +122,7 @@ public class UserUtils {
     public static void main(String[] args) {
         String token = createToken("200");
         System.out.println(token);
-        System.out.println(getUserIdByToken("AoWWkzmZRk-cDCb*VyH*dcDdzt9-XNPh"));
+        System.out.println(getUserIdByToken("IQCFqchHf4YsfowPivHA1CGY55Le-Lcp"));
 
 
     }

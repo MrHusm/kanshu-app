@@ -13,7 +13,7 @@
 <body>
 <#if authorBooks??>
 <div class="pd1Box">
-    <div class="h6"><i class="h6Icon"></i><span style="vertical-align: middle;font-size: 22px">本书作者还写了</span></div>
+    <div class="h6"><i class="h6Icon"></i><span style="vertical-align: middle;font-size: 18px">本书作者还写了</span></div>
     <#list authorBooks as authorBook >
         <section class="bookListBox" onclick="bookInfo(${authorBook.bookId?c},'${authorBook.title}')">
             <img class="bookListImg" data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
@@ -40,7 +40,7 @@
 <#if relatedBooks?? && relatedBooks?size gt 0>
 <div class="hr"></div>
 <div class="pd1Box">
-    <div class="h6"><i class="h6Icon"></i><span style="vertical-align: middle;font-size: 22px">看了本书的用户还看了</span></div>
+    <div class="h6"><i class="h6Icon"></i><span style="vertical-align: middle;font-size: 18px">看了本书的用户还看了</span></div>
     <#list relatedBooks as relatedBook>
         <#if relatedBook.bookId != bookId>
             <section class="bookListBox" onclick="bookInfo(${relatedBook.bookId?c},'${relatedBook.title}')">
