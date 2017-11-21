@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="WeixinResponseMapper">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.pay.model.WeixinResponse">
+        <id column="wx_response_id" property="wxResponseId" jdbcType="BIGINT" />
+        <result column="openid" property="openid" jdbcType="VARCHAR" />
+        <result column="trade_type" property="tradeType" jdbcType="VARCHAR" />
+        <result column="bank_type" property="bankType" jdbcType="VARCHAR" />
+        <result column="total_fee" property="totalFee" jdbcType="INTEGER" />
+        <result column="cash_fee" property="cashFee" jdbcType="INTEGER" />
+        <result column="transaction_id" property="transactionId" jdbcType="VARCHAR" />
+        <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
+        <result column="time_end" property="timeEnd" jdbcType="VARCHAR" />
+        <result column="result_code" property="resultCode" jdbcType="VARCHAR" />
+        <result column="err_code" property="errCode" jdbcType="VARCHAR" />
+        <result column="err_code_des" property="errCodeDes" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="wxResponseId != null"> and wx_response_id= #{wxResponseId}</if>
+        <if test="out_trade_no != null and out_trade_no !=''"> and out_trade_no= #{outTradeNo}</if>
+        <if test="status != null"> and status= #{status}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        `wx_response_id`,`openid`,`trade_type`,`bank_type`,`total_fee`,`cash_fee`, `transaction_id,
+        `out_trade_no`,`time_end`,`result_code`,`err_code`,`err_code_des`,status,`create_date`,`update_date`
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" /> from weixin_response where wx_response_id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from weixin_response where wx_response_id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="wxResponseId" parameterType="com.yxsd.kanshu.pay.model.WeixinResponse">
+        insert into weixin_response
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="wxResponseId != null" >
+                wx_response_id,
+            </if>
+            <if test="openid != null" >
+                openid,
+            </if>
+            <if test="tradeType != null" >
+                trade_type,
+            </if>
+            <if test="bankType != null" >
+                bank_type,
+            </if>
+            <if test="totalFee != null" >
+                total_fee,
+            </if>
+            <if test="cashFee != null" >
+                cash_fee,
+            </if>
+            <if test="transactionId != null" >
+                transaction_id,
+            </if>
+            <if test="outTradeNo != null" >
+                out_trade_no,
+            </if>
+            <if test="timeEnd != null" >
+                time_end,
+            </if>
+            <if test="resultCode != null" >
+                result_code,
+            </if>
+            <if test="errCode != null" >
+                err_code,
+            </if>
+            <if test="errCodeDes != null" >
+                err_code_des,
+            </if>
+            <if test="status != null">status,</if>
+            <if test="createDate != null" >
+                create_date,
+            </if>
+            <if test="updateDate != null" >
+                update_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="wxResponseId != null" >
+                #{wxResponseId,jdbcType=BIGINT},
+            </if>
+            <if test="openid != null" >
+                #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeType != null" >
+                #{tradeType,jdbcType=VARCHAR},
+            </if>
+            <if test="bankType != null" >
+                #{bankType,jdbcType=VARCHAR},
+            </if>
+            <if test="totalFee != null" >
+                #{totalFee,jdbcType=INTEGER},
+            </if>
+            <if test="cashFee != null" >
+                #{cashFee,jdbcType=INTEGER},
+            </if>
+            <if test="transactionId != null" >
+                #{transactionId,jdbcType=VARCHAR},
+            </if>
+            <if test="outTradeNo != null" >
+                #{outTradeNo,jdbcType=VARCHAR},
+            </if>
+            <if test="timeEnd != null" >
+                #{timeEnd,jdbcType=VARCHAR},
+            </if>
+            <if test="resultCode != null" >
+                #{resultCode,jdbcType=VARCHAR},
+            </if>
+            <if test="errCode != null" >
+                #{errCode,jdbcType=VARCHAR},
+            </if>
+            <if test="errCodeDes != null" >
+                #{errCodeDes,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null" >
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null" >
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.pay.model.WeixinResponse">
+        update weixin_response
+        <set>
+            <if test="openid != null" >
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeType != null" >
+                trade_type = #{tradeType,jdbcType=VARCHAR},
+            </if>
+            <if test="bankType != null" >
+                bank_type = #{bankType,jdbcType=VARCHAR},
+            </if>
+            <if test="totalFee != null" >
+                total_fee = #{totalFee,jdbcType=INTEGER},
+            </if>
+            <if test="cashFee != null" >
+                cash_fee = #{cashFee,jdbcType=INTEGER},
+            </if>
+            <if test="transactionId != null" >
+                transaction_id = #{transactionId,jdbcType=VARCHAR},
+            </if>
+            <if test="outTradeNo != null" >
+                out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+            </if>
+            <if test="timeEnd != null" >
+                time_end = #{timeEnd,jdbcType=VARCHAR},
+            </if>
+            <if test="resultCode != null" >
+                result_code = #{resultCode,jdbcType=VARCHAR},
+            </if>
+            <if test="errCode != null" >
+                err_code = #{errCode,jdbcType=VARCHAR},
+            </if>
+            <if test="errCodeDes != null" >
+                err_code_des = #{errCodeDes,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="updateDate != null" >
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where wx_response_id = #{wxResponseId,jdbcType=BIGINT}
+    </update>
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from weixin_response where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from weixin_response where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from weixin_response where 1=1
+        <include refid="Base_Where" />
+        order by create_date desc
+    </select>
+</mapper>

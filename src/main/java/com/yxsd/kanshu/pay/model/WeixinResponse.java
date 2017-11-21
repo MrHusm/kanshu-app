@@ -67,6 +67,11 @@ public class WeixinResponse implements Serializable {
      */
     private String errCodeDes;
 
+    /**
+     * 0：未处理 1：已处理
+     */
+    private Integer status;
+
     private Date createDate;
 
     private Date updateDate;
@@ -181,5 +186,13 @@ public class WeixinResponse implements Serializable {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

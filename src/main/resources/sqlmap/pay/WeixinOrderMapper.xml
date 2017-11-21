@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="WeixinOrderMapper">
+    <resultMap id="BaseResultMap" type="com.yxsd.kanshu.pay.model.WeixinOrder">
+        <id column="wx_order_id" property="wxOrderId" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+        <result column="product_id" property="productId" jdbcType="BIGINT" />
+        <result column="channel" property="channel" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="comment" property="comment" jdbcType="VARCHAR" />
+        <result column="nonce_str" property="nonce_str" jdbcType="VARCHAR" />
+        <result column="sign" property="sign" jdbcType="VARCHAR" />
+        <result column="body" property="body" jdbcType="VARCHAR" />
+        <result column="out_trade_no" property="out_trade_no" jdbcType="VARCHAR" />
+        <result column="total_fee" property="total_fee" jdbcType="INTEGER" />
+        <result column="spbill_create_ip" property="spbill_create_ip" jdbcType="VARCHAR" />
+        <result column="trade_type" property="trade_type" jdbcType="VARCHAR" />
+        <result column="scene_info" property="scene_info" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Where">
+        <if test="wx_order_id != null"> and wx_order_id= #{wx_order_id}</if>
+        <if test="userId != null"> and user_id= #{userId}</if>
+        <if test="productId != null"> and product_id= #{productId}</if>
+        <if test="channel != null"> and channel= #{channel}</if>
+        <if test="type != null"> and type= #{type}</if>
+        <if test="out_trade_no != null and out_trade_no !=''"> and out_trade_no= #{out_trade_no}</if>
+    </sql>
+    <sql id="Base_Column_List">
+        `wx_order_id`,`user_id`,`product_id`,`channel`,`type`,`comment`,`nonce_str`,`sign`,`body`,`out_trade_no`,`total_fee`,`spbill_create_ip`,
+        `trade_type`,`scene_info`,`create_date`,`update_date`
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select <include refid="Base_Column_List" /> from weixin_order where wx_order_id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from weixin_order where wx_order_id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="wxOrderId" parameterType="com.yxsd.kanshu.pay.model.WeixinOrder">
+        insert into weixin_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="wxOrderId != null">wx_order_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="channel != null">channel,</if>
+            <if test="type != null">type,</if>
+            <if test="comment != null and comment !=''">comment,</if>
+            <if test="nonce_str != null and nonce_str !=''">nonce_str,</if>
+            <if test="sign != null and sign !=''">sign,</if>
+            <if test="body != null and body !=''">body,</if>
+            <if test="out_trade_no != null and out_trade_no !=''">`out_trade_no`,</if>
+            <if test="total_fee != null">`total_fee`,</if>
+            <if test="spbill_create_ip != null and spbill_create_ip !=''">`spbill_create_ip`,</if>
+            <if test="trade_type != null and trade_type !=''">`trade_type`,</if>
+            <if test="scene_info != null and scene_info !=''">`scene_info`,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="wxOrderId != null">
+                #{wxOrderId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="productId != null">
+                #{productId,jdbcType=BIGINT},
+            </if>
+            <if test="channel != null">
+                #{channel,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="comment != null and comment !=''">
+                #{comment,jdbcType=VARCHAR},
+            </if>
+            <if test="nonce_str != null and nonce_str !=''">
+                #{nonce_str,jdbcType=VARCHAR},
+            </if>
+            <if test="sign != null and sign !=''">
+                #{sign,jdbcType=VARCHAR},
+            </if>
+            <if test="body != null and body !=''">
+                #{body,jdbcType=VARCHAR},
+            </if>
+            <if test="out_trade_no != null and out_trade_no !=''">
+                #{out_trade_no,jdbcType=VARCHAR},
+            </if>
+            <if test="total_fee != null">
+                #{total_fee,jdbcType=INTEGER},
+            </if>
+            <if test="spbill_create_ip != null and spbill_create_ip !=''">
+                #{spbill_create_ip,jdbcType=VARCHAR},
+            </if>
+            <if test="trade_type != null and trade_type !=''">
+                #{trade_type,jdbcType=VARCHAR},
+            </if>
+            <if test="scene_info != null and scene_info !=''">
+                #{scene_info,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from weixin_order where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
+        select count(1) from weixin_order where 1=1
+        <include refid="Base_Where" />
+    </select>
+    <select id="pageData" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List" />
+        from weixin_order where 1=1
+        <include refid="Base_Where" />
+        order by create_date desc
+    </select>
+</mapper>
