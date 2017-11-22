@@ -1,6 +1,5 @@
 package com.yxsd.kanshu.pay.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.ErrorCodeEnum;
 import com.yxsd.kanshu.base.contants.WXPayConstants;
@@ -41,9 +40,9 @@ import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 @Controller
@@ -176,8 +175,8 @@ public class WeixinController extends BaseController {
 				map.put("appid",result.get("appid"));
 				map.put("partnerid",result.get("mch_id"));
 				map.put("prepayid",result.get("prepay_id"));
-				map.put("package",result.get("WXPay"));
-				map.put("noncestr",result.get("nonce_str"));
+				map.put("package","Sign=WXPay");
+				map.put("noncestr",WXPayUtil.generateNonceStr());
 				map.put("timestamp", String.valueOf(new Date().getTime() / 1000));
 				map.put("sign",WXPayUtil.generateSignature(map, WxPayConfig.KEY, WXPayConstants.SignType.MD5));
 				sender.put("params",map);
@@ -204,29 +203,23 @@ public class WeixinController extends BaseController {
 	public void notifyUrl(HttpServletResponse response, HttpServletRequest request){
 		Map<String,String> result = new HashMap<String, String>();
 		try {
-			//获取微信POST过来反馈信息
-			Map<String,String> params = new HashMap<String,String>();
-			Map requestParams = request.getParameterMap();
-			for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
-				String name = (String) iter.next();
-				String[] values = (String[]) requestParams.get(name);
-				String valueStr = "";
-				for (int i = 0; i < values.length; i++) {
-					valueStr = (i == values.length - 1) ? valueStr + values[i]
-							: valueStr + values[i] + ",";
-				}
-				//乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
-				//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "gbk");
-				params.put(name, valueStr);
+			StringBuilder paramXml = new StringBuilder();
+			BufferedReader br =  request.getReader();
+			String s = null;
+			while((s = br.readLine())!=null){
+				paramXml.append(s);
 			}
-			logger.info("wixin_notifyUrl_params:"+JSON.toJSONString(params));
+			br.close();
+			logger.info("weixin_notifyUrl_paramXml:" + paramXml);
 
+			Map<String,String> params = WXPayUtil.xmlToMap(paramXml.toString());
 			if("SUCCESS".equals(params.get("return_code"))){
 				//验证签名
 				boolean verify_result = WXPayUtil.isSignatureValid(params, WxPayConfig.KEY, WXPayConstants.SignType.MD5);
 				if(verify_result){
+					logger.info("weixin_notifyUrl：验签成功");
 					//保存或修改response表
-					WeixinResponse weixinResponse = weixinResponseService.findUniqueByParams("out_trade_no", params.get("out_trade_no"));
+					WeixinResponse weixinResponse = weixinResponseService.findUniqueByParams("outTradeNo", params.get("out_trade_no"));
 					if(weixinResponse == null){
 						weixinResponse = new WeixinResponse();
 					}

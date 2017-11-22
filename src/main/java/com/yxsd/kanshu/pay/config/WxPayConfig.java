@@ -5,7 +5,7 @@ package com.yxsd.kanshu.pay.config;
  */
 public class WxPayConfig {
     // 公众账号ID
-    public static final String APPID = "wxee171e6fa787e8ae";
+    public static final String APPID = "wxa198592e76051714";
     // 商户号
     public static final String MCH_ID = "1492771722";
     //密钥
