@@ -5,14 +5,14 @@ package com.yxsd.kanshu.pay.config;
  */
 public class WxPayConfig {
     // 公众账号ID
-    public static final String APPID = "wxa198592e76051714";
+    public static final String APPID = "wxee171e6fa787e8ae";
     // 商户号
     public static final String MCH_ID = "1492771722";
     //密钥
     public static final String KEY = "vn1GjTN7A3VGQ93cy0gq1ZnKPnpuHDop";
     // 接收微信支付异步通知回调地址，通知url必须为直接可访问的url，不能携带参数
-    public static final String NOTIFY_URL = "http://m.chunnuan999.com/weixin/notifyUrl.go";
+    public static final String NOTIFY_URL = "http://read.chunnuan999.com/weixin/notifyUrl.go";
     // 页面跳转同步通知页面路径 需http://或者https://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问 商户可以自定义同步跳转地址
-    public static final String RETURN_URL = "http://m.chunnuan999.com/weixin/returnUrl.go";
+    public static final String RETURN_URL = "http://read.chunnuan999.com/weixin/returnUrl.go";
 
 }

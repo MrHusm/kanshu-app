@@ -16,6 +16,19 @@ import com.yxsd.kanshu.pay.service.IWeixinResponseService;
 import com.yxsd.kanshu.product.service.IVipService;
 import com.yxsd.kanshu.ucenter.service.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -105,9 +118,8 @@ public class WeixinController extends BaseController {
 				order.setBody("充值"+rechargeItem.getMoney()+"钻");
 			}
 			order.setTotal_fee(rechargeItem.getPrice().intValue() * 100);
-
 			order.setOut_trade_no(Long.toHexString(System.currentTimeMillis()));
-			order.setNonce_str(CommonUtil.createNoncestr());
+			order.setNonce_str(WXPayUtil.generateNonceStr());
 			order.setSpbill_create_ip(HttpUtils.getIp(request));
 			order.setTrade_type("APP");
 			order.setCreateDate(new Date());
@@ -120,7 +132,8 @@ public class WeixinController extends BaseController {
 			param.put("nonce_str", order.getNonce_str());
 			param.put("body", order.getBody());
 			param.put("out_trade_no", order.getOut_trade_no());
-			param.put("total_fee", String.valueOf(order.getTotal_fee()));
+			//param.put("total_fee", String.valueOf(order.getTotal_fee()));
+			param.put("total_fee", "1");
 			param.put("spbill_create_ip", order.getSpbill_create_ip());
 			param.put("notify_url", WxPayConfig.NOTIFY_URL);
 			param.put("trade_type", order.getTrade_type());
@@ -130,10 +143,51 @@ public class WeixinController extends BaseController {
 			order.setSign(sign);
 			//保存微信订单
 			weixinOrderService.save(order);
-			sender.put("params",param);
-			sender.success(response);
-		}catch (Exception e){
-			logger.error("wxWapPay Exception reason is "+ e);
+			String reqBody = WXPayUtil.mapToXml(param);
+
+			BasicHttpClientConnectionManager connManager = new BasicHttpClientConnectionManager(
+					RegistryBuilder.<ConnectionSocketFactory>create()
+							.register("http", PlainConnectionSocketFactory.getSocketFactory())
+							.register("https", SSLConnectionSocketFactory.getSocketFactory())
+							.build(),null,null,null);
+			HttpClient httpClient = HttpClientBuilder.create()
+					.setConnectionManager(connManager)
+					.build();
+
+			String url = "https://" + WXPayConstants.DOMAIN_API + WXPayConstants.UNIFIEDORDER_URL_SUFFIX;
+			HttpPost httpPost = new HttpPost(url);
+
+			RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(20000).setConnectTimeout(5000).build();
+			httpPost.setConfig(requestConfig);
+
+			StringEntity postEntity = new StringEntity(reqBody, "UTF-8");
+			httpPost.addHeader("Content-Type", "text/xml");
+			httpPost.addHeader("User-Agent", "wxpay sdk java v1.0 " + WxPayConfig.MCH_ID);  //很重要，用来检测 sdk 的使用情况，要不要加上商户信息？
+			httpPost.setEntity(postEntity);
+
+			HttpResponse httpResponse = httpClient.execute(httpPost);
+			HttpEntity httpEntity = httpResponse.getEntity();
+			String resultXml = EntityUtils.toString(httpEntity, "UTF-8");
+			//微信下单数据返回
+			logger.info("weixin_unifiedorder_result:" + resultXml);
+			Map<String,String> result =  WXPayUtil.xmlToMap(resultXml);
+			if("SUCCESS".equals(result.get("return_code")) && "SUCCESS".equals(result.get("result_code"))){
+				Map<String,String> map = new HashMap<String, String>();
+				map.put("appid",result.get("appid"));
+				map.put("partnerid",result.get("mch_id"));
+				map.put("prepayid",result.get("prepay_id"));
+				map.put("package",result.get("WXPay"));
+				map.put("noncestr",result.get("nonce_str"));
+				map.put("timestamp", String.valueOf(new Date().getTime() / 1000));
+				map.put("sign",WXPayUtil.generateSignature(map, WxPayConfig.KEY, WXPayConstants.SignType.MD5));
+				sender.put("params",map);
+				sender.success(response);
+			}else{
+				sender.fail(ErrorCodeEnum.ERROR_CODE_99999.getErrorCode(),
+						result.get("return_msg") + "|" +result.get("err_code_des"), response);
+			}
+		} catch (Exception e) {
+			logger.error("wxWapPay Exception reason is " + e);
 			e.printStackTrace();
 			sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(),
 					ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
