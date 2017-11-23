@@ -1017,6 +1017,7 @@ public class RankClimbController extends BaseController {
                         driveBook.setStatus(0);
                         driveBook.setManType(manType == null ? 0 : manType);
                         driveBook.setCreateDate(new Date());
+                        driveBook.setUpdateDate(new Date());
                         driveBookService.save(driveBook);
                         logger.info("驱动保存成功书名_"+title+"_type+"+type+"_score_"+score);
                     }else{
@@ -1067,27 +1068,27 @@ public class RankClimbController extends BaseController {
     }
 
 
-    public static void climbBook1(){
-        String baseUrl = "http://www.ireader.com/index.php?ca=bookrank.ranklistdata&pca=bookrank.ranklist&rankId=14877&page=%d";
-        try{
-            for (int i = 1; i < 8; i++) {
-                Document doc = Jsoup.connect(String.format(baseUrl,i))
-                        .userAgent(USER_AGENT) // 设置 User-Agent
-                        .cookie("auth", "token") // 设置 cookie
-                        .timeout(10000)           // 设置连接超时时间
-                        .get();                 // 使用 POST 方法访问 URL
-                Elements elements = doc.getElementsByAttributeValue("class","secCol");
-                if(elements != null && elements.size() > 0){
-                    for(Element ele : elements){
-                        String title = ele.text();
-                        System.out.println(title);
-                    }
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+//    public static void climbBook1(){
+//        String baseUrl = "http://www.ireader.com/index.php?ca=bookrank.ranklistdata&pca=bookrank.ranklist&rankId=14877&page=%d";
+//        try{
+//            for (int i = 1; i < 8; i++) {
+//                Document doc = Jsoup.connect(String.format(baseUrl,i))
+//                        .userAgent(USER_AGENT) // 设置 User-Agent
+//                        .cookie("auth", "token") // 设置 cookie
+//                        .timeout(10000)           // 设置连接超时时间
+//                        .get();                 // 使用 POST 方法访问 URL
+//                Elements elements = doc.getElementsByAttributeValue("class","secCol");
+//                if(elements != null && elements.size() > 0){
+//                    for(Element ele : elements){
+//                        String title = ele.text();
+//                        System.out.println(title);
+//                    }
+//                }
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
     public static void main(String[] args) {
         RankClimbController climbController = new RankClimbController();
@@ -1098,7 +1099,7 @@ public class RankClimbController extends BaseController {
         //climbController.climbSaleDrive();
         //climbController.climbFullDrive();
         //climbController.climbNewDrive();
-        climbController.climbBook1();
+        //climbController.climbBook1();
     }
 
 }
