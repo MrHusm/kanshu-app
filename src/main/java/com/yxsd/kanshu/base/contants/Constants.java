@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * @date 2017/7/5.
  */
 public class Constants {
-    public static final String HOST_KANSHU = "http://47.94.174.25:8081/";
+    public static final String HOST_KANSHU = "http://read.chunnuan999.com/";
     //public static final String HOST_KANSHU = "http://localhost:8080/";
 
     public static final String CMS_USER_INFO_STORED_IN_SESSION = "userSessionInfo";

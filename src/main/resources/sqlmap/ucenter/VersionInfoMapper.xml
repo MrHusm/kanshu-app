@@ -11,6 +11,7 @@
     </resultMap>
     <sql id="Base_Where">
         <if test="userId != null"> and user_id= #{userId}</if>
+        <if test="channel != null"> and channel= #{channel}</if>
     </sql>
     <sql id="Base_Column_List">
         id,version,channel,`type`,create_date,update_date

@@ -590,6 +590,18 @@ public class BookController extends BaseController {
                 boolean flag = true;
                 if(userShelf != null && userShelf.getAutoBuy() == 1){
                     //自动购买
+//                    Integer code = null;
+//                    Map<String,Object> map = new HashMap<String,Object>();
+//                    map.put("bookId",bookId);
+//                    map.put("channel",channel);
+//                    if(book.getChargeType() == 2){
+//                        //按本购买
+//                        code = this.userService.consume(Long.parseLong(userId),book.getPrice(),Constants.CONSUME_TYPE_S3,map);
+//                    }else {
+//                        //按章购买
+//                        map.put("chapterId", chapterId);
+//                        code = this.userService.consume(Long.parseLong(userId), chapter.getPrice(), Constants.CONSUME_TYPE_S1, map);
+//                    }
                     String buyUrl = Constants.HOST_KANSHU + "/book/buyChapter.go?chapterId="+chapterId+"&token="+token+"&bookId="+bookId+"&channel="+ StringUtils.trimToEmpty(channel);
                     String buyJson = HttpUtils.getContent(buyUrl,"UTF-8");
                     Integer code = JSON.parseObject(buyJson).getJSONObject("data").getInteger("code");

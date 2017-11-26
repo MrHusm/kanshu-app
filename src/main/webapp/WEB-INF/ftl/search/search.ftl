@@ -18,12 +18,12 @@
         </div>
     <#else>
         <div class="tag newClear">
-            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="window.JSHandle.searchCatagory('都市')">都市</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="window.JSHandle.searchCatagory('玄幻')">玄幻</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle3" onclick="window.JSHandle.searchCatagory('言情')">言情</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle4" onclick="window.JSHandle.searchCatagory('体育')">体育</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="window.JSHandle.searchCatagory('军事')">军事</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="window.JSHandle.searchCatagory('武侠')">武侠</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="window.JSHandle.searchCatagory('玄幻')">玄幻</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="window.JSHandle.searchCatagory('都市')">都市</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle3" onclick="window.JSHandle.searchCatagory('现代言情')">现代言情</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle4" onclick="window.JSHandle.searchCatagory('古代言情')">古代言情</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="bookInfo(31886,'末日乐园')">末日乐园</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="bookInfo(14408,'武神血脉')">武神血脉</span></div>
         </div>
     </#if>
     <div class="hr"></div>

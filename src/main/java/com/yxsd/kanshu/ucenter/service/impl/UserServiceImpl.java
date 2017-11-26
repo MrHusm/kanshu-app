@@ -131,128 +131,127 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements IUse
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public int consume(Long userId, Integer price, Integer type, Map<String,Object> map) {
-        UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
-        UserAccountLog userAccountLog = new UserAccountLog();
-        Long bookId = Long.parseLong(map.get("bookId").toString());
-        if(type == Constants.CONSUME_TYPE_S1){
-            //单章购买
-            Long chapterId = Long.parseLong(map.get("chapterId").toString());
-            Integer channel = map.get("channel") == null ? null : Integer.parseInt(map.get("channel").toString());
-            if((userAccount.getMoney() + userAccount.getVirtualMoney()) >= price){
-                UserPayChapter userPayChapter = new UserPayChapter();
-                userPayChapter.setOrderNo(Long.toHexString(System.currentTimeMillis()));
-                userPayChapter.setBookId(bookId);
-                userPayChapter.setChapterId(chapterId);
-                userPayChapter.setUserId(userId);
-                userPayChapter.setUpdateDate(new Date());
-                userPayChapter.setCreateDate(new Date());
-                //保存章节购买数据
-                userPayChapterService.save(userPayChapter);
+            UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
+            UserAccountLog userAccountLog = new UserAccountLog();
+            Long bookId = Long.parseLong(map.get("bookId").toString());
+            if(type == Constants.CONSUME_TYPE_S1){
+                //单章购买
+                Long chapterId = Long.parseLong(map.get("chapterId").toString());
+                Integer channel = map.get("channel") == null ? null : Integer.parseInt(map.get("channel").toString());
+                if((userAccount.getMoney() + userAccount.getVirtualMoney()) >= price){
+                    UserPayChapter userPayChapter = new UserPayChapter();
+                    userPayChapter.setOrderNo(Long.toHexString(System.currentTimeMillis()));
+                    userPayChapter.setBookId(bookId);
+                    userPayChapter.setChapterId(chapterId);
+                    userPayChapter.setUserId(userId);
+                    userPayChapter.setUpdateDate(new Date());
+                    userPayChapter.setCreateDate(new Date());
+                    //保存章节购买数据
+                    userPayChapterService.save(userPayChapter);
 
-                userAccountLog.setChannel(channel);
-                userAccountLog.setOrderNo(userPayChapter.getOrderNo());
-                userAccountLog.setProductId(String.valueOf(bookId));
-                userAccountLog.setComment(JSON.toJSONString(map));
+                    userAccountLog.setChannel(channel);
+                    userAccountLog.setOrderNo(userPayChapter.getOrderNo());
+                    userAccountLog.setProductId(String.valueOf(bookId));
+                    userAccountLog.setComment(JSON.toJSONString(map));
+                }else{
+                    //余额不够
+                    return -1;
+                }
+            }else if(type == Constants.CONSUME_TYPE_S2) {
+                //批量购买
+                Long startChapterId = Long.parseLong(map.get("startChapterId").toString());
+                Integer startChapterIdx = Integer.parseInt(map.get("startChapterIdx").toString());
+                Long endChapterId = Long.parseLong(map.get("endChapterId").toString());
+                Integer endChapterIdx = Integer.parseInt(map.get("endChapterIdx").toString());
+                Integer channel = map.get("channel") == null ? null : Integer.parseInt(map.get("channel").toString());
+                if ((userAccount.getMoney() + userAccount.getVirtualMoney()) >= price) {
+                    UserPayBook userPayBook = new UserPayBook();
+                    userPayBook.setBookId(bookId);
+                    userPayBook.setOrderNo(Long.toHexString(System.currentTimeMillis()));
+                    userPayBook.setStartChapterId(startChapterId);
+                    userPayBook.setStartChapterIdx(startChapterIdx);
+                    userPayBook.setEndChapterId(endChapterId);
+                    userPayBook.setEndChapterIdx(endChapterIdx);
+                    userPayBook.setType(1);
+                    userPayBook.setUserId(userId);
+                    userPayBook.setCreateDate(new Date());
+                    userPayBook.setUpdateDate(new Date());
+
+                    //保存批量购买数据
+                    userPayBookService.save(userPayBook);
+
+                    userAccountLog.setChannel(channel);
+                    userAccountLog.setOrderNo(userPayBook.getOrderNo());
+                    userAccountLog.setProductId(String.valueOf(bookId));
+                    userAccountLog.setComment(JSON.toJSONString(map));
+                } else {
+                    //余额不够
+                    return -1;
+                }
+            }else if(type == Constants.CONSUME_TYPE_S3){
+                //全本购买
+                Integer channel = map.get("channel") == null ? null : Integer.parseInt(map.get("channel").toString());
+                if((userAccount.getMoney() + userAccount.getVirtualMoney()) >= price) {
+                    UserPayBook userPayBook = new UserPayBook();
+                    userPayBook.setBookId(bookId);
+                    userPayBook.setOrderNo(Long.toHexString(System.currentTimeMillis()));
+                    userPayBook.setType(2);
+                    userPayBook.setUserId(userId);
+                    userPayBook.setCreateDate(new Date());
+                    userPayBook.setUpdateDate(new Date());
+
+                    //保存批量购买数据
+                    userPayBookService.save(userPayBook);
+
+                    userAccountLog.setChannel(channel);
+                    userAccountLog.setOrderNo(userPayBook.getOrderNo());
+                    userAccountLog.setProductId(String.valueOf(bookId));
+                    userAccountLog.setComment(JSON.toJSONString(map));
+                } else {
+                    //余额不够
+                    return -1;
+                }
+            }
+            //消费
+            if(userAccount.getVirtualMoney() >= price){
+                userAccount.setVirtualMoney(userAccount.getVirtualMoney() - price);
+
+                userAccountLog.setUnitMoney(0);
+                userAccountLog.setUnitVirtual(price);
             }else{
-                //余额不够
-                return -1;
+                userAccountLog.setUnitMoney(price - userAccount.getVirtualMoney());
+                userAccountLog.setUnitVirtual(userAccount.getVirtualMoney());
+
+                userAccount.setMoney(userAccount.getMoney() - (price - userAccount.getVirtualMoney()));
+                userAccount.setVirtualMoney(0);
             }
-        }else if(type == Constants.CONSUME_TYPE_S2) {
-            //批量购买
-            Long startChapterId = Long.parseLong(map.get("startChapterId").toString());
-            Integer startChapterIdx = Integer.parseInt(map.get("startChapterIdx").toString());
-            Long endChapterId = Long.parseLong(map.get("endChapterId").toString());
-            Integer endChapterIdx = Integer.parseInt(map.get("endChapterIdx").toString());
-            Integer channel = map.get("channel") == null ? null : Integer.parseInt(map.get("channel").toString());
-            if ((userAccount.getMoney() + userAccount.getVirtualMoney()) >= price) {
-                UserPayBook userPayBook = new UserPayBook();
-                userPayBook.setBookId(bookId);
-                userPayBook.setOrderNo(Long.toHexString(System.currentTimeMillis()));
-                userPayBook.setStartChapterId(startChapterId);
-                userPayBook.setStartChapterIdx(startChapterIdx);
-                userPayBook.setEndChapterId(endChapterId);
-                userPayBook.setEndChapterIdx(endChapterIdx);
-                userPayBook.setType(1);
-                userPayBook.setUserId(userId);
-                userPayBook.setCreateDate(new Date());
-                userPayBook.setUpdateDate(new Date());
 
-                //保存批量购买数据
-                userPayBookService.save(userPayBook);
+            userAccountLog.setUserId(userId);
+            userAccountLog.setType(type);
+            userAccountLog.setCreateDate(new Date());
+            userAccount.setUpdateDate(new Date());
+            //修改账户数据
+            userAccountService.update(userAccount);
+            //保存账户日志数据
+            userAccountLogService.save(userAccountLog);
 
-                userAccountLog.setChannel(channel);
-                userAccountLog.setOrderNo(userPayBook.getOrderNo());
-                userAccountLog.setProductId(String.valueOf(bookId));
-                userAccountLog.setComment(JSON.toJSONString(map));
-            } else {
-                //余额不够
-                return -1;
+            //统计销量
+            BookExpand bookExpand = this.bookExpandService.findUniqueByParams("bookId",bookId);
+            if(bookExpand == null){
+                Book book = this.bookService.getBookById(bookId);
+                bookExpand = new BookExpand();
+                bookExpand.setBookId(bookId);
+                bookExpand.setBookName(book.getTitle());
+                bookExpand.setSaleNum(1L);
+                bookExpand.setCreateDate(new Date());
+                bookExpand.setUpdateDate(new Date());
+                bookExpandService.save(bookExpand);
+            }else{
+                bookExpand.setSaleNum((bookExpand.getSaleNum() ==  null ? 0 : bookExpand.getSaleNum()) + 1);
+                bookExpand.setUpdateDate(new Date());
+                bookExpandService.update(bookExpand);
             }
-        }else if(type == Constants.CONSUME_TYPE_S3){
-            //全本购买
-            Integer channel = map.get("channel") == null ? null : Integer.parseInt(map.get("channel").toString());
-            if((userAccount.getMoney() + userAccount.getVirtualMoney()) >= price) {
-                UserPayBook userPayBook = new UserPayBook();
-                userPayBook.setBookId(bookId);
-                userPayBook.setOrderNo(Long.toHexString(System.currentTimeMillis()));
-                userPayBook.setType(2);
-                userPayBook.setUserId(userId);
-                userPayBook.setCreateDate(new Date());
-                userPayBook.setUpdateDate(new Date());
-
-                //保存批量购买数据
-                userPayBookService.save(userPayBook);
-
-                userAccountLog.setChannel(channel);
-                userAccountLog.setOrderNo(userPayBook.getOrderNo());
-                userAccountLog.setProductId(String.valueOf(bookId));
-                userAccountLog.setComment(JSON.toJSONString(map));
-            } else {
-                //余额不够
-                return -1;
-            }
-        }
-        //消费
-        if(userAccount.getVirtualMoney() >= price){
-            userAccount.setVirtualMoney(userAccount.getVirtualMoney() - price);
-
-            userAccountLog.setUnitMoney(0);
-            userAccountLog.setUnitVirtual(price);
-        }else{
-            userAccountLog.setUnitMoney(price - userAccount.getVirtualMoney());
-            userAccountLog.setUnitVirtual(userAccount.getVirtualMoney());
-
-            userAccount.setMoney(userAccount.getMoney() - (price - userAccount.getVirtualMoney()));
-            userAccount.setVirtualMoney(0);
-        }
-
-        userAccountLog.setUserId(userId);
-        userAccountLog.setType(type);
-        userAccountLog.setCreateDate(new Date());
-        userAccount.setUpdateDate(new Date());
-        //修改账户数据
-        userAccountService.update(userAccount);
-        //保存账户日志数据
-        userAccountLogService.save(userAccountLog);
-
-        //统计销量
-        BookExpand bookExpand = this.bookExpandService.findUniqueByParams("bookId",bookId);
-        if(bookExpand == null){
-            Book book = this.bookService.getBookById(bookId);
-            bookExpand = new BookExpand();
-            bookExpand.setBookId(bookId);
-            bookExpand.setBookName(book.getTitle());
-            bookExpand.setSaleNum(1L);
-            bookExpand.setCreateDate(new Date());
-            bookExpand.setUpdateDate(new Date());
-            bookExpandService.save(bookExpand);
-        }else{
-            bookExpand.setSaleNum((bookExpand.getSaleNum() ==  null ? 0 : bookExpand.getSaleNum()) + 1);
-            bookExpand.setUpdateDate(new Date());
-            bookExpandService.update(bookExpand);
-        }
-
-        return 0;
+            return 0;
     }
 
     @Override

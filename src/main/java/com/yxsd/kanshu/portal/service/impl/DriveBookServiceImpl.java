@@ -64,8 +64,9 @@ public class DriveBookServiceImpl extends BaseServiceImpl<DriveBook, Long> imple
         String key = String.format(RedisKeyConstants.CACHE_DRIVE_BOOK_ONE_KEY,type,bookId,status);
         DriveBook driveBook = slaveRedisTemplate.opsForValue().get(key);
         if(driveBook == null){
-            driveBook = this.findUniqueByParams("type",type,"bookId",bookId,"status",status);
-            if(driveBook != null){
+            List<DriveBook> driveBooks = this.findListByParams("type",type,"bookId",bookId,"status",status);
+            if(CollectionUtils.isNotEmpty(driveBooks)) {
+                driveBook = driveBooks.get(0);
                 masterRedisTemplate.opsForValue().set(key,driveBook,1,TimeUnit.DAYS);
             }
         }

@@ -131,8 +131,8 @@ public class WeixinController extends BaseController {
 			param.put("nonce_str", order.getNonce_str());
 			param.put("body", order.getBody());
 			param.put("out_trade_no", order.getOut_trade_no());
-			//param.put("total_fee", String.valueOf(order.getTotal_fee()));
-			param.put("total_fee", "1");
+			param.put("total_fee", String.valueOf(order.getTotal_fee()));
+			//param.put("total_fee", "1");
 			param.put("spbill_create_ip", order.getSpbill_create_ip());
 			param.put("notify_url", WxPayConfig.NOTIFY_URL);
 			param.put("trade_type", order.getTrade_type());
