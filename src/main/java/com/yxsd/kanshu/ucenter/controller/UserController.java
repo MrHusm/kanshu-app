@@ -1149,7 +1149,7 @@ public class UserController extends BaseController {
                     }
                     userReceive.setVipStatus(1);
                     sender.put("type",1);
-                    sender.put("msg","取消三次，自动领取成功");
+                    sender.put("msg","已成功领取3天全站免费特权");
                     //清除用户缓存
                     masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
                 }
