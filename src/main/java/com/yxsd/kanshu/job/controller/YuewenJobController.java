@@ -97,8 +97,13 @@ public class YuewenJobController extends BaseController {
 	@RequestMapping(value = "/getAllBooks")
 	@ResponseBody
 	public void getAllBooks(HttpServletRequest request, HttpServletResponse response){
-		String url = "http://cp.book.qq.com/ServiceBus.do?service=CpNovel&action=booklist&appKey=b7f7a2f01203&appToken=3b516aebe091&pageNo=1&pageSize=100000";
 
+		String appKey = ConfigPropertieUtils.getString(YUEWEN_APPKEY);
+		String token = getYueWenToken();
+		String url = ConfigPropertieUtils.getString(YUEWEN_URL_BOOKLIST);
+		url = MessageFormat.format(url, appKey, token, 1, "200000");
+		//String url = "http://cp.book.qq.com/ServiceBus.do?service=CpNovel&action=booklist&appKey=b7f7a2f01203&appToken=3b516aebe091&pageNo=1&pageSize=100000";
+		logger.info("url:"+url);
 		String result = HttpUtils.getContent(url, "UTF-8");
 
 		Object[] cbids = JSON.parseObject(result).getJSONObject("result").getJSONArray("cbids").toArray();
@@ -317,7 +322,7 @@ public class YuewenJobController extends BaseController {
 		int count = pullBookService.findCount(pullBook);
 		pageNo = count/pageSize + 1;
 		String bookListUrl = ConfigPropertieUtils.getString(YUEWEN_URL_BOOKLIST);
-		bookListUrl = MessageFormat.format(bookListUrl, appKey, token, pageNo.toString(), pageSize);
+		bookListUrl = MessageFormat.format(bookListUrl, appKey, token, String.valueOf(pageNo), String.valueOf(pageSize));
 		logger.info("yuewen booklist url={}", bookListUrl);
 		String result = HttpUtils.getContent(bookListUrl, "UTF-8");
 		logger.info("yuewen booklist result={}", result);
@@ -363,45 +368,46 @@ public class YuewenJobController extends BaseController {
 					}
 
 					for (final String cbid : cbids) {
-						logger.info("开始拉取图书："+cbid);
-						pullBookPool.execute(new Runnable() {
+						if(StringUtils.isNotBlank(cbid)) {
+							logger.info("开始拉取图书：" + cbid);
+							pullBookPool.execute(new Runnable() {
 
-							@Override
-							public void run() {
-								try {
-									if(StringUtils.isNotBlank(cbid)){
+								@Override
+								public void run() {
+									try {
 										//调用阅文接口获取书籍信息并保存到数据库
 										BookInfoResp bookInfoResp = getBookByYuewen(cbid);
-										if(bookInfoResp != null){
+										if (bookInfoResp != null) {
 											//封装图书数据
 											Book book = setBook(bookInfoResp);
 											//保存图书
 											bookService.save(book);
 											//创建搜索索引
-											IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+											IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME, setIndexField(book));
 											//调用阅文获取书籍卷列表
 											List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
-											if(volumeInfoResps != null){
-												if(volumeInfoResps.size() > 0){
+											if (volumeInfoResps != null) {
+												if (volumeInfoResps.size() > 0) {
 													// 有卷的信息：调用卷的基本信息，获取卷的章节列表，章节的基本信息，章节内容
 													addChapterByVolume(volumeInfoResps, book.getBookId(), cbid);
-												}else{
+												} else {
 													// 没有卷的信息：调用获取书的所有章节列表，章节的基本信息，章节内容
 													addChapterByBook(book.getBookId(), cbid);
 												}
 											}
 										}
-									}
-								} catch (Exception e) {
-									e.printStackTrace();
-									int pullStatus = 0;
 
-									String pullFailureCause = "拉取异常：" + ExceptionUtils.getFullStackTrace(e);
-									pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
-											cbid, pullStatus, pullFailureCause);
+									} catch (Exception e) {
+										e.printStackTrace();
+										int pullStatus = 0;
+
+										String pullFailureCause = "拉取异常：" + ExceptionUtils.getFullStackTrace(e);
+										pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+												cbid, pullStatus, pullFailureCause);
+									}
 								}
-							}
-						});
+							});
+						}
 					}
 				}
 			}else{
@@ -409,6 +415,87 @@ public class YuewenJobController extends BaseController {
 			}
 		}
 		logger.info("yuewen pullBooks end!");
+	}
+
+
+	/**
+	 *
+	 * @Title: pullAddBooks
+	 * @Description: 每天3点拉取增加的图书
+	 * @return
+	 * @author hushengmeng
+	 */
+	@RequestMapping(value = "/pullAddBooks")
+	@ResponseBody
+	public void pullAddBooks(HttpServletRequest request) {
+		logger.info("yuewen pullAddBooks begin!");
+		String appKey = ConfigPropertieUtils.getString(YUEWEN_APPKEY);
+		String token = getYueWenToken();
+		String bookListUrl = ConfigPropertieUtils.getString(YUEWEN_URL_BOOKLIST);
+		bookListUrl = MessageFormat.format(bookListUrl, appKey, token, 1, "10000");
+		logger.info("yuewen pullAddBooks url={}", bookListUrl);
+		String result = HttpUtils.getContent(bookListUrl, "UTF-8");
+		if(StringUtils.isBlank(result)){
+			logger.error("yuewen booklist result empty!");
+		}else{
+			String returnCode = JSON.parseObject(result).getString("returnCode");
+			if("0".equals(returnCode)){
+				String[] cbids = JSON.parseObject(result).getJSONObject("result").getJSONArray("cbids").toArray(new String[10000]);
+				if(cbids != null && cbids.length > 0){
+					int num = 0;
+					for (String cbid : cbids) {
+						num++;
+						if(num % 1000 == 0){
+							System.out.println("拉取到第"+ num + "本");
+						}
+						if(StringUtils.isNotBlank(cbid)){
+							//判断是否拉取过
+							logger.info("ifpullBook params:copyrightCode={},copyrightBookId={}", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbid);
+							PullBook pullBookFromDB = pullBookService.findUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+									"copyrightBookId", cbid);
+							if(pullBookFromDB != null){
+								logger.info("该书已经拉取过pullBook params:copyrightCode={},copyrightBookId={}", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbid);
+							}else{
+								//设置图书正在拉取状态
+								pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),cbid, 3, null);
+								try {
+									//调用阅文接口获取书籍信息并保存到数据库
+									BookInfoResp bookInfoResp = getBookByYuewen(cbid);
+									if (bookInfoResp != null) {
+										//封装图书数据
+										Book book = setBook(bookInfoResp);
+										//保存图书
+										bookService.save(book);
+										//创建搜索索引
+										//IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME, setIndexField(book));
+										//调用阅文获取书籍卷列表
+										List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
+										if (volumeInfoResps != null) {
+											if (volumeInfoResps.size() > 0) {
+												// 有卷的信息：调用卷的基本信息，获取卷的章节列表，章节的基本信息，章节内容
+												addChapterByVolume(volumeInfoResps, book.getBookId(), cbid);
+											} else {
+												// 没有卷的信息：调用获取书的所有章节列表，章节的基本信息，章节内容
+												addChapterByBook(book.getBookId(), cbid);
+											}
+										}
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+									int pullStatus = 0;
+									String pullFailureCause = "拉取异常：" + ExceptionUtils.getFullStackTrace(e);
+									pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+											cbid, pullStatus, pullFailureCause);
+								}
+							}
+						}
+					}
+				}
+			}else{
+				logger.error("yuewen booklist result error!");
+			}
+		}
+		logger.info("yuewen pullAddBooks end!");
 	}
 
 	/**
@@ -470,7 +557,7 @@ public class YuewenJobController extends BaseController {
 										//清除图书相关缓存
 										bookService.clearBookAllCache(book.getBookId());
 										//创建搜索索引
-										IndexManager.getManager().updateIndex(SearchContants.ID, SearchContants.TABLENAME, setIndexField(book));
+										IndexManager.getManager().updateIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME, setIndexField(book));
 
 										//调用阅文获取书籍卷列表
 										List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
@@ -628,14 +715,14 @@ public class YuewenJobController extends BaseController {
 						if(beforeBook == null){
 							bookService.save(book);
 							//创建搜索索引
-							IndexManager.getManager().createIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+							IndexManager.getManager().createIndex(String.valueOf(book.getBookId()),SearchContants.TABLENAME,setIndexField(book));
 						}else{
 							book.setBookId(beforeBook.getBookId());
 							bookService.update(book);
 							//清除图书相关缓存
 							bookService.clearBookAllCache(book.getBookId());
 							//修改搜索索引
-							IndexManager.getManager().updateIndex(SearchContants.ID,SearchContants.TABLENAME,setIndexField(book));
+							IndexManager.getManager().updateIndex(String.valueOf(book.getBookId()),SearchContants.TABLENAME,setIndexField(book));
 						}
 
 						//调用阅文获取书籍卷列表

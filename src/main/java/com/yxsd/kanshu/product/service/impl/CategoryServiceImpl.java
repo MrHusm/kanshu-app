@@ -63,6 +63,7 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> impleme
                     List<Category> list = new ArrayList<Category>();
                     for(Category category : categories){
                         Map<String,Object> condition = new HashMap<String,Object>();
+                        condition.put("shelfStatus",1);
                         if(category.getLevel() == 2){
                             condition.put("categorySecId",category.getCategoryId());
                         }else if(category.getLevel() == 3){

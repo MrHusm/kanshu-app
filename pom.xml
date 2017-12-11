@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.personal.kanshu</groupId>
-    <artifactId>media_cms</artifactId>
+    <artifactId>kanshu-app</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>media_cms Maven Webapp</name>
+    <name>kanshu-app Maven Webapp</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -339,7 +339,7 @@
     </dependencies>
 
     <build>
-        <finalName>media_cms</finalName>
+        <finalName>kanshu-app</finalName>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>

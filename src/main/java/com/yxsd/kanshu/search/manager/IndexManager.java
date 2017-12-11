@@ -181,7 +181,8 @@ public class IndexManager {
 		DirectoryReader ireader = null;
 
 		try {
-			ireader = DirectoryReader.open(ramDirectory);
+			//ireader = DirectoryReader.open(ramDirectory);
+			ireader = DirectoryReader.open(directory);
 			IndexSearcher isearcher = new IndexSearcher(ireader);
 
 			QueryParser parser = new MultiFieldQueryParser(fields, analyzer);
@@ -248,6 +249,9 @@ public class IndexManager {
 			}
 			indexWriter.deleteDocuments(terms);
 			indexWriter.commit();
+
+			ramIndexWriter.deleteDocuments(terms);
+			ramIndexWriter.commit();
 			return true;
 		} catch (Exception e) {
 			logger.error("删除索引失败", e);
@@ -308,6 +312,9 @@ public class IndexManager {
 			}
 			indexWriter.updateDocument(new Term(SearchContants.ID, id), document);
 			indexWriter.commit();
+
+			ramIndexWriter.updateDocument(new Term(SearchContants.ID, id), document);
+			ramIndexWriter.commit();
 			return true;
 		} catch (Exception e) {
 			logger.error("更新索引失败", e);
