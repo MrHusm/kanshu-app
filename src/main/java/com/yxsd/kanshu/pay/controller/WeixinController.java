@@ -111,11 +111,12 @@ public class WeixinController extends BaseController {
 			order.setComment(content);
 
 			RechargeItem rechargeItem = rechargeItemService.get(Long.parseLong(productId));
-			if(rechargeItem.getVirtual() != null && rechargeItem.getVirtual() > 0){
-				order.setBody("充值"+rechargeItem.getMoney()+"钻赠送"+rechargeItem.getVirtual()+"钻");
-			}else{
-				order.setBody("充值"+rechargeItem.getMoney()+"钻");
-			}
+//			if(rechargeItem.getVirtual() != null && rechargeItem.getVirtual() > 0){
+//				order.setBody("充值"+rechargeItem.getMoney()+"钻赠送"+rechargeItem.getVirtual()+"钻");
+//			}else{
+//				order.setBody("充值"+rechargeItem.getMoney()+"钻");
+//			}
+			order.setBody("春意小说微信充值");
 			order.setTotal_fee(rechargeItem.getPrice().intValue() * 100);
 			order.setOut_trade_no(Long.toHexString(System.currentTimeMillis()));
 			order.setNonce_str(WXPayUtil.generateNonceStr());
