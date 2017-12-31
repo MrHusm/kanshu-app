@@ -383,7 +383,7 @@ public class YuewenJobController extends BaseController {
 											//保存图书
 											bookService.save(book);
 											//创建搜索索引
-											IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME, setIndexField(book));
+											//IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME, setIndexField(book));
 											//调用阅文获取书籍卷列表
 											List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
 											if (volumeInfoResps != null) {
@@ -557,7 +557,7 @@ public class YuewenJobController extends BaseController {
 										//清除图书相关缓存
 										bookService.clearBookAllCache(book.getBookId());
 										//创建搜索索引
-										IndexManager.getManager().updateIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME, setIndexField(book));
+										//IndexManager.getManager().updateIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME, setIndexField(book));
 
 										//调用阅文获取书籍卷列表
 										List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
@@ -715,14 +715,14 @@ public class YuewenJobController extends BaseController {
 						if(beforeBook == null){
 							bookService.save(book);
 							//创建搜索索引
-							IndexManager.getManager().createIndex(String.valueOf(book.getBookId()),SearchContants.TABLENAME,setIndexField(book));
+							//IndexManager.getManager().createIndex(String.valueOf(book.getBookId()),SearchContants.TABLENAME,setIndexField(book));
 						}else{
 							book.setBookId(beforeBook.getBookId());
 							bookService.update(book);
 							//清除图书相关缓存
 							bookService.clearBookAllCache(book.getBookId());
 							//修改搜索索引
-							IndexManager.getManager().updateIndex(String.valueOf(book.getBookId()),SearchContants.TABLENAME,setIndexField(book));
+							//IndexManager.getManager().updateIndex(String.valueOf(book.getBookId()),SearchContants.TABLENAME,setIndexField(book));
 						}
 
 						//调用阅文获取书籍卷列表
