@@ -22,8 +22,8 @@
             <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="window.JSHandle.searchCatagory('都市')">都市</span></div>
             <div class="tagPub"><span class="tagCont tagPubStyle3" onclick="window.JSHandle.searchCatagory('现代言情')">现代言情</span></div>
             <div class="tagPub"><span class="tagCont tagPubStyle4" onclick="window.JSHandle.searchCatagory('古代言情')">古代言情</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="bookInfo(31886,'末日乐园')">末日乐园</span></div>
-            <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="bookInfo(14408,'武神血脉')">武神血脉</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle1" onclick="bookInfo(49379,'炮灰修仙')">炮灰修仙</span></div>
+            <div class="tagPub"><span class="tagCont tagPubStyle2" onclick="bookInfo(41173,'天影')">天影</span></div>
         </div>
     </#if>
     <div class="hr"></div>
