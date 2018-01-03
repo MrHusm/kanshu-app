@@ -1,14 +1,18 @@
 package com.yxsd.kanshu.portal.controller;
 
+import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.model.DriveBook;
+import com.yxsd.kanshu.portal.model.Special;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
+import com.yxsd.kanshu.portal.service.ISpecialService;
 import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.model.Category;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.ICategoryService;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -28,6 +33,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 
 @Controller
 @Scope("prototype")
@@ -35,6 +43,7 @@ import java.util.Map;
 public class PortalController extends BaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(PortalController.class);
+    
     
     @Resource(name="driveBookService")
     IDriveBookService driveBookService;
@@ -44,6 +53,9 @@ public class PortalController extends BaseController{
 
     @Resource(name="bookService")
     IBookService bookService;
+    
+    @Resource(name="specialService")
+    ISpecialService specialService;
 
 
     /**
@@ -70,7 +82,30 @@ public class PortalController extends BaseController{
             //默认取首页驱动数据
             type = "1";
         }
+        
+        
+        
         PageFinder<DriveBook> pageFinder = this.driveBookService.findPageWithCondition(Integer.parseInt(type),query);
+        List<DriveBook> list = pageFinder.getData();//图书列表
+        List<DriveBook> driveBookList = new ArrayList<DriveBook>();//图书列表
+        List<Special> specialsList = new ArrayList<Special>();//图书专题
+        List<Map<String, Object>> arrayList = new ArrayList<Map<String, Object>>();
+        Map<String, Object> map = new TreeMap<String, Object>();
+        List<Special> specials=this.specialService.getSpecials();
+        int num = 0;
+        
+        for (DriveBook driveBook : list) {
+        	 num+=1;
+        	 map.put(Constants.PORTAL_TYPE_BOOK_LIST, driveBookList.add(driveBook));
+        	 for (Special special : specials) {
+     			if(num%4==0){
+     				 map.put(Constants.PORTAL_TYPE_SPECIAL_LIST, specialsList.add(special));
+     			}
+     		 }
+        	 arrayList.add(map);
+		}
+        //查询专题集合
+        
         //榜单封面图
         List<DriveBook> boyDriveBooks = this.driveBookService.getDriveBooks(2,1);
         if(CollectionUtils.isNotEmpty(boyDriveBooks)){

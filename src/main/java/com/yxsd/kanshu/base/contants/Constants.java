@@ -33,7 +33,10 @@ public class Constants {
     public static final int CONSUME_TYPE_S2 = -2;//批量购买
     public static final int CONSUME_TYPE_S3 = -3;//全本购买
     public static final int CONSUME_TYPE_S4 = -4;//VIP消费
-
+    
+    public static final String PORTAL_TYPE_BOOK_LIST="1";
+    
+    public static final String PORTAL_TYPE_SPECIAL_LIST="2";
     public Constants() {
     }
 
