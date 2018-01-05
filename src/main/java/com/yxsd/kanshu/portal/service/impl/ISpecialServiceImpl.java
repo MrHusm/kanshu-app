@@ -1,18 +1,16 @@
 package com.yxsd.kanshu.portal.service.impl;
 
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
 import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
 import com.yxsd.kanshu.portal.dao.ISpecialDao;
 import com.yxsd.kanshu.portal.model.Special;
 import com.yxsd.kanshu.portal.service.ISpecialService;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 /**
  * 
  * @author hanweiwei
@@ -30,12 +28,6 @@ public class ISpecialServiceImpl extends BaseServiceImpl<Special, Long> implemen
 
     @Resource(name = "slaveRedisTemplate")
     private RedisTemplate<String,Special> slaveRedisTemplate;
-
-    @Resource(name = "masterRedisTemplate")
-    private RedisTemplate<String,List<Special>> listMasterRedisTemplate;
-
-    @Resource(name = "slaveRedisTemplate")
-    private RedisTemplate<String,List<Special>> listSlaveRedisTemplate;
 	
 	@Override
 	public IBaseDao<Special> getBaseDao() {

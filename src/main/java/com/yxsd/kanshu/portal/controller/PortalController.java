@@ -1,6 +1,5 @@
 package com.yxsd.kanshu.portal.controller;
 
-import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
@@ -12,7 +11,6 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.model.Category;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.ICategoryService;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -33,7 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 @Controller
 @Scope("prototype")
@@ -80,42 +76,28 @@ public class PortalController extends BaseController{
             //默认取首页驱动数据
             type = "1";
         }
-        
-        
-        
         PageFinder<DriveBook> pageFinder = this.driveBookService.findPageWithCondition(Integer.parseInt(type),query);
-        List<DriveBook> list = pageFinder.getData();//图书列表
-        List<DriveBook> driveBookList = new ArrayList<DriveBook>();//图书列表
-        List<Special> specialsList = new ArrayList<Special>();//图书专题
-        List<Map<String, Object>> arrayList = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new TreeMap<String, Object>();
-        List<Special> specials=this.specialService.getSpecials();
-        int num = 0;
-        
-        for (DriveBook driveBook : list) {
-        	 num+=1;
-        	 map.put(Constants.PORTAL_TYPE_BOOK_LIST, driveBookList.add(driveBook));
-        	 for (Special special : specials) {
-     			if(num%4==0){
-     				 map.put(Constants.PORTAL_TYPE_SPECIAL_LIST, specialsList.add(special));
-     			}
-     		 }
-        	 arrayList.add(map);
-		}
-        //查询专题集合
-        
-        //榜单封面图
-        List<DriveBook> boyDriveBooks = this.driveBookService.getDriveBooks(2,1);
-        if(CollectionUtils.isNotEmpty(boyDriveBooks)){
-            model.addAttribute("boyImg",boyDriveBooks.get(0).getBook().getCoverUrl());
-        }
-        List<DriveBook> girlDriveBooks = this.driveBookService.getDriveBooks(3,1);
-        if(CollectionUtils.isNotEmpty(girlDriveBooks)){
-            model.addAttribute("girlImg",girlDriveBooks.get(0).getBook().getCoverUrl());
-        }
-        List<DriveBook> secDriveBooks = this.driveBookService.getDriveBooks(4,1);
-        if(CollectionUtils.isNotEmpty(secDriveBooks)){
-            model.addAttribute("secImg",secDriveBooks.get(0).getBook().getCoverUrl());
+        if(query.getPage() == 1){
+            //第一页面查询专题数据
+            List<Special> specials = this.specialService.findListByParamsObjs(null);
+            List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+            for(DriveBook driveBook : pageFinder.getData()){
+                Map<String,Object> map = new HashMap<String,Object>();
+                map.put("type",1);
+                map.put("data",driveBook);
+                result.add(map);
+            }
+            if(CollectionUtils.isNotEmpty(specials)){
+                for(Special special : specials){
+                    if(special.getSpecialIndex() < 20){
+                        Map<String,Object> map = new HashMap<String,Object>();
+                        map.put("type",2);
+                        map.put("data",special);
+                        result.add(special.getSpecialIndex(),map);
+                    }
+                }
+            }
+            model.addAttribute("result",result);
         }
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("type",type);
