@@ -349,7 +349,7 @@ public class UserController extends BaseController {
                     user.setSex(userWeixin.getSex());
                     user.setLogo(userWeixin.getHeadimgurl());
                     userService.update(user);
-                    //删除已绑定的微博
+                    //删除已绑定的微信
                     userWeixinService.deleteByByParams("userId",user.getUserId());
                     //保存微信相关信息
                     userWeixin.setUserId(Long.parseLong(currentUid));
