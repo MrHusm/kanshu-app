@@ -319,7 +319,7 @@ public class UserController extends BaseController {
                 //用户当前已经登录
                 currentUid = UserUtils.getUserIdByToken(token);
                 if(userWx != null){
-                    //该QQ号已经被用户绑定
+                    //该微信号已经被用户绑定
                     if(String.valueOf(userWx.getUserId()).equals(currentUid)){
                         //当前用户和绑定微信号的用户相同
                         sender.put("code",0);
@@ -366,8 +366,8 @@ public class UserController extends BaseController {
                 //用户当前未登录
                 sender.put("code",2);
                 User user = null;
-                if(userWeixin != null){
-                    user = this.userService.getUserByUserId(userWeixin.getUserId());
+                if(userWx != null){
+                    user = this.userService.getUserByUserId(userWx.getUserId());
                     user.setSex(userWeixin.getSex());
                     user.setLogo(userWeixin.getHeadimgurl());
                     userService.update(user);
@@ -641,7 +641,7 @@ public class UserController extends BaseController {
         }
         try{
             User user = userService.getUserByUserId(Long.parseLong(userId));
-            Integer maxVirtual = rechargeItemService.getMaxVirtual();
+            Integer maxVirtual = rechargeItemService.getMaxVirtual(1);
             if(maxVirtual != null && maxVirtual > 0){
                 sender.put("rechargeContent","充值最高返"+maxVirtual);
             }
@@ -668,10 +668,12 @@ public class UserController extends BaseController {
                 sender.put("qqStatus", userReceive.getQqStatus() != null && userReceive.getQqStatus() == 1 ? 1 : 0);
                 sender.put("weiboStatus", userReceive.getWeiboStatus() != null && userReceive.getWeiboStatus() == 1 ? 1 : 0);
                 sender.put("weixinStatus", userReceive.getWeixinStatus() != null && userReceive.getWeixinStatus() == 1 ? 1 : 0);
+                sender.put("telStatus", userReceive.getTelStatus() != null && userReceive.getTelStatus() == 1 ? 1 : 0);
             }else{
                 sender.put("qqStatus", 0);
                 sender.put("weiboStatus",0);
                 sender.put("weixinStatus",0);
+                sender.put("telStatus",0);
             }
            sender.put("user",user);
            sender.put("userAccount",userAccount);

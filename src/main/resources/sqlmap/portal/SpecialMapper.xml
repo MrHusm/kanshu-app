@@ -10,7 +10,7 @@
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
-  <reultMap type="com.yxsd.kanshu.portal.model.Special" id="getSpecialImgMap" extends="BaseResultMap">
+  <resultMap id="withImgInfoMap" extends="BaseResultMap" type="com.yxsd.kanshu.portal.model.Special">
     	<collection property="specialImgs" ofType="com.yxsd.kanshu.portal.model.SpecialImg">  
             <id column="special_img_id" property="specialImgId"/>  
             <result column="special_pic" property="specialPic"/>  
@@ -19,8 +19,12 @@
             <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />  
         </collection>
-  
-  </reultMap>
+  </resultMap>
+
+  <sql id="Base_Where">
+    <if test="specialType != null"> and special_type= #{specialType}</if>
+  </sql>
+
   <sql id="Base_Column_List" >
     special_id, special_type, special_name, special_content, special_index, create_date, 
     update_date
@@ -127,4 +131,11 @@
       update_date = #{updateDate,jdbcType=TIMESTAMP}
     where special_id = #{specialId,jdbcType=BIGINT}
   </update>
+  <select id="getAll" resultMap="withImgInfoMap" parameterType="map">
+    select s.* , i.*
+    from special s
+    LEFT JOIN special_img i
+    ON s.special_id = i.special_id where 1=1
+    <include refid="Base_Where" />
+  </select>
 </mapper>

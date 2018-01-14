@@ -137,6 +137,9 @@ public class AlipayController extends BaseController {
 			model.setOutTradeNo(order.getWIDoutTradeNo());
 			model.setTimeoutExpress("30m");
 			model.setTotalAmount(String.valueOf(order.getWIDtotalAmount()));
+//			if(order.getUserId().intValue() == 5166){
+//				model.setTotalAmount("0.01");
+//			}
 			model.setProductCode("QUICK_MSECURITY_PAY");
 			payRequest.setBizModel(model);
 			payRequest.setNotifyUrl(AlipayConfig.notify_url);

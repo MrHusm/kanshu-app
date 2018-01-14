@@ -29,6 +29,11 @@ public class RechargeItem implements Serializable {
      */
     private Integer virtual;
 
+    /**
+     * 类型 1：通用 2：微信公众号
+     */
+    private Integer type;
+
     private Date createDate;
 
     private Date updateDate;
@@ -79,5 +84,13 @@ public class RechargeItem implements Serializable {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

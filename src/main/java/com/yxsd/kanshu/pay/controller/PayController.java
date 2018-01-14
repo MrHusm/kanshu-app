@@ -66,7 +66,7 @@ public class PayController extends BaseController{
                 return;
             }
             UserAccount userAccount = userAccountService.findUniqueByParams("userId", UserUtils.getUserIdByToken(token));
-            List<RechargeItem> rechargeItems = this.rechargeItemService.findListByParams();
+            List<RechargeItem> rechargeItems = this.rechargeItemService.getRechargeItem(1);
             sender.put("rechargeItems", rechargeItems);
             sender.put("userAccount", userAccount);
             sender.success(response);

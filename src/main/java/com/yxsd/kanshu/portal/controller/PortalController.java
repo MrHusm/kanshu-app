@@ -4,9 +4,7 @@ import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.model.DriveBook;
-import com.yxsd.kanshu.portal.model.Special;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
-import com.yxsd.kanshu.portal.service.ISpecialService;
 import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.model.Category;
 import com.yxsd.kanshu.product.service.IBookService;
@@ -47,9 +45,6 @@ public class PortalController extends BaseController{
 
     @Resource(name="bookService")
     IBookService bookService;
-    
-    @Resource(name="specialService")
-    ISpecialService specialService;
 
 
     /**
@@ -77,27 +72,18 @@ public class PortalController extends BaseController{
             type = "1";
         }
         PageFinder<DriveBook> pageFinder = this.driveBookService.findPageWithCondition(Integer.parseInt(type),query);
-        if(query.getPage() == 1){
-            //第一页面查询专题数据
-            List<Special> specials = this.specialService.findListByParamsObjs(null);
-            List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
-            for(DriveBook driveBook : pageFinder.getData()){
-                Map<String,Object> map = new HashMap<String,Object>();
-                map.put("type",1);
-                map.put("data",driveBook);
-                result.add(map);
-            }
-            if(CollectionUtils.isNotEmpty(specials)){
-                for(Special special : specials){
-                    if(special.getSpecialIndex() < 20){
-                        Map<String,Object> map = new HashMap<String,Object>();
-                        map.put("type",2);
-                        map.put("data",special);
-                        result.add(special.getSpecialIndex(),map);
-                    }
-                }
-            }
-            model.addAttribute("result",result);
+        //榜单封面图
+        List<DriveBook> boyDriveBooks = this.driveBookService.getDriveBooks(2,1);
+        if(CollectionUtils.isNotEmpty(boyDriveBooks)){
+            model.addAttribute("boyImg",boyDriveBooks.get(0).getBook().getCoverUrl());
+        }
+        List<DriveBook> girlDriveBooks = this.driveBookService.getDriveBooks(3,1);
+        if(CollectionUtils.isNotEmpty(girlDriveBooks)){
+            model.addAttribute("girlImg",girlDriveBooks.get(0).getBook().getCoverUrl());
+        }
+        List<DriveBook> secDriveBooks = this.driveBookService.getDriveBooks(4,1);
+        if(CollectionUtils.isNotEmpty(secDriveBooks)){
+            model.addAttribute("secImg",secDriveBooks.get(0).getBook().getCoverUrl());
         }
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("type",type);

@@ -6,14 +6,16 @@
         <result column="price" property="price" jdbcType="NUMERIC" />
         <result column="money" property="money" jdbcType="INTEGER" />
         <result column="virtual" property="virtual" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="INTEGER" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
     <sql id="Base_Where">
         <if test="rechargeItemId != null"> and recharge_item_id= #{rechargeItemId}</if>
+        <if test="type != null"> and type= #{type}</if>
     </sql>
     <sql id="Base_Column_List">
-        recharge_item_id,price,money,virtual,create_date,update_date
+        recharge_item_id,price,money,virtual,type,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -32,6 +34,7 @@
             <if test="price != null">price,</if>
             <if test="money != null">money,</if>
             <if test="virtual != null">virtual,</if>
+            <if test="type != null">type,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
@@ -48,6 +51,9 @@
             <if test="virtual != null">
                 #{virtual,jdbcType=INTEGER},
             </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
             </if>
@@ -58,7 +64,8 @@
     </insert>
 
     <select id="getMaxVirtual" resultType="java.lang.Integer" parameterType="map">
-        select max(virtual) from recharge_item
+        select max(virtual) from recharge_item where 1 = 1
+        <include refid="Base_Where" />
     </select>
 
     <select id="getAll" resultMap="BaseResultMap" parameterType="map">
