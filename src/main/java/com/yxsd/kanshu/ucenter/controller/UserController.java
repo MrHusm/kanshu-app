@@ -542,11 +542,18 @@ public class UserController extends BaseController {
         }
         try{
             //根据用户imei->android_id->serialNunber ->UUID生成的查询用户
-            User user =  userService.findUniqueByParams("deviceSerialNo",deviceSerialNo.toLowerCase());
+            List<User> users = userService.findListByParams("deviceSerialNo",deviceSerialNo);
+            if(CollectionUtils.isEmpty(users)){
+                users = userService.findListByParams("deviceSerialNo",deviceSerialNo.toLowerCase());
+            }
 
-            if(user == null){
+            User user = null;
+            if(CollectionUtils.isNotEmpty(users)){
+                user = users.get(users.size() - 1);
+            }else{
                 user = this.userService.register(channel,deviceType,deviceSerialNo,request);
             }
+
             sender.put("user",user);
             sender.put("token",UserUtils.createToken(String.valueOf(user.getUserId())));
             sender.send(response);

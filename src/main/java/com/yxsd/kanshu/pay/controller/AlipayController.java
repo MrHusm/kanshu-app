@@ -137,9 +137,9 @@ public class AlipayController extends BaseController {
 			model.setOutTradeNo(order.getWIDoutTradeNo());
 			model.setTimeoutExpress("30m");
 			model.setTotalAmount(String.valueOf(order.getWIDtotalAmount()));
-//			if(order.getUserId().intValue() == 5166){
-//				model.setTotalAmount("0.01");
-//			}
+			if(order.getUserId().intValue() == 23159){
+				model.setTotalAmount("0.01");
+			}
 			model.setProductCode("QUICK_MSECURITY_PAY");
 			payRequest.setBizModel(model);
 			payRequest.setNotifyUrl(AlipayConfig.notify_url);
@@ -193,9 +193,15 @@ public class AlipayController extends BaseController {
 				//交易状态
 				String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"),"UTF-8");
 				//订单金额（元）
-				String total_amount = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"),"UTF-8");
+				String total_amount = null;
+				if(StringUtils.isNotBlank(request.getParameter("total_amount"))){
+					total_amount = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"),"UTF-8");
+				}
 				//实收金额（元）
-				String receipt_amount = new String(request.getParameter("receipt_amount").getBytes("ISO-8859-1"),"UTF-8");
+				String receipt_amount = null;
+				if(StringUtils.isNotBlank(request.getParameter("receipt_amount"))){
+					receipt_amount = new String(request.getParameter("receipt_amount").getBytes("ISO-8859-1"),"UTF-8");
+				}
 
 				//保存或修改response表
 				AlipayResponse alipayResponse = alipayResponseService.findUniqueByParams("outTradeNo",out_trade_no);
@@ -215,8 +221,8 @@ public class AlipayController extends BaseController {
 					alipayResponse.setStatus(0);
 				}
 				alipayResponse.setOutTradeNo(out_trade_no);
-				alipayResponse.setReceiptAmount(Double.parseDouble(receipt_amount));
-				alipayResponse.setTotalAmount(Double.parseDouble(total_amount));
+				alipayResponse.setReceiptAmount(StringUtils.isBlank(receipt_amount) ? null : Double.parseDouble(receipt_amount));
+				alipayResponse.setTotalAmount(StringUtils.isBlank(total_amount) ? null : Double.parseDouble(total_amount));
 				alipayResponse.setTradeNo(trade_no);
 				alipayResponse.setTradeStatus(trade_status);
 				alipayResponse.setUpdateDate(new Date());
