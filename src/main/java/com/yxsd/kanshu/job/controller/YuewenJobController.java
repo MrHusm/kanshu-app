@@ -1586,10 +1586,10 @@ public class YuewenJobController extends BaseController {
 									chapterContentResp.getContent(), volumeIndex-1);
 							//保存章节信息
 							chapterService.saveChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
-//							int chapterPullStatus = 1;
-//							String chapterPullFailureCause = "";
-//							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
-//									chapterInfoResp.getcCID().toString(), chapterPullStatus, chapterPullFailureCause);
+							int chapterPullStatus = 1;
+							String chapterPullFailureCause = "";
+							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
+									chapterInfoResp.getcCID().toString(), chapterPullStatus, chapterPullFailureCause);
 						}
 					}
 					chapterPage++;
