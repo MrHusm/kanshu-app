@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/reset_5.css">
     <link rel="stylesheet" href="/css/index.css">
     <script src="/js/jquery.min.js"></script>
+    <script src="/js/baidu-statis.js"></script>
 </head>
 <body>
     <aside class="newBookBox">

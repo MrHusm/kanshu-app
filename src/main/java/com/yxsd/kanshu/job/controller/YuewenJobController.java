@@ -581,8 +581,10 @@ public class YuewenJobController extends BaseController {
 												updateChapterByBook(book.getBookId(), 	cbid);
 											}
 										}
-										int pullStatus = 2;
-										String pullFailureCause = "调用阅文更新书籍接口：重新拉取！";
+//										int pullStatus = 2;
+//										String pullFailureCause = "调用阅文更新书籍接口：重新拉取！";
+										int pullStatus = 1;
+										String pullFailureCause = "更新成功！";
 										pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
 												cbid, pullStatus, pullFailureCause);
 									}

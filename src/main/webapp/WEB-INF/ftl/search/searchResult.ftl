@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/sreach.css">
     <script src="/js/jquery.min.js"></script>
     <script src="/js/common.js"></script>
+    <script src="/js/baidu-statis.js"></script>
 </head>
 <body>
     <article class="pageLoad">

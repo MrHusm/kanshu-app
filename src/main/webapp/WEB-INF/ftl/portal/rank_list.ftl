@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/free.css">
     <link rel="stylesheet" href="/css/channel.css">
     <script src="/js/jquery.min.js"></script>
+    <script src="/js/baidu-statis.js"></script>
 </head>
 <body>
     <#if type == '9'>
