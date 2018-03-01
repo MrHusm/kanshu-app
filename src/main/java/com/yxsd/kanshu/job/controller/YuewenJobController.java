@@ -581,10 +581,10 @@ public class YuewenJobController extends BaseController {
 												updateChapterByBook(book.getBookId(), 	cbid);
 											}
 										}
-//										int pullStatus = 2;
-//										String pullFailureCause = "调用阅文更新书籍接口：重新拉取！";
-										int pullStatus = 1;
-										String pullFailureCause = "更新成功！";
+										int pullStatus = 2;
+										String pullFailureCause = "调用阅文更新书籍接口：重新拉取！";
+//										int pullStatus = 1;
+//										String pullFailureCause = "更新成功！";
 										pullBookService.saveOrUpdatePullBook(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
 												cbid, pullStatus, pullFailureCause);
 									}
@@ -783,6 +783,9 @@ public class YuewenJobController extends BaseController {
 			List<VolumeInfoResp> volumeInfoResps = getVolumesFromYuewenByBookId(cbid);
 			//调用阅文获取卷基本信息接口
 			VolumeInfoResp volumeInfoResp = getVolumeFromYuewenByVolumeId(cbid, cvid);
+			if(volumeInfoResp == null){
+				continue;
+			}
 			int volumeIndex = 0;
 			for (int i = 0; i < volumeInfoResps.size(); i++) {
 				if(volumeInfoResp.getcVID().longValue() == volumeInfoResps.get(i).getcVID().longValue()){
@@ -1675,6 +1678,12 @@ public class YuewenJobController extends BaseController {
 						, chapterPage, chapterPageSize);
 				if(chapterInfoResps != null && chapterInfoResps.size() > 0){
 					for (ChapterInfoResp chapterInfoResp : chapterInfoResps) {
+						Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+								"copyrightBookId", cbid, "copyrightChapterId", chapterInfoResp.getcCID().toString(),
+								"num",bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
+						if(beforeChapter != null && StringUtils.isNotBlank(beforeChapter.getContent())){
+							continue;
+						}
 						//调用获取章节内容接口
 						ChapterContentResp chapterContentResp = getChapterContentFromYuewenByChapterId(cbid, chapterInfoResp.getcCID().toString(),
 								chapterInfoResp.getcVID().toString());
@@ -1686,7 +1695,7 @@ public class YuewenJobController extends BaseController {
 							logger.info("findChapter params=[copyrightCode="+ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE)+",copyrightBookId="+
 									cbid +", copyrightChapterId="+ chapterInfoResp.getcCID() +"]");
 
-							Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
+							beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode", ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE),
 									"copyrightBookId", cbid, "copyrightChapterId", chapterInfoResp.getcCID().toString(),
 									"num",bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
 
@@ -1731,6 +1740,13 @@ public class YuewenJobController extends BaseController {
 			List<ChapterInfoResp> chapterInfoResps = getChaptersFromYuewenByBookId(cbid, chapterPage, chapterPageSize);
 			if(chapterInfoResps != null && chapterInfoResps.size() > 0){
 				for (ChapterInfoResp chapterInfoResp : chapterInfoResps) {
+					Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode",
+							ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
+							"copyrightChapterId", chapterInfoResp.getcCID().toString(),
+							"num",bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
+					if(beforeChapter != null && StringUtils.isNotBlank(beforeChapter.getContent())){
+						continue;
+					}
 					//调用获取章节内容接口
 					ChapterContentResp chapterContentResp = getChapterContentFromYuewenByChapterId(cbid, chapterInfoResp.getcCID().toString(),
 							chapterInfoResp.getcVID().toString());
@@ -1738,7 +1754,7 @@ public class YuewenJobController extends BaseController {
 						//封装章节信息
 						Chapter chapter = setChapter(chapterInfoResp, bookId, null, chapterContentResp.getContent(), null);
 						//查询是否拉取过该章节
-						Chapter beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode",
+						beforeChapter = chapterService.findMasterUniqueByParams("copyrightCode",
 								ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), "copyrightBookId", cbid,
 								"copyrightChapterId", chapterInfoResp.getcCID().toString(),
 								"num",bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
