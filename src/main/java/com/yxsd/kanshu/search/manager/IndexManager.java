@@ -78,7 +78,7 @@ public class IndexManager {
 				directory = FSDirectory.open(new File(INDEX_DIR).toPath());
 
 				// 创建内存索引库
-				ramDirectory = new RAMDirectory(FSDirectory.open(new File(INDEX_DIR).toPath()), null);
+				//ramDirectory = new RAMDirectory(FSDirectory.open(new File(INDEX_DIR).toPath()), null);
 			} catch (IOException e) {
 				logger.error("创建索引文件目录失败", e);
 				throw new RuntimeException("创建索引文件目录失败", e);
@@ -106,8 +106,8 @@ public class IndexManager {
 		try {
 
 			// 操作内存的IndexWriter
-			IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
-			ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
+//			IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
+//			ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
 
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			indexWriter = new IndexWriter(directory, config);
@@ -139,8 +139,8 @@ public class IndexManager {
 			indexWriter.addDocument(document);
 			indexWriter.commit();
 
-			ramIndexWriter.addDocument(document);
-			ramIndexWriter.commit();
+//			ramIndexWriter.addDocument(document);
+//			ramIndexWriter.commit();
 			return true;
 		} catch (Exception e) {
 			logger.error("创建索引失败", e);
@@ -296,8 +296,8 @@ public class IndexManager {
 		try {
 
 			// 操作内存的IndexWriter
-			IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
-			ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
+//			IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
+//			ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
 
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			indexWriter = new IndexWriter(directory, config);
@@ -307,14 +307,31 @@ public class IndexManager {
 			document.add(new TextField(SearchContants.TABLENAME, tableName, Store.YES));
 
 			for (String key : fieldMap.keySet()) {
-				document.add(new TextField(key, fieldMap.get(key), Store.YES));
+				TextField field = new TextField(key, fieldMap.get(key), Store.YES);
+				// 设置搜索权重
+				if (SearchEnum.title.getSearchField().equals(key)) {
+					field.setBoost(10f);
+				} else if (SearchEnum.author_name.getSearchField().equals(key)) {
+					field.setBoost(3f);
+				} else if (SearchEnum.author_penname.getSearchField().equals(key)) {
+					field.setBoost(3f);
+				} else if (SearchEnum.category_sec_name.getSearchField().equals(key)) {
+					field.setBoost(2f);
+				} else if (SearchEnum.category_thr_name.getSearchField().equals(key)) {
+					field.setBoost(3f);
+				}
+//				else if (SearchEnum.intro.getSearchField().equals(key)) {
+//					field.setBoost(1f);
+//				}
 
+				document.add(field);
 			}
+
 			indexWriter.updateDocument(new Term(SearchContants.ID, id), document);
 			indexWriter.commit();
 
-			ramIndexWriter.updateDocument(new Term(SearchContants.ID, id), document);
-			ramIndexWriter.commit();
+//			ramIndexWriter.updateDocument(new Term(SearchContants.ID, id), document);
+//			ramIndexWriter.commit();
 			return true;
 		} catch (Exception e) {
 			logger.error("更新索引失败", e);
