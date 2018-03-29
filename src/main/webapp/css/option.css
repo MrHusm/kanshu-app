@@ -1,0 +1,99 @@
+		*{
+			margin:0;
+			padding:0;
+        }
+        body{
+            overflow-x:hidden;
+        }
+	   .container{
+           height: 100%;
+            padding-top: 0.21rem;
+            background-color: #fff;
+       }
+       html{
+           height: 100%;
+           background-color: #f6f5f5;
+       }
+       
+	   ul {
+		list-style:none;
+	   }
+	   
+	   #options{
+			
+            padding: 0 0.24rem;
+            height: 0.73rem;
+            text-align: center;
+            font-size: 0.32rem;
+	   }
+	   
+	   #options li{
+			float:left;
+			line-height:0.37rem;
+			padding:0.2rem 0.2rem;
+			cursor:pointer;
+	   }
+	   
+	   #options li.current{
+			background-color:#fff;
+			height:0.3rem;
+	   }
+	   
+	   #cards{
+           height: 100%;
+            clear:both;
+            background-color:#f6f5f5;
+	   }
+	   
+	   #cards li{
+            padding: 0.32rem 0.24rem;
+            height: 100%;
+            display:none;
+            
+       }
+       .current{
+           color: #3399ff;
+       }
+	   #cards li.current{
+            display:block;
+            height: 100%;
+       }
+       .contents{
+           display: flex;
+           justify-content:space-between;
+           flex-wrap: wrap;
+       }
+       .details{
+           float: left;
+           width: 3.1rem;
+           height: 1.64rem;
+           position: relative;
+           margin-bottom: 0.32rem;
+           background-image: url(/img/back.png);
+           background-repeat: no-repeat;
+           background-size:100% auto;
+           
+       }
+		.className{
+            position: absolute;
+            top: 0.34rem;
+            left: 0.29rem;
+            font-size:0.3rem;
+            color:#333;
+        }
+        .booksName{
+            position: absolute;
+            top: 0.86rem;
+            left: 0.3rem;
+            font-size:0.18rem;
+            color:#999;
+        }
+        .details img{
+            position: absolute;
+            width:1.28rem;
+            height: 1rem;
+            top: 0.35rem;
+            left: 1.54rem;
+
+        }
+        

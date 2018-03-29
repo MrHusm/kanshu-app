@@ -1,5 +1,6 @@
 package com.yxsd.kanshu.product.service.impl;
 
+import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
 import com.yxsd.kanshu.product.dao.IBookExpandDao;
@@ -9,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by lenovo on 2017/8/7.
@@ -32,6 +34,12 @@ public class BookExpandServiceImpl extends BaseServiceImpl<BookExpand, Long> imp
 
     @Override
     public BookExpand getMaxClickBook() {
-        return this.bookExpandDao.selectOne("BookExpandMapper.getMaxClickBook");
+        String key = RedisKeyConstants.CACHE_MAX_CLICK_BOOK_KEY;
+        BookExpand bookExpand = slaveRedisTemplate.opsForValue().get(key);
+        if(bookExpand == null){
+            bookExpand =  this.bookExpandDao.selectOne("BookExpandMapper.getMaxClickBook");
+            masterRedisTemplate.opsForValue().set(key, bookExpand, 12, TimeUnit.HOURS);
+        }
+        return bookExpand;
     }
 }

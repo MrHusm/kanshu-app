@@ -69,19 +69,20 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> impleme
                         }else if(category.getLevel() == 3){
                             condition.put("categoryThrId",category.getCategoryId());
                         }
-                        Book book = this.bookService.selectOneBookCondition(condition);
-                        if(book != null){
+                        List<Book> books = bookService.findListByParamsObjs(condition);
+                        if(CollectionUtils.isNotEmpty(books)){
+                            category.setBookNum(books.size());
                             list.add(category);
                         }
                     }
                     if(list.size() > 0){
                         categories = list;
-                        listMasterRedisTemplate.opsForValue().set(key, categories, 1, TimeUnit.HOURS);
+                        listMasterRedisTemplate.opsForValue().set(key, categories, 1, TimeUnit.DAYS);
                     }else{
                         categories = null;
                     }
                 }else{
-                    listMasterRedisTemplate.opsForValue().set(key, categories, 1, TimeUnit.HOURS);
+                    listMasterRedisTemplate.opsForValue().set(key, categories, 1, TimeUnit.DAYS);
                 }
             }
         }

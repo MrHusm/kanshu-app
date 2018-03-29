@@ -1,0 +1,90 @@
+*{margin: 0;
+  padding: 0;
+}
+.freeLogo{
+    width: 100%;
+    height: 0.81rem;
+    position: relative;
+
+}
+.freeLogo img{
+    width: 100%;
+    height: 0.81rem;
+    position: absolute;
+    overflow: hidden;
+}
+.recommend{
+    padding: 0  0.38rem;
+}
+
+.bookListBox{
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 0.4rem;
+    margin-top: 0.4rem;
+    border-bottom: 1px solid #dbdbdb;
+    position: relative;
+}
+.bookImg{
+    width:1.70rem;
+    height: 2.25rem;
+    margin-right:0.25rem;
+}
+.bookList{
+    font-size: 14px;
+    color: #999;
+    overflow: hidden;
+}
+.bookName{
+    color: #000000;
+    font-size: .3rem;
+    width: 70%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.bookInfo{
+    letter-spacing: 0.03rem;
+    margin: 8px 0 0;
+    height: 1.15rem;
+    font-size: .24rem;
+    overflow: hidden;
+    line-height: 0.4rem;
+    text-align: justify;
+    color: #999;
+}
+.authorBox{
+    flex-wrap: nowrap;
+    display: flex;
+    justify-content: space-between;
+}
+.authorNmae {
+    font-size: .24rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 0.3rem;
+    color: #999;
+}
+.bookGenrePublic {
+    border: 1px solid #999999;
+    border-radius: 4px;
+    float: right;
+    padding: 3px 4px;
+    margin-left: 10px;
+    box-sizing: border-box;
+    margin-top: 0.3rem;
+    font-size: 0.2rem;
+}.bookGenre > :last-child {
+    margin-left: 0;
+}
+.bookGenrePublicStyle {
+    border: 1px solid #82bce5;
+    color: #82bce5;
+}
+.bookGenrePublic {
+    border-radius: 4px;
+    float: right;
+    padding: 3px 4px;
+    box-sizing: border-box;
+}

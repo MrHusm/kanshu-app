@@ -3,18 +3,20 @@
 <mapper namespace="SpecialMapper" >
   <resultMap id="BaseResultMap" type="com.yxsd.kanshu.portal.model.Special" >
     <id column="special_id" property="specialId" jdbcType="BIGINT" />
-    <result column="special_type" property="specialType" jdbcType="SMALLINT" />
-    <result column="special_name" property="specialName" jdbcType="VARCHAR" />
-    <result column="special_content" property="specialContent" jdbcType="VARCHAR" />
-    <result column="special_index" property="specialIndex" jdbcType="SMALLINT" />
+    <result column="type" property="type" jdbcType="SMALLINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="index" property="index" jdbcType="INTEGER" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <resultMap id="withImgInfoMap" extends="BaseResultMap" type="com.yxsd.kanshu.portal.model.Special">
     	<collection property="specialImgs" ofType="com.yxsd.kanshu.portal.model.SpecialImg">  
             <id column="special_img_id" property="specialImgId"/>  
-            <result column="special_pic" property="specialPic"/>  
-            <result column="img_url" property="imgUrl"/>  
+            <result column="img_url" property="imgUrl"/>
+            <result column="i_type" property="type" jdbcType="INTEGER" />
+            <result column="target" property="target" jdbcType="VARCHAR" />
+            <result column="title" property="title" jdbcType="VARCHAR" />
             <result column="special_id" property="specialId"/>  
             <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     		<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />  
@@ -22,30 +24,26 @@
   </resultMap>
 
   <sql id="Base_Where">
-    <if test="specialType != null"> and special_type= #{specialType}</if>
+    <if test="type != null"> and type= #{type}</if>
   </sql>
 
   <sql id="Base_Column_List" >
-    special_id, special_type, special_name, special_content, special_index, create_date, 
-    update_date
+    special_id, type, name, content, index, create_date,update_date
   </sql>
   
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
-    from special
-    where special_id = #{specialId,jdbcType=BIGINT}
+    from special where special_id = #{specialId,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from special
     where special_id = #{specialId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yxsd.kanshu.portal.model.Special" >
-    insert into special (special_id, special_type, special_name, 
-      special_content, special_index, create_date, 
-      update_date)
-    values (#{specialId,jdbcType=BIGINT}, #{specialType,jdbcType=SMALLINT}, #{specialName,jdbcType=VARCHAR}, 
-      #{specialContent,jdbcType=VARCHAR}, #{specialIndex,jdbcType=SMALLINT}, #{createDate,jdbcType=TIMESTAMP}, 
+    insert into special (special_id, type, name,content, index, create_date, update_date)
+    values (#{specialId,jdbcType=BIGINT}, #{type,jdbcType=SMALLINT}, #{name,jdbcType=VARCHAR},
+      #{content,jdbcType=VARCHAR}, #{index,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP},
       #{updateDate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yxsd.kanshu.portal.model.Special" >
@@ -54,17 +52,17 @@
       <if test="specialId != null" >
         special_id,
       </if>
-      <if test="specialType != null" >
-        special_type,
+      <if test="type != null" >
+        type,
       </if>
-      <if test="specialName != null" >
-        special_name,
+      <if test="name != null and name !=''" >
+        name,
       </if>
-      <if test="specialContent != null" >
-        special_content,
+      <if test="content != null and content != ''" >
+        content,
       </if>
-      <if test="specialIndex != null" >
-        special_index,
+      <if test="index != null" >
+        index,
       </if>
       <if test="createDate != null" >
         create_date,
@@ -77,17 +75,17 @@
       <if test="specialId != null" >
         #{specialId,jdbcType=BIGINT},
       </if>
-      <if test="specialType != null" >
-        #{specialType,jdbcType=SMALLINT},
+      <if test="type != null" >
+        #{type,jdbcType=SMALLINT},
       </if>
-      <if test="specialName != null" >
-        #{specialName,jdbcType=VARCHAR},
+      <if test="name != null and name != ''" >
+        #{name,jdbcType=VARCHAR},
       </if>
-      <if test="specialContent != null" >
-        #{specialContent,jdbcType=VARCHAR},
+      <if test="content != null and content != ''" >
+        #{content,jdbcType=VARCHAR},
       </if>
-      <if test="specialIndex != null" >
-        #{specialIndex,jdbcType=SMALLINT},
+      <if test="index != null" >
+        #{index,jdbcType=INTEGER},
       </if>
       <if test="createDate != null" >
         #{createDate,jdbcType=TIMESTAMP},
@@ -100,17 +98,17 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.portal.model.Special" >
     update special
     <set >
-      <if test="specialType != null" >
-        special_type = #{specialType,jdbcType=SMALLINT},
+      <if test="type != null" >
+        type = #{type,jdbcType=SMALLINT},
       </if>
-      <if test="specialName != null" >
-        special_name = #{specialName,jdbcType=VARCHAR},
+      <if test="name != null and name != ''" >
+        name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="specialContent != null" >
-        special_content = #{specialContent,jdbcType=VARCHAR},
+      <if test="content != null and content != ''" >
+        content = #{content,jdbcType=VARCHAR},
       </if>
-      <if test="specialIndex != null" >
-        special_index = #{specialIndex,jdbcType=SMALLINT},
+      <if test="index != null" >
+        index = #{index,jdbcType=INTEGER},
       </if>
       <if test="createDate != null" >
         create_date = #{createDate,jdbcType=TIMESTAMP},
@@ -123,16 +121,16 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yxsd.kanshu.portal.model.Special" >
     update special
-    set special_type = #{specialType,jdbcType=SMALLINT},
-      special_name = #{specialName,jdbcType=VARCHAR},
-      special_content = #{specialContent,jdbcType=VARCHAR},
-      special_index = #{specialIndex,jdbcType=SMALLINT},
+    set type = #{type,jdbcType=SMALLINT},
+      name = #{name,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      index = #{index,jdbcType=INTEGER},
       create_date = #{createDate,jdbcType=TIMESTAMP},
       update_date = #{updateDate,jdbcType=TIMESTAMP}
     where special_id = #{specialId,jdbcType=BIGINT}
   </update>
   <select id="getAll" resultMap="withImgInfoMap" parameterType="map">
-    select s.* , i.*
+    select s.* , i.*,i.type as i_type
     from special s
     LEFT JOIN special_img i
     ON s.special_id = i.special_id where 1=1

@@ -11,6 +11,17 @@
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
+
+    <resultMap id="withImgInfoMap" type="com.yxsd.kanshu.product.model.Category" extends="BaseResultMap" >
+        <collection property="categoryImg" ofType="com.yxsd.kanshu.product.model.CategoryImg">
+            <id column="id" property="id" jdbcType="BIGINT" />
+            <result column="category_id" property="categoryId" jdbcType="BIGINT" />
+            <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+            <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+            <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+        </collection>
+    </resultMap>
+
     <sql id="Base_Where">
         <if test="categoryId != null"> and category_id= #{categoryId}</if>
         <if test="name != null and name != ''"> and name= #{name}</if>
@@ -18,8 +29,20 @@
         <if test="copyrightCode != null and copyrightCode != ''"> and copyright_code= #{copyrightCode}</if>
         <if test="copyrightCategoryId != null"> and copyright_category_id= #{copyrightCategoryId}</if>
     </sql>
+
+    <sql id="Img_Base_Where">
+        <if test="categoryId != null"> and c.category_id= #{categoryId}</if>
+        <if test="name != null and name != ''"> and c.name= #{name}</if>
+        <if test="pid != null"> and c.pid= #{pid}</if>
+    </sql>
+
+
     <sql id="Base_Column_List">
         category_id,name,level,pid,copyright_code,copyright_category_id,create_date,update_date
+    </sql>
+
+    <sql id="Column_With_Img_List" >
+        c.category_id,c.name,c.level,c.pid,c.copyright_code,c.copyright_category_id,c.create_date,c.update_date,i.img_url
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -95,12 +118,11 @@
         where category_id = #{categoryId,jdbcType=BIGINT}
     </update>
 
-    <select id="getAll" resultMap="BaseResultMap" parameterType="map">
-        select
-        <include refid="Base_Column_List" />
-        from category where 1=1
-        <include refid="Base_Where" />
-        order by category_id
+    <select id="getAll" resultMap="withImgInfoMap" parameterType="map">
+        select c.*,i.*
+        from category c left join category_img i on c.category_id = i.category_id where 1=1
+        <include refid="Img_Base_Where" />
+        order by c.category_id
     </select>
     <select id="pageCount" resultType="java.lang.Integer" parameterType="map">
         select count(1) from category where 1=1
