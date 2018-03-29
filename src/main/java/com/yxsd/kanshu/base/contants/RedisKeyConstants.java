@@ -47,8 +47,18 @@ public class RedisKeyConstants {
 
     //充值信息key
     public final static String CACHE_RECHARGE_ITEM_LIST_KEY = "recharge_item_list_type_";
-    
+
+    //搜索词推荐key
+    public final static String CACHE_SEARCH_WORD_KEY = "search_word";
+
     public final static String CACHE_SPECIAL_KEY="special_";
+
+
+    //渠道图书默认计费点key
+    public final static String CACHE_BOOK_CHANNEL_POINT_KEY = "book_channel_point";
+
+    //图书计费点key
+    public final static String CACHE_BOOK_POINT_MAP_KEY = "book_point_map";
 
 
 }

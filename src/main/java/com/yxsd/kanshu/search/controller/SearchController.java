@@ -1,5 +1,6 @@
 package com.yxsd.kanshu.search.controller;
 
+import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.base.utils.PageFinder;
@@ -7,9 +8,12 @@ import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.model.DriveBook;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
 import com.yxsd.kanshu.product.model.Book;
+import com.yxsd.kanshu.product.model.Chapter;
 import com.yxsd.kanshu.product.service.IBookService;
+import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.search.manager.IndexManager;
 import com.yxsd.kanshu.search.service.IndexService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +46,9 @@ public class SearchController {
 
 	@Resource(name = "bookService")
 	IBookService bookService;
+
+	@Resource(name="chapterService")
+	IChapterService chapterService;
 
 	@Resource(name = "indexService")
 	IndexService indexService;
@@ -129,6 +136,10 @@ public class SearchController {
 		String page = request.getParameter("page");
 		String syn = request.getParameter("syn") == null ? "0" : request.getParameter("syn");
 		model.addAttribute("syn", syn);
+		String version = request.getParameter("version");
+		if(StringUtils.isNotBlank(version)){
+			model.addAttribute("version",Integer.parseInt(version.replace(".","")));
+		}
 
 		// 未传page默认查首页
 		if (StringUtils.isBlank(page)) {
@@ -144,6 +155,7 @@ public class SearchController {
 			//if (isMessyCode(searchText)) {
 				searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
 			//}
+			searchText = "穿越";
 			model.addAttribute("searchText",searchText);
 			logger.info("search被调用，条件为page:" + page + ",searchText:" + searchText);
 
@@ -173,6 +185,12 @@ public class SearchController {
 					}
 					Book book = this.bookService.getBookById(Long.parseLong(id));
 					if (book != null) {
+						if(book.getTitle().equals(searchText) && books.size() == 0){
+							List<Chapter> chapters = this.chapterService.getChaptersByBookId(book.getBookId(),book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+							if(CollectionUtils.isNotEmpty(chapters)){
+								model.addAttribute("maxChapterIndex",chapters.get(chapters.size()-1).getIdx());
+							}
+						}
 						books.add(book);
 					}
 				}

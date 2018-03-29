@@ -9,11 +9,12 @@ import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.*;
 import com.yxsd.kanshu.pay.service.IRechargeItemService;
 import com.yxsd.kanshu.product.model.Book;
-import com.yxsd.kanshu.product.model.BookExpand;
 import com.yxsd.kanshu.product.model.Chapter;
 import com.yxsd.kanshu.product.service.IBookExpandService;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.IChapterService;
+import com.yxsd.kanshu.search.model.SearchWord;
+import com.yxsd.kanshu.search.service.ISearchWordService;
 import com.yxsd.kanshu.ucenter.model.*;
 import com.yxsd.kanshu.ucenter.service.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -83,6 +84,9 @@ public class UserController extends BaseController {
 
     @Resource(name="userVipService")
     IUserVipService userVipService;
+
+    @Resource(name="searchWordService")
+    ISearchWordService searchWordService;
 
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate masterRedisTemplate;
@@ -597,6 +601,7 @@ public class UserController extends BaseController {
                     user = userService.getUserByUserId(Long.parseLong(userId));
                 }
             }
+
             if(StringUtils.isNotBlank(nickName) && user == null){
                 user = userService.findUniqueByParams("nickName",nickName);
             }
@@ -657,18 +662,24 @@ public class UserController extends BaseController {
             VersionInfo versionInfo = this.versionInfoService.getVersionInfoByChannel(Integer.parseInt(channel));
             sender.put("versionStatus",0);
             if(versionInfo != null){
-                if(versionInfo.getType() == 1){
-                    //强制更新
+                if(versionInfo.getType() == 1 || versionInfo.getVersion() > Integer.parseInt(version.replace(".",""))){
+                    //强制更新 或手动更新
                     sender.put("versionStatus",1);
-                }
-                if(versionInfo.getVersion() > Integer.parseInt(version.replace(".",""))){
-                    //更新
-                    sender.put("versionStatus",1);
+                    sender.put("versionTitle",versionInfo.getTitle());
+                    sender.put("versionContent",versionInfo.getContent());
+                    sender.put("versionUrl",versionInfo.getUrl());
                 }
             }
-            BookExpand bookExpand = this.bookExpandService.getMaxClickBook();
-            if(bookExpand != null){
-                sender.put("searchBook",bookExpand.getBookName());
+            SearchWord searchWord = this.searchWordService.getSearchWord();
+            if(searchWord != null){
+                if(Integer.parseInt(version.replace(".","")) >= 120){
+                    sender.put("searchBook",searchWord.getSearchWords());
+                }else{
+                    if(StringUtils.isNotBlank(searchWord.getSearchWords())){
+                        sender.put("searchBook",searchWord.getSearchWords().split("\\|")[0]);
+                    }
+                }
+                sender.put("searchHotWords", searchWord.getSearchHotWords());
             }
             UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
             if(userReceive != null){
@@ -676,11 +687,18 @@ public class UserController extends BaseController {
                 sender.put("weiboStatus", userReceive.getWeiboStatus() != null && userReceive.getWeiboStatus() == 1 ? 1 : 0);
                 sender.put("weixinStatus", userReceive.getWeixinStatus() != null && userReceive.getWeixinStatus() == 1 ? 1 : 0);
                 sender.put("telStatus", userReceive.getTelStatus() != null && userReceive.getTelStatus() == 1 ? 1 : 0);
+                if(userReceive.getVipStatus() != null && userReceive.getVipStatus() == 1) {
+                    //用户领取过新手vip礼包或参加完新手签到活动
+                    sender.put("receiveStatus", 1);
+                }else{
+                    sender.put("receiveStatus", 0);
+                }
             }else{
                 sender.put("qqStatus", 0);
                 sender.put("weiboStatus",0);
                 sender.put("weixinStatus",0);
                 sender.put("telStatus",0);
+                sender.put("receiveStatus", 0);
             }
            sender.put("user",user);
            sender.put("userAccount",userAccount);
@@ -1014,7 +1032,7 @@ public class UserController extends BaseController {
             }else{
                 sender.put("receiveStatus",0);
                 //新手礼包天数3
-                sender.put("days",3);
+                sender.put("days",1);
             }
             sender.success(response);
         }catch (Exception e){
