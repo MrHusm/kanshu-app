@@ -6,6 +6,9 @@
         <result column="version" property="version" jdbcType="INTEGER" />
         <result column="channel" property="channel" jdbcType="INTEGER" />
         <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -14,7 +17,7 @@
         <if test="channel != null"> and channel= #{channel}</if>
     </sql>
     <sql id="Base_Column_List">
-        id,version,channel,`type`,create_date,update_date
+        id,version,channel,`type`,title,content,url,create_date,update_date
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
@@ -33,6 +36,9 @@
             <if test="version != null">version,</if>
             <if test="channel != null">channel,</if>
             <if test="type != null">`type`,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="url != null and url != ''">url,</if>
             <if test="createDate != null">create_date,</if>
             <if test="updateDate != null">update_date,</if>
         </trim>
@@ -48,6 +54,15 @@
             </if>
             <if test="type != null">
                 #{type,jdbcType=INTEGER},
+            </if>
+            <if test="title != null and title != ''">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null and content != ''">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null and url != ''">
+                #{url,jdbcType=VARCHAR},
             </if>
             <if test="createDate != null">
                 #{createDate,jdbcType=TIMESTAMP},
@@ -69,6 +84,15 @@
             </if>
             <if test="type != null">
                 `type` = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null and url != ''">
+                url = #{url,jdbcType=VARCHAR},
             </if>
             <if test="updateDate != null">
                 update_date= #{updateDate,jdbcType=TIMESTAMP},

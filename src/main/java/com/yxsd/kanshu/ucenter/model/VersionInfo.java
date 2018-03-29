@@ -27,6 +27,21 @@ public class VersionInfo implements Serializable{
      */
     private Integer type;
 
+    /**
+     * 更新文案标题
+     */
+    private String title;
+
+    /**
+     * 更新文案
+     */
+    private String content;
+
+    /**
+     * 更新包下载地址
+     */
+    private String url;
+
     private Date updateDate;
 
     private Date createDate;
@@ -77,5 +92,29 @@ public class VersionInfo implements Serializable{
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
