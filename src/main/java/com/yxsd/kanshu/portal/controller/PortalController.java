@@ -4,7 +4,9 @@ import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.model.DriveBook;
+import com.yxsd.kanshu.portal.model.Special;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
+import com.yxsd.kanshu.portal.service.ISpecialService;
 import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.model.Category;
 import com.yxsd.kanshu.product.service.IBookService;
@@ -35,8 +37,7 @@ import java.util.Map;
 public class PortalController extends BaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(PortalController.class);
-    
-    
+
     @Resource(name="driveBookService")
     IDriveBookService driveBookService;
 
@@ -45,6 +46,9 @@ public class PortalController extends BaseController{
 
     @Resource(name="bookService")
     IBookService bookService;
+
+    @Resource(name="specialService")
+    ISpecialService specialService;
 
 
     /**
@@ -58,8 +62,12 @@ public class PortalController extends BaseController{
     public String portalIndex(HttpServletResponse response, HttpServletRequest request, Model model) {
         String page = request.getParameter("page");
         String type = request.getParameter("type");
+        String version = request.getParameter("version");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
         model.addAttribute("syn",syn);
+        if(StringUtils.isNotBlank(version)){
+            model.addAttribute("version",Integer.parseInt(version.replace(".","")));
+        }
         Query query = new Query();
         if(StringUtils.isNotBlank(page)){
             query.setPage(Integer.parseInt(page));
@@ -72,18 +80,26 @@ public class PortalController extends BaseController{
             type = "1";
         }
         PageFinder<DriveBook> pageFinder = this.driveBookService.findPageWithCondition(Integer.parseInt(type),query);
-        //榜单封面图
-        List<DriveBook> boyDriveBooks = this.driveBookService.getDriveBooks(2,1);
-        if(CollectionUtils.isNotEmpty(boyDriveBooks)){
-            model.addAttribute("boyImg",boyDriveBooks.get(0).getBook().getCoverUrl());
-        }
-        List<DriveBook> girlDriveBooks = this.driveBookService.getDriveBooks(3,1);
-        if(CollectionUtils.isNotEmpty(girlDriveBooks)){
-            model.addAttribute("girlImg",girlDriveBooks.get(0).getBook().getCoverUrl());
-        }
-        List<DriveBook> secDriveBooks = this.driveBookService.getDriveBooks(4,1);
-        if(CollectionUtils.isNotEmpty(secDriveBooks)){
-            model.addAttribute("secImg",secDriveBooks.get(0).getBook().getCoverUrl());
+        if(query.getPage() == 1){
+            //第一页面查询专题数据
+            List<Special> specials = this.specialService.findListByParamsObjs(null);
+            List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+            for(DriveBook driveBook : pageFinder.getData()){
+                Map<String,Object> map = new HashMap<String,Object>();
+                map.put("type",1);
+                map.put("data",driveBook);
+                result.add(map);
+            }
+            if(CollectionUtils.isNotEmpty(specials)){
+                for(int i = 0; i < specials.size(); i++){
+                    Special special = specials.get(i);
+                    Map<String,Object> map = new HashMap<String,Object>();
+                    map.put("type",2);
+                    map.put("data",special);
+                    result.add(special.getIndex()+i,map);
+                }
+            }
+            model.addAttribute("result",result);
         }
         model.addAttribute("pageFinder",pageFinder);
         model.addAttribute("type",type);
@@ -107,19 +123,6 @@ public class PortalController extends BaseController{
             map.put(parentCategory.getName(),categories);
             data.add(map);
         }
-        //榜单封面图
-        List<DriveBook> saleDriveBooks = this.driveBookService.getDriveBooks(6,1);
-        if(CollectionUtils.isNotEmpty(saleDriveBooks)){
-            model.addAttribute("saleImg",saleDriveBooks.get(0).getBook().getCoverUrl());
-        }
-        List<DriveBook> fullDriveBooks = this.driveBookService.getDriveBooks(7,1);
-        if(CollectionUtils.isNotEmpty(fullDriveBooks)){
-            model.addAttribute("fullImg",fullDriveBooks.get(0).getBook().getCoverUrl());
-        }
-        List<DriveBook> newDriveBooks = this.driveBookService.getDriveBooks(8,1);
-        if(CollectionUtils.isNotEmpty(newDriveBooks)){
-            model.addAttribute("newImg",newDriveBooks.get(0).getBook().getCoverUrl());
-        }
         model.addAttribute("data",data);
         return "/portal/category_index";
     }
@@ -139,6 +142,10 @@ public class PortalController extends BaseController{
         String isFull = request.getParameter("isFull");
         String page = request.getParameter("page");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+        String version = request.getParameter("version");
+        if(StringUtils.isNotBlank(version)){
+            model.addAttribute("version",Integer.parseInt(version.replace(".","")));
+        }
 
         Category category = this.categoryService.findUniqueByParams("categoryId",categoryId);
         List<Category> childCategorys = this.categoryService.getCategorysByPid(Long.parseLong(categoryId),1);
@@ -193,6 +200,10 @@ public class PortalController extends BaseController{
         logger.info("tag:"+tag);
         String page = request.getParameter("page");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+        String version = request.getParameter("version");
+        if(StringUtils.isNotBlank(version)){
+            model.addAttribute("version",Integer.parseInt(version.replace(".","")));
+        }
 
         Query query = new Query();
         if(StringUtils.isNotBlank(page)){
@@ -202,7 +213,7 @@ public class PortalController extends BaseController{
         }
         query.setPageSize(20);
         Book condition = new Book();
-        condition.setTag("%"+tag+"%");
+        condition.setTag(tag+"%");
         PageFinder<Book> pageFinder = this.bookService.findPageFinderWithExpandObjs(condition, query);
 
         model.addAttribute("pageFinder",pageFinder);
@@ -223,6 +234,10 @@ public class PortalController extends BaseController{
         String page = request.getParameter("page");
         String type = request.getParameter("type");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
+        String version = request.getParameter("version");
+        if(StringUtils.isNotBlank(version)){
+            model.addAttribute("version",Integer.parseInt(version.replace(".","")));
+        }
         model.addAttribute("syn",syn);
         Query query = new Query();
         if(StringUtils.isNotBlank(page)){
