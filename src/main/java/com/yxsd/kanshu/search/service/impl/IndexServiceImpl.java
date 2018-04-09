@@ -106,8 +106,10 @@ public class IndexServiceImpl implements IndexService {
 			try {
 				logger.info("开始创建索引,start=" + pageFinder.getPageNo() + "页");
 				for (Book book : pageFinder.getData()) {
-					IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME,
-							YuewenJobController.setIndexField(book));
+					if(book.getShelfStatus() == 1){
+						IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME,
+								YuewenJobController.setIndexField(book));
+					}
 				}
 				logger.info("结束创建索引,创建成功,start=" + pageFinder.getPageNo() + "页");
 			} catch (Exception e) {
@@ -126,9 +128,11 @@ public class IndexServiceImpl implements IndexService {
 		List<Book> books = this.bookService.findListByParamsObjs(null);
 		for (int i = 0; i< books.size() ; i++) {
 			Book book = books.get(i);
-			logger.info("正在创建搜索索引：《"+book.getTitle()+"》");
-			IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME,
-					YuewenJobController.setIndexField(book));
+			if(book.getShelfStatus() == 1) {
+				logger.info("正在创建搜索索引：《" + book.getTitle() + "》");
+				IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME,
+						YuewenJobController.setIndexField(book));
+			}
 		}
 		logger.info("结束全局创建索引");
 	}
