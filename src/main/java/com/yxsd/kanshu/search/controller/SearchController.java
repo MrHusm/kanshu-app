@@ -1,5 +1,6 @@
 package com.yxsd.kanshu.search.controller;
 
+import com.yxsd.kanshu.base.contants.Constants;
 import com.yxsd.kanshu.base.contants.SearchContants;
 import com.yxsd.kanshu.base.contants.SearchEnum;
 import com.yxsd.kanshu.base.utils.PageFinder;
@@ -7,9 +8,12 @@ import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.model.DriveBook;
 import com.yxsd.kanshu.portal.service.IDriveBookService;
 import com.yxsd.kanshu.product.model.Book;
+import com.yxsd.kanshu.product.model.Chapter;
 import com.yxsd.kanshu.product.service.IBookService;
+import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.search.manager.IndexManager;
 import com.yxsd.kanshu.search.service.IndexService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +46,9 @@ public class SearchController {
 
 	@Resource(name = "bookService")
 	IBookService bookService;
+
+	@Resource(name="chapterService")
+	IChapterService chapterService;
 
 	@Resource(name = "indexService")
 	IndexService indexService;
@@ -136,6 +142,7 @@ public class SearchController {
 		}
 	}
 
+
 	/**
 	 * 搜索
 	 * @param response
@@ -151,6 +158,10 @@ public class SearchController {
 		String page = request.getParameter("page");
 		String syn = request.getParameter("syn") == null ? "0" : request.getParameter("syn");
 		model.addAttribute("syn", syn);
+		String version = request.getParameter("version");
+		if(StringUtils.isNotBlank(version)){
+			model.addAttribute("version",Integer.parseInt(version.replace(".","")));
+		}
 
 		// 未传page默认查首页
 		if (StringUtils.isBlank(page)) {
@@ -160,12 +171,13 @@ public class SearchController {
 		try {
 			// 查询为空直接返回
 			if (StringUtils.isBlank(searchText)) {
-				response.sendRedirect("/search/searchIndex.go?type=1");
-				return null;
+				return "/search/search_no_result";
 			}
-			//if (isMessyCode(searchText)) {
-				searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
-			//}
+
+//			String searchTextCode = URLEncoder.encode(searchText,"UTF-8");
+//			model.addAttribute("searchTextCode",searchTextCode);
+//			searchText = URLDecoder.decode(searchText,"UTF-8");
+			searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
 			model.addAttribute("searchText",searchText);
 			logger.info("search被调用，条件为page:" + page + ",searchText:" + searchText);
 
@@ -195,6 +207,12 @@ public class SearchController {
 					}
 					Book book = this.bookService.getBookById(Long.parseLong(id));
 					if (book != null) {
+						if(book.getTitle().equals(searchText) && books.size() == 0){
+							List<Chapter> chapters = this.chapterService.getChaptersByBookId(book.getBookId(),book.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+							if(CollectionUtils.isNotEmpty(chapters)){
+								model.addAttribute("maxChapterIndex",chapters.get(chapters.size()-1).getIdx());
+							}
+						}
 						books.add(book);
 					}
 				}
@@ -202,25 +220,16 @@ public class SearchController {
 				return "/search/searchResult";
 			} else {
 				if("0".equals(syn)){
-					response.sendRedirect("/search/searchIndex.go?type=1");
-					return null;
+					return "/search/search_no_result";
 				}else{
-					model.addAttribute("searchBooks", null);
 					return "/search/searchResult";
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("search出错，条件为：" + searchText, e);
-			try {
-				response.sendRedirect("/search/searchIndex.go?type=1");
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			return "/search/search_no_result";
 		}
-		// 返回为空界面
-		return null;
-
 	}
 
 	public static boolean isMessyCode(String strName) {

@@ -1,0 +1,123 @@
+/*初始化样式*/
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td { margin:0; padding:0; }
+body { background:#fff; color:#4c4c4c; font-size:14px; font-family: Verdana, Arial, Helvetica, sans-serif; }
+td,th,caption { font-size:14px; }
+h1, h2, h3, h4, h5, h6 { font-weight:normal; font-size:100%; }
+address, caption, cite, code, dfn, em, strong, th, var { font-style:normal; font-weight:normal;}
+a { color:#4c4c4c; text-decoration:none; }
+img { border:none; }
+ol,ul,li { list-style:none; }
+input, textarea, select, button { font:14px Verdana,Helvetica,Arial,sans-serif; }
+table { border-collapse:collapse; }
+.clearfix:after {content: "."; display: block; height:0; clear:both; visibility: hidden;}
+.clearfix { *zoom:1; }
+
+/*index*/
+.content{ background-color: #f4f4f4;}
+.bannerImg .swiper-slide{ width: 100%; height: 150px;}
+.bannerImg .swiper-slide img{width: 100%; height: 100%;}
+.search input{ width:100%; -webkit-box-sizing:border-box; height: 35px; line-height: 35px; background-color: #f4f4f4; border: none; -webkit-border-radius: 20px; padding-left: 35px;}
+.indexNav{ display: -webkit-box; background-color: #fff; margin-bottom: 10px; padding: 18px 0 18px 0;}
+.indexNav li{ width: 20%; text-align: center;}
+.indexNav li .navImg1{ width: 32px; height: 30px;}
+.indexNav li .navImg2{ width: 22px; height: 30px;}
+.indexNav li .navImg3{ width: 22px; height: 30px;}
+.indexNav li .navImg4{ width: 26px; height: 30px;}
+.indexNav li .navImg5{ width: 27px; height: 30px;}
+.indexNav li p{ padding-top: 15px;}
+.bookList{ background-color: #fff;}
+.bookList ul li{display: -webkit-box; margin: 0 10px; border-bottom: 1px solid #ddd; padding: 18px 0; position: relative;}
+.bookList ul li:last-child{ border-bottom: none;}
+.bookList ul li .bookImg{ width: 85px; height: 112px; margin-left: 10px;}
+.bookImg img{ width: 100%; height: 100%;}
+.bookList ul li .bookCon{ -webkit-box-flex: 1; padding-left: 13px;}
+.bookList .hTitle{  padding:10px 0 0 10px; margin:10px 0 0 20px; background: url(../img/h_title.png) no-repeat left 14px; -webkit-background-size: 2px 12px;}
+.bookCon h3{padding-bottom: 10px;font-size: 16px;}
+.bookCon p{ display: -webkit-box; height:53px; line-height: 18px; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp: 3; -webkit-box-orient: vertical; color:#999; font-size: 13px; letter-spacing: 1px;}
+.bookInstr{ position: relative; left:0px; bottom:-12px; display: flex; flex-wrap: nowrap; justify-content:space-between; width: 100%;white-space:nowrap;text-overflow:ellipsis;}
+.bookInstr span {display: block; -webkit-box-flex: 1; color: #999; overflow: hidden; text-overflow: ellipsis;max-width: calc(100vw - 6rem - (176rem / 16));}
+.bookInstr .bookKey{ display: -webkit-box; padding-right: 10px;white-space:nowrap;text-overflow:ellipsis;}
+.bookKey b{ padding:1px 5px; border: 1px solid #999; -webkit-border-radius: 4px; color:#999; font-size: 12px;font-weight:normal;}
+.bookKey b:first-child{ border: 1px solid #82bce5; color:#82bce5;}
+.special{ padding: 20px; background-color: #fff; margin-bottom: 10px; margin-top: 10px;}
+.special h3{ padding-left: 10px; background: url(../img/h_title.png) no-repeat left center; -webkit-background-size: 2px 12px;font-size: 18px}
+.special p{ line-height: 18px; padding: 10px 0 8px 0; color: #999;}
+.special .specialImg{ width: 100%; height: 112px;}
+.specialImg img{ width: 100%; height: 100%;}
+.ad { padding: 8px 15px 8px 20px; background-color: #fff; margin-bottom: 10px; margin-top: 10px; display: -webkit-box;}
+.ad .adImg{ width: 50%; margin-right: 5px; -webkit-box-sizing: border-box; height: 65px;}
+.adImg img{ width: 100%; height: 100%;}
+
+.topAd{ width: 100%; height: 40px;}
+.topAd img{ width: 100%; height: 100%;}
+
+.classifyList{padding: 10px 10px 0 10px; background-color: #fff;}
+.classifyList ul{border-bottom: 1px solid #ddd;}
+.classifyList ul li{ padding:0 15px 15px 0; color: #ccc; float: left; color: #999;}
+.classifyList ul li.active{ color:#82bce5}
+.chooseType{ padding: 10px 10px 10px 0; display: -webkit-box;}
+.chooseType span{ display: inline-block; padding-right: 15px;color: #999;}
+.chooseType span.active{ color: #82bce5;}
+
+.searchResult{margin-bottom: 10px;  background-color: #fff;}
+.searchBook .bookImg{ width: 85px; height: 112px;}
+/*.bookImg img{ width: 100%; height: 100%;}*/
+.searchBook{display: -webkit-box; margin: 0 10px; padding: 25px 0;}
+.searchBook .bookCon{ -webkit-box-flex: 1; position: relative; padding-left: 13px;}
+/*.bookCon h3{padding-bottom: 10px;}*/
+/*.bookCon p{  height:53px; line-height: 18px; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp: 3; -webkit-box-orient: vertical;}
+.bookInstr{ position: absolute; left:15px; bottom:0; display: -webkit-box; width: 100%;}
+.bookInstr span {display: block; -webkit-box-flex: 1; width: 100%;}
+.bookInstr .bookKey{ display: -webkit-box; padding-right: 20px;}
+.bookKey b{ padding: 3px 5px; border: 1px solid #ccc; -webkit-border-radius: 4px;}
+.bookKey b:first-child{ border: 1px solid #53c4ff;}*/
+.searchbtn{ display: -webkit-box; padding: 0 10px 10px 8px; position: absolute; bottom: 0; left:0; width: 96%;}
+.searchbtn input{ width: 32%; display: block; background-color: #f4f4f4; -webkit-border-radius: 4px; color: #53C4FF; border: none; padding: 5px 0;outline: none;}
+.searchbtn input:first-child{ margin-right: 2%; background-color: #53C4FF; color: #fff;}
+.searchbtn input:last-child{ margin-left: 2%;}
+
+.topNav{ display: -webkit-box; background-color: #fff; padding: 10px 15px 0 15px;}
+.topNav li{ padding-bottom: 5px; margin-right: 25px;}
+.topNav li.active{ border-bottom: 1px solid #82bce5;}
+.manList{padding: 15px;}
+.manList li{ width: 48%; float: left; background:url(../img/back.png) no-repeat; -webkit-background-size: 100% auto; padding: 15px 10px; display: none; -webkit-box-sizing: border-box; margin-bottom: 4%;}
+.manList li:nth-child(2n){ margin-left: 2%;}
+.manList li:nth-child(2n+1){ margin-right: 2%;}
+.manList li.current{display: -webkit-box}
+.manCon { -webkit-box-flex: 1; }
+.manCon h3{ padding-bottom: 2px;}
+.manCon p {color:#999; font-size: 12px;}
+.mamImg{ width: 64px; height: 50px;}
+.mamImg img{ width: 100%; height: 100%;}
+
+.topSuspen{ text-align: center; height: 30px; line-height: 30px; position: fixed; top:-30px; left: 0; width: 100%; background-color:#fff; transition: top .5s ease; -moztransition: top .5s ease;  -webkit-transition: top .5s ease; z-index:9999}
+.topSuspen img{ width: 12px; height: 6px; padding-left: 10px;}
+.topSuspen span{ color:#82bce5}
+.topOpen{ position: fixed; top:0; left: 0; width: 100%; background-color:#fff; border-bottom: 1px solid #ddd; display: none; z-index:9999}
+
+.bookLoad { color: #8c8c8c; text-align: center; height: 30px; line-height: 30px; margin: 10px 15px 0;  font-size: 16px;}
+.loadGif { height: 20px; vertical-align: middle; position: relative; top: -1px;}
+.loadTxt{ font-size: 12px;}
+@-webkit-keyframes rotation{
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(360deg);}
+}
+.bookLoad img{
+    -webkit-transform: rotate(360deg);
+    animation: rotation 1s linear infinite;
+    -moz-animation: rotation 1s linear infinite;
+    -webkit-animation: rotation 1s linear infinite;
+    -o-animation: rotation 1s linear infinite;
+}
+
+.otherBook{ background-color: #fff; margin-bottom: 10px;}
+.otherBook .hTitle{  padding:10px 0 0 10px; margin:10px 0 0 20px; background: url(../img/h_title.png) no-repeat left 14px; -webkit-background-size: 2px 12px;}
+.otherList{ padding: 15px; }
+.otherList li{ width: 30%; margin:0 5% 5% 0; float: left;}
+.otherList li:nth-child(3n){ margin-right: 0;}
+.otherList li:nth-child(3n) .coverImg{ float: right;}
+.otherList li:nth-child(3n+2) .coverImg{ position: relative; left: 50%; margin-left: -43px;}
+.coverImg{ width: 85px; height: 116px; padding-bottom: 30px;}
+.coverImg img{ width: 100%; height: 100%;}
+.coverImg p{ display:-webkit-box; height:14px; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp:1; -webkit-box-orient: vertical; color:#666; font-size: 12px; padding-top: 10px;}
+.readFinish{ text-align: center; padding: 50px 0; font-size: 18px; color: #333; background-color: #fff;}

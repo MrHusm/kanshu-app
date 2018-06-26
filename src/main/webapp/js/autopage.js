@@ -176,9 +176,7 @@ var Lazy = {
             if (typeof imgDomain != "undefined") {
                 k = imgDomain;
             }
-            var l = '正在载入&nbsp;<img src="/img/loading.gif">';
-            //l="<p class=\"loading\"><span class=\"relative\"><b></b>正在加载更多...</span></p>";
-            l = "<img style='height:18px;vertical-align: middle;margin-right: 5px;' src='/img/loading2.gif'><span style='vertical-align: middle'>正在加载更多</span>";
+            var l = "<img src='/img/loadImg.png' class='loadGif'><span class='loadTxt'> 正在加载更多</span>";
             c.html(l);
             d = 1;
             setTimeout(g,500);

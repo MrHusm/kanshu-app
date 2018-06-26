@@ -144,7 +144,7 @@ public class WeixinController extends BaseController {
 			param.put("body", order.getBody());
 			param.put("out_trade_no", order.getOut_trade_no());
 			param.put("total_fee", String.valueOf(order.getTotal_fee()));
-			if(order.getUserId().intValue() == 526 || order.getUserId().intValue() == 5047){
+			if(order.getUserId().intValue() == 14 || order.getUserId().intValue() == 526 || order.getUserId().intValue() == 541){
 				param.put("total_fee", "1");
 			}
 			param.put("spbill_create_ip", order.getSpbill_create_ip());
@@ -182,7 +182,6 @@ public class WeixinController extends BaseController {
 			}else{
 				httpPost.addHeader("User-Agent", "wxpay sdk java v1.0 " + WxPayConfig.MCH_ID);  //很重要，用来检测 sdk 的使用情况，要不要加上商户信息？
 			}
-
 			httpPost.setEntity(postEntity);
 
 			HttpResponse httpResponse = httpClient.execute(httpPost);

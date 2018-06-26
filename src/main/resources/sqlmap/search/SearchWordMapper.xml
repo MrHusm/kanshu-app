@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SearchWordMapper" >
+  <resultMap id="BaseResultMap" type="com.yxsd.kanshu.search.model.SearchWord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="search_words" property="searchWords" jdbcType="VARCHAR" />
+    <result column="search_hot_words" property="searchHotWords" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Where">
+    <if test="id != null"> and id= #{id}</if>
+  </sql>
+
+  <sql id="Base_Column_List" >
+    id, search_words, search_hot_words, create_date, update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from search_word
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from search_word
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yxsd.kanshu.search.model.SearchWord" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into search_word (search_words, search_hot_words, create_date, 
+      update_date)
+    values (#{searchWords,jdbcType=VARCHAR}, #{searchHotWords,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yxsd.kanshu.search.model.SearchWord" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into search_word
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="searchWords != null" >
+        search_words,
+      </if>
+      <if test="searchHotWords != null" >
+        search_hot_words,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="searchWords != null" >
+        #{searchWords,jdbcType=VARCHAR},
+      </if>
+      <if test="searchHotWords != null" >
+        #{searchHotWords,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.search.model.SearchWord" >
+    update search_word
+    <set >
+      <if test="searchWords != null" >
+        search_words = #{searchWords,jdbcType=VARCHAR},
+      </if>
+      <if test="searchHotWords != null" >
+        search_hot_words = #{searchHotWords,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yxsd.kanshu.search.model.SearchWord" >
+    update search_word
+    set search_words = #{searchWords,jdbcType=VARCHAR},
+      search_hot_words = #{searchHotWords,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getAll" resultMap="BaseResultMap" parameterType="map">
+    select <include refid="Base_Column_List" />
+    from search_word where 1=1
+    <include refid="Base_Where" />
+  </select>
+</mapper>

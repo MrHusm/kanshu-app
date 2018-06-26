@@ -56,6 +56,11 @@
     <if test="copyrightBookId != null"> and copyright_book_id= #{copyrightBookId}</if>
     <if test="type != null"> and `type`= #{type}</if>
     <if test="isMonthly != null"> and is_monthly= #{isMonthly}</if>
+    <if test="bookIds != null">
+      <foreach collection="bookIds" item="bookId" open="and book_id in(" separator= "," close = ")">
+        #{bookId}
+      </foreach>
+    </if>
   </sql>
 
   <sql id="Base_Column_List" >

@@ -1,0 +1,116 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+html,body{overflow:hidden;overflow-y:auto;}
+
+.searchDetails{
+    margin-top: 0.34rem;
+}
+#bookListBox{
+    padding: 0  0.38rem;
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 0.4rem;
+    position: relative;
+}
+.bookListBox{
+    padding: 0  0.38rem;
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 0.2rem;
+    margin-top: 0.4rem;
+    border-bottom: 1px solid #dbdbdb;
+    position: relative;
+}
+.bookImg{
+    width:1.70rem;
+    height: 2.25rem;
+    margin-right:0.25rem;
+}
+.bookList{
+    font-size: 14px;
+    color: #999;
+    overflow: hidden;
+}
+.bookName{
+    color: #000000;
+    font-size: .3rem;
+    width: 70%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.bookInfo{
+    letter-spacing: 0.03rem;
+    margin: 8px 0 10px;
+    height: 1.15rem;
+    font-size: .24rem;
+    overflow: hidden;
+    line-height: 0.4rem;
+    text-align: justify;
+    color: #999;
+}
+.authorBox{
+    flex-wrap: nowrap;
+    display: flex;
+    justify-content: space-between;
+}
+.authorNmae {
+    font-size: .24rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 0.12rem;
+    color: #999;
+}
+.bookGenre{
+    font-size: 0.2rem;
+}
+.bookGenrePublic {
+    border: 1px solid #999999;
+    border-radius: 4px;
+    float: right;
+    padding: 1px 4px;
+    margin-left: 10px;
+    box-sizing: border-box;
+    margin-top: 0.1rem;
+    font-size: 0.2rem;
+}.bookGenre > :last-child {
+    margin-left: 0;
+}
+.bookGenrePublicStyle {
+    border: 1px solid #82bce5;
+    color: #82bce5;
+}
+.bookGenrePublic {
+    border-radius: 4px;
+    float: right;
+    padding: 0 4px;
+    box-sizing: border-box;
+}
+.buttons{
+    margin-bottom: 0.3rem;
+    margin-top:-0.1rem;
+    padding: 0 0.38rem;
+    display: flex;
+    justify-content: space-between;
+}
+.buttons input{
+    width: 1.94rem;
+    height: 0.57rem;
+    font-size: 0.28rem;
+    text-align: center;
+    background-color: #fff;
+    border-radius: 8px; 
+    color:#3399ff;
+    border: solid 1px #3399ff;
+}
+.empty{
+    height:0.16rem;
+    background: #f5f3f3;
+}
+input:focus {
+    background-color: #3399ff;
+    color: #fff;
+}

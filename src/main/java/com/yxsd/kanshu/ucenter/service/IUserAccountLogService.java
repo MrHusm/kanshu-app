@@ -16,5 +16,5 @@ public interface IUserAccountLogService extends IBaseService<UserAccountLog,Long
      * @param userId
      * @return
      */
-    public Map<String, Object> getUserTotalMoney(String userId,String channel);
+    public Map<String, Object> getUserTotalMoney(String userId, String channel);
 }

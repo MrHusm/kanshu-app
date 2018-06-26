@@ -1,0 +1,21 @@
+1、打开充值页
+type:1
+NeedClosePage:充值完了是否需要关闭充值页  true：关闭 false：不关闭
+
+2、打开阅读器阅读
+type:2
+bookName:图书名称
+bookId:图书ID
+bookCover:图书封面地址
+chapterId:章节ID
+
+3、打开图书简介页
+type:3
+bookId:图书ID
+
+4、打开h5链接
+type:4
+title:标题
+url:h5地址
+NeedLogin:是否需要登录 0：不需要 1：需要
+

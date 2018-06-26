@@ -9,11 +9,12 @@ import com.yxsd.kanshu.base.controller.BaseController;
 import com.yxsd.kanshu.base.utils.*;
 import com.yxsd.kanshu.pay.service.IRechargeItemService;
 import com.yxsd.kanshu.product.model.Book;
-import com.yxsd.kanshu.product.model.BookExpand;
 import com.yxsd.kanshu.product.model.Chapter;
 import com.yxsd.kanshu.product.service.IBookExpandService;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.IChapterService;
+import com.yxsd.kanshu.search.model.SearchWord;
+import com.yxsd.kanshu.search.service.ISearchWordService;
 import com.yxsd.kanshu.ucenter.model.*;
 import com.yxsd.kanshu.ucenter.service.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -84,6 +84,9 @@ public class UserController extends BaseController {
 
     @Resource(name="userVipService")
     IUserVipService userVipService;
+
+    @Resource(name="searchWordService")
+    ISearchWordService searchWordService;
 
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate masterRedisTemplate;
@@ -598,6 +601,7 @@ public class UserController extends BaseController {
                     user = userService.getUserByUserId(Long.parseLong(userId));
                 }
             }
+
             if(StringUtils.isNotBlank(nickName) && user == null){
                 user = userService.findUniqueByParams("nickName",nickName);
             }
@@ -651,39 +655,67 @@ public class UserController extends BaseController {
             User user = userService.getUserByUserId(Long.parseLong(userId));
             Integer maxVirtual = rechargeItemService.getMaxVirtual(1);
             if(maxVirtual != null && maxVirtual > 0){
-                sender.put("rechargeContent","充值最高返"+maxVirtual);
+                sender.put("rechargeContent","充值最高返"+ maxVirtual/100 + "元");
             }
             UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
 
             VersionInfo versionInfo = this.versionInfoService.getVersionInfoByChannel(Integer.parseInt(channel));
             sender.put("versionStatus",0);
             if(versionInfo != null){
-                if(versionInfo.getType() == 1){
-                    //强制更新
+                if(versionInfo.getType() == 1 || versionInfo.getVersion() > Integer.parseInt(version.replace(".",""))){
+                    //强制更新 或手动更新
                     sender.put("versionStatus",1);
-                }
-                if(versionInfo.getVersion() > Integer.parseInt(version.replace(".",""))){
-                    //更新
-                    sender.put("versionStatus",1);
+                    sender.put("versionTitle",versionInfo.getTitle());
+                    sender.put("versionContent",versionInfo.getContent());
+                    sender.put("versionUrl",versionInfo.getUrl());
                 }
             }
-            //BookExpand bookExpand = this.bookExpandService.getMaxClickBook();
-//            if(bookExpand != null){
-//                sender.put("searchBook",bookExpand.getBookName());
-//            }
-            sender.put("searchBook","都市透视狂医");
+            SearchWord searchWord = this.searchWordService.getSearchWord();
+            if(searchWord != null){
+                if(Integer.parseInt(version.replace(".","")) >= 120){
+                    sender.put("searchBook",searchWord.getSearchWords());
+                }else{
+                    if(StringUtils.isNotBlank(searchWord.getSearchWords())){
+                        sender.put("searchBook",searchWord.getSearchWords().split("\\|")[0]);
+                    }
+                }
+                if(StringUtils.isNotBlank(searchWord.getSearchHotWords())){
+                    List<Map<String,Object>> hotWord = new ArrayList<Map<String, Object>>();
+                    for(String word : searchWord.getSearchHotWords().split("\\|")){
+                        Map<String,Object> map = new HashMap<String, Object>();
+                        if(word.split("_").length == 1){
+                            map.put("type",1);
+                            map.put("hotWord",word.split("_")[0]);
+                        }else{
+                            map.put("type",2);
+                            map.put("hotWord",word.split("_")[0]);
+                            map.put("url",Constants.HOST_KANSHU + word.split("_")[1]);
+                        }
+                        hotWord.add(map);
+                    }
+                    sender.put("searchHotWords", hotWord);
+                }
+            }
             UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
             if(userReceive != null){
                 sender.put("qqStatus", userReceive.getQqStatus() != null && userReceive.getQqStatus() == 1 ? 1 : 0);
                 sender.put("weiboStatus", userReceive.getWeiboStatus() != null && userReceive.getWeiboStatus() == 1 ? 1 : 0);
                 sender.put("weixinStatus", userReceive.getWeixinStatus() != null && userReceive.getWeixinStatus() == 1 ? 1 : 0);
                 sender.put("telStatus", userReceive.getTelStatus() != null && userReceive.getTelStatus() == 1 ? 1 : 0);
+                if(userReceive.getVipStatus() != null && userReceive.getVipStatus() == 1) {
+                    //用户领取过新手vip礼包或参加完新手签到活动
+                    sender.put("receiveStatus", 1);
+                }else{
+                    sender.put("receiveStatus", 0);
+                }
             }else{
                 sender.put("qqStatus", 0);
                 sender.put("weiboStatus",0);
                 sender.put("weixinStatus",0);
                 sender.put("telStatus",0);
+                sender.put("receiveStatus", 0);
             }
+           sender.put("adShow",1);
            sender.put("user",user);
            sender.put("userAccount",userAccount);
            sender.success(response);
@@ -837,7 +869,6 @@ public class UserController extends BaseController {
         String type = request.getParameter("type");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
 
-
         if(StringUtils.isBlank(token) || StringUtils.isBlank(type)){
             logger.error("UserController_findUserRechargeLog：token或type为空");
             return "error";
@@ -884,7 +915,7 @@ public class UserController extends BaseController {
                         for (Map<String,Object> map1 : result) {
                             if(map1.get("bookId").equals(map.get("bookId"))){
                                 map1.put("charge",Integer.parseInt(map1.get("charge").toString())+Integer.parseInt(map.get("charge").toString()));
-                                map1.put("createDate", map.get("createDate"));
+                                //map1.put("createDate", map.get("createDate"));
                                 flag=1;
                                 break;
                             }
@@ -996,7 +1027,6 @@ public class UserController extends BaseController {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String token = request.getParameter("token");
-        String channel = request.getParameter("channel");
         if(StringUtils.isBlank(token)){
             logger.error("UserController_getNewUserVipInfo：token为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
@@ -1011,18 +1041,14 @@ public class UserController extends BaseController {
             return;
         }
         try{
-            if("100018".equals(channel)){
-                //米赚渠道不显示新手礼包
+            UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
+            if(userReceive != null && userReceive.getVipStatus() == 1){
                 sender.put("receiveStatus",1);
             }else{
-                UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
-                if(userReceive != null && userReceive.getVipStatus() == 1){
-                    sender.put("receiveStatus",1);
-                }else{
-                    sender.put("receiveStatus",0);
-                    //新手礼包天数3
-                    sender.put("days",1);
-                }
+                sender.put("receiveStatus",0);
+                //新手礼包天数1
+                sender.put("days",1);
+                sender.put("message","新用户限量礼包全站图书免费读（1天）");
             }
             sender.success(response);
         }catch (Exception e){
@@ -1146,7 +1172,12 @@ public class UserController extends BaseController {
                     UserVip userVip = this.userVipService.findUniqueByParams("userId",userId);
                     Calendar calendar = Calendar.getInstance();
                     if(userVip != null){
-                        calendar.setTime(userVip.getEndDate());
+                        Date now = new Date();
+                        if(now.getTime() > userVip.getEndDate().getTime()){
+                            calendar.setTime(now);
+                        }else{
+                            calendar.setTime(userVip.getEndDate());
+                        }
                         calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(days));
                         userVip.setEndDate(calendar.getTime());
                         userVip.setUpdateDate(new Date());
@@ -1166,7 +1197,7 @@ public class UserController extends BaseController {
                     }
                     userReceive.setVipStatus(1);
                     sender.put("type",1);
-                    sender.put("msg","已成功领取3天全站免费特权");
+                    sender.put("msg","已成功领取"+days+"天全站免费特权");
                     //清除用户缓存
                     masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
                 }
@@ -1187,6 +1218,7 @@ public class UserController extends BaseController {
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
     }
+
 
     /**
      * 获取用户充值总额信息
@@ -1222,9 +1254,9 @@ public class UserController extends BaseController {
 //                        }else{
 //                            sender.put("totalMoney",0);
 //                        }
-                        //2018-06-04后的都属于新用户
+                        //2018-06-25后的都属于新用户
                         Calendar calendar=Calendar.getInstance();
-                        calendar.set(2018,5,4,0,0,0);
+                        calendar.set(2018,5,25,0,0,0);
                         List<UserAccountLog> userAccountLogs = this.userAccountLogService.findListByParams("userId",user.getUserId(),"findType",1);
                         int totalMoneyPre = 0;
                         int totalMoneyNext = 0;
@@ -1237,13 +1269,13 @@ public class UserController extends BaseController {
                                 totalMoneyPre = totalMoneyPre + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
                             }
                         }
-                        sender.put("totalMoneyPre",totalMoneyPre);
-                        sender.put("totalMoneyNext",totalMoneyNext);
-                        if(user.getCreateDate().getTime() > calendar.getTime().getTime()){
-                            sender.put("isNew",1);
-                        }else{
-                            sender.put("isNew",0);
-                        }
+                        //sender.put("totalMoneyPre",totalMoneyPre);
+                        sender.put("totalMoney",totalMoneyNext);
+//                        if(user.getCreateDate().getTime() > calendar.getTime().getTime()){
+//                            sender.put("isNew",1);
+//                        }else{
+//                            sender.put("isNew",0);
+//                        }
                         sender.put("userId",user.getUserId());
                         sender.put("name",user.getName());
                     }else{
@@ -1272,9 +1304,9 @@ public class UserController extends BaseController {
 //                        }else{
 //                            sender.put("totalMoney",0);
 //                        }
-                        //2018-06-04后的都属于新用户
+                        //2018-06-25后的都属于新用户
                         Calendar calendar=Calendar.getInstance();
-                        calendar.set(2018,5,4,0,0,0);
+                        calendar.set(2018,5,25,0,0,0);
                         List<UserAccountLog> userAccountLogs = this.userAccountLogService.findListByParams("userId",user.getUserId(),"findType",1);
                         int totalMoneyPre = 0;
                         int totalMoneyNext = 0;
@@ -1287,13 +1319,13 @@ public class UserController extends BaseController {
                                 totalMoneyPre = totalMoneyPre + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
                             }
                         }
-                        sender.put("totalMoneyPre",totalMoneyPre);
-                        sender.put("totalMoneyNext",totalMoneyNext);
-                        if(user.getCreateDate().getTime() > calendar.getTime().getTime()){
-                            sender.put("isNew",1);
-                        }else{
-                            sender.put("isNew",0);
-                        }
+                        //sender.put("totalMoneyPre",totalMoneyPre);
+                        sender.put("totalMoney",totalMoneyNext);
+//                        if(user.getCreateDate().getTime() > calendar.getTime().getTime()){
+//                            sender.put("isNew",1);
+//                        }else{
+//                            sender.put("isNew",0);
+//                        }
                         sender.put("userId",user.getUserId());
                         sender.put("name",user.getName());
                     }else{

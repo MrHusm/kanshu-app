@@ -3,14 +3,16 @@
 <mapper namespace="SpecialImgMapper" >
   <resultMap id="BaseResultMap" type="com.yxsd.kanshu.portal.model.SpecialImg" >
     <id column="special_img_id" property="specialImgId" jdbcType="BIGINT" />
-    <result column="special_pic" property="specialPic" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="target" property="target" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
     <result column="special_id" property="specialId" jdbcType="BIGINT" />
     <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
     <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    special_img_id, special_pic, img_url, special_id, create_date, update_date
+    special_img_id, type, target,title, img_url, special_id, create_date, update_date
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -23,12 +25,10 @@
     where special_img_id = #{specialImgId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yxsd.kanshu.portal.model.SpecialImg" >
-    insert into special_img (special_img_id, special_pic, img_url, 
-      special_id, create_date, update_date
-      )
-    values (#{specialImgId,jdbcType=BIGINT}, #{specialPic,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR}, 
-      #{specialId,jdbcType=BIGINT}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}
-      )
+    insert into special_img (special_img_id, type,target,title, img_url,
+      special_id, create_date, update_date)
+    values (#{specialImgId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER},#{target,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR},
+      #{specialId,jdbcType=BIGINT}, #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yxsd.kanshu.portal.model.SpecialImg" >
     insert into special_img
@@ -36,10 +36,16 @@
       <if test="specialImgId != null" >
         special_img_id,
       </if>
-      <if test="specialPic != null" >
-        special_pic,
+      <if test="type != null">
+        type,
       </if>
-      <if test="imgUrl != null" >
+      <if test="target != null and target != ''" >
+        target,
+      </if>
+      <if test="title != null and title != ''" >
+        title,
+      </if>
+      <if test="imgUrl != null and imgUrl != ''" >
         img_url,
       </if>
       <if test="specialId != null" >
@@ -56,8 +62,14 @@
       <if test="specialImgId != null" >
         #{specialImgId,jdbcType=BIGINT},
       </if>
-      <if test="specialPic != null" >
-        #{specialPic,jdbcType=VARCHAR},
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="target != null and target != ''" >
+        #{target,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null and title != ''" >
+        #{title,jdbcType=VARCHAR},
       </if>
       <if test="imgUrl != null" >
         #{imgUrl,jdbcType=VARCHAR},
@@ -76,8 +88,14 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yxsd.kanshu.portal.model.SpecialImg" >
     update special_img
     <set >
-      <if test="specialPic != null" >
-        special_pic = #{specialPic,jdbcType=VARCHAR},
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="target != null" >
+        target = #{target,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
       </if>
       <if test="imgUrl != null" >
         img_url = #{imgUrl,jdbcType=VARCHAR},
@@ -96,7 +114,9 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yxsd.kanshu.portal.model.SpecialImg" >
     update special_img
-    set special_pic = #{specialPic,jdbcType=VARCHAR},
+    set type = #{type,jdbcType=INTEGER},
+      target = #{target,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
       img_url = #{imgUrl,jdbcType=VARCHAR},
       special_id = #{specialId,jdbcType=BIGINT},
       create_date = #{createDate,jdbcType=TIMESTAMP},

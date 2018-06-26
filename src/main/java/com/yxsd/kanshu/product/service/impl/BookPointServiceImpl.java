@@ -3,6 +3,8 @@ package com.yxsd.kanshu.product.service.impl;
 import com.yxsd.kanshu.base.contants.RedisKeyConstants;
 import com.yxsd.kanshu.base.dao.IBaseDao;
 import com.yxsd.kanshu.base.service.impl.BaseServiceImpl;
+import com.yxsd.kanshu.portal.model.DriveBook;
+import com.yxsd.kanshu.portal.service.IDriveBookService;
 import com.yxsd.kanshu.product.dao.IBookPointDao;
 import com.yxsd.kanshu.product.model.BookChannelPoint;
 import com.yxsd.kanshu.product.model.BookPoint;
@@ -31,6 +33,9 @@ public class BookPointServiceImpl extends BaseServiceImpl<BookPoint, Long> imple
     @Resource(name="bookChannelPointService")
     private IBookChannelPointService bookChannelPointService;
 
+    @Resource(name="driveBookService")
+    private IDriveBookService driveBookService;
+
     @Resource(name = "masterRedisTemplate")
     private RedisTemplate<String,Map<Long,Integer>> masterRedisTemplate;
 
@@ -44,31 +49,27 @@ public class BookPointServiceImpl extends BaseServiceImpl<BookPoint, Long> imple
 
     @Override
     public Integer getBookPointNum(Long bookId, String channel) {
-        if(StringUtils.isBlank(channel)){
-            return null;
+        //默认从31章开始收费
+        Integer num = 31;
+        //获取限章免费的图书
+        DriveBook driveBook = this.driveBookService.findUniqueByParams("type",11,"bookId",bookId,"status",1,"manType",1);
+        if(driveBook != null){
+            num = driveBook.getNum();
         }else{
-            BookChannelPoint bookChannelPoint = this.bookChannelPointService.getBookChannelPoint();
-            if(bookChannelPoint == null){
-                return null;
-            }else{
-                String channels = bookChannelPoint.getChannels();
-                if(channels.contains(channel)){
-                    Map<Long,Integer> bookPointMap = getBookPointMap();
-                    if(bookPointMap != null){
-                        Integer num = bookPointMap.get(bookId);
-                        if(num == null){
-                            return bookChannelPoint.getNum();
-                        }else{
-                            return num;
+            if(StringUtils.isNotBlank(channel)){
+                BookChannelPoint bookChannelPoint = this.bookChannelPointService.getBookChannelPoint();
+                if(bookChannelPoint != null){
+                    String channels = bookChannelPoint.getChannels();
+                    if(channels.contains(channel)){
+                        Map<Long,Integer> bookPointMap = getBookPointMap();
+                        if(bookPointMap != null && bookPointMap.get(bookId) !=null){
+                            num = bookPointMap.get(bookId);
                         }
-                    }else{
-                        return bookChannelPoint.getNum();
                     }
-                }else{
-                    return null;
                 }
             }
         }
+        return num;
     }
 
     @Override

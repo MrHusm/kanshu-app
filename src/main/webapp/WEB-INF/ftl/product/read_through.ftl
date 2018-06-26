@@ -1,77 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
     <title>已读完</title>
-    <link rel="stylesheet" href="/css/reset_5.css">
-    <link rel="stylesheet" href="/css/readThrough.css">
+    <script>
+        window.JSHandle.setBookIsOver(${isFull});
+    </script>
 </head>
-<script>
-    window.JSHandle.setBookIsOver(${isFull});
-</script>
-<body>
-<#if authorBooks?? && authorBooks?size gt 1>
-<div class="pd1Box">
-    <div class="h6"><i class="h6Icon"></i><span style="vertical-align: middle;font-size: 18px">本书作者还写了</span></div>
-    <#list authorBooks as authorBook >
-        <#if authorBook.bookId != bookId>
-            <section class="bookListBox" onclick="bookInfo(${authorBook.bookId?c},'${authorBook.title}')">
-                <img class="bookListImg" data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-                <div class="bookList">
-                    <div class="bookName">${authorBook.title}</div>
-                    <div class="bookInfo">
-                        <#if authorBook.intro??>
-                            ${authorBook.intro?replace("　","")?replace("　","")}
-                        </#if>
-                    </div>
-                    <div class="authorBox">
-                        <div class="authorNmae">${authorBook.authorPenname}</div>
-                        <div class="bookGenre">
-                            <div class="bookGenrePublic">${authorBook.categorySecName}</div>
-                            <div class="bookGenrePublic bookGenrePublicStyle">${authorBook.categoryThrName}</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </#if>
-    </#list>
-</div>
-</#if>
 
-<#if relatedBooks?? && relatedBooks?size gt 0>
-<div class="hr"></div>
-<div class="pd1Box">
-    <div class="h6"><i class="h6Icon"></i><span style="vertical-align: middle;font-size: 18px">看了本书的用户还看了</span></div>
-    <#list relatedBooks as relatedBook>
-        <#if relatedBook.bookId != bookId>
-            <section class="bookListBox" onclick="bookInfo(${relatedBook.bookId?c},'${relatedBook.title}')">
-                <img class="bookListImg" data-echo="${relatedBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-                <div class="bookList">
-                    <div class="bookName">${relatedBook.title}</div>
-                    <div class="bookInfo">
-                        <#if relatedBook.intro??>
-                            ${relatedBook.intro?replace("　","")?replace("　","")}
-                        </#if>
+<body>
+<div class="content">
+    <p class="readFinish"><#if isFull == 0>未完待续，作者持续更新中<#else>已读完本书</#if></p>
+<#if authorBooks?? && (authorBooks?size>0)>
+    <div class="otherBook">
+        <h3 class="hTitle">作者其他书</h3>
+        <ul class="otherList clearfix">
+            <#list authorBooks as authorBook>
+                <li onclick="bookInfo(${authorBook.bookId?c},'${authorBook.title}')">
+                    <div class="coverImg">
+                        <img data-echo="${authorBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+                        <p>${authorBook.title}</p>
                     </div>
-                    <div class="authorBox">
-                        <div class="authorNmae">${relatedBook.authorPenname}</div>
-                        <div class="bookGenre">
-                            <div class="bookGenrePublic">${relatedBook.categorySecName}</div>
-                            <div class="bookGenrePublic bookGenrePublicStyle">${relatedBook.categoryThrName}</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </#if>
-    </#list>
-</div>
+                </li>
+            </#list>
+        </ul>
+    </div>
 </#if>
+<#if relatedBooks??  && (relatedBooks?size>0)>
+    <div class="otherBook">
+        <h3 class="hTitle">看过这本书的人也看过</h3>
+        <ul class="otherList clearfix">
+            <#list relatedBooks as relatedBook>
+                <li onclick="bookInfo(${relatedBook.bookId?c},'${relatedBook.title}')">
+                    <div class="coverImg">
+                        <img data-echo="${relatedBook.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+                        <p>${relatedBook.title}</p>
+                    </div>
+                </li>
+            </#list>
+        </ul>
+    </div>
+</#if>
+</div>
 <script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
     function bookInfo(bookId,title) {
-        var url = "/book/bookDetail.go?bookId="+bookId;
-        window.JSHandle.goToHtml(url,title,1,1);
+        var version = <#if version??>${version?c}<#else>null</#if>;
+        if(version != null && version >= 120){
+            window.JSHandle.openBookIntroduction(bookId);
+        }else{
+            var url = "/book/bookDetail.go?bookId="+bookId;
+            window.JSHandle.goToHtml(url,title,1,1);
+        }
     }
 
     Echo.init({

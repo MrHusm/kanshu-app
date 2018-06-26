@@ -37,6 +37,13 @@ public class Category implements Serializable{
      */
     private Long copyrightCategoryId;
 
+    /**
+     * 图书数量
+     */
+    private Integer bookNum;
+
+    private CategoryImg categoryImg;
+
     private Date createDate;
 
     private Date updateDate;
@@ -103,5 +110,21 @@ public class Category implements Serializable{
 
     public void setCopyrightCode(String copyrightCode) {
         this.copyrightCode = copyrightCode;
+    }
+
+    public CategoryImg getCategoryImg() {
+        return categoryImg;
+    }
+
+    public void setCategoryImg(CategoryImg categoryImg) {
+        this.categoryImg = categoryImg;
+    }
+
+    public Integer getBookNum() {
+        return bookNum;
+    }
+
+    public void setBookNum(Integer bookNum) {
+        this.bookNum = bookNum;
     }
 }

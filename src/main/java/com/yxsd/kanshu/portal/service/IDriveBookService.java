@@ -6,6 +6,7 @@ import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.portal.model.DriveBook;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by hushengmeng on 2017/7/4.
@@ -17,6 +18,7 @@ public interface IDriveBookService extends IBaseService<DriveBook,Long> {
      * @param type 类型 1：首页驱动 2：首页男生最爱 3：首页女生频道
      * 4：首页二次元 5：大家都在搜索 6：书库全站畅销
      * 7：书库完结精选 8：书库重磅新书 9：限免 10：书籍相关图书
+     * 11:限章免费
      * @param status 1:上线 0：未上线
      * @return
      */
@@ -27,6 +29,7 @@ public interface IDriveBookService extends IBaseService<DriveBook,Long> {
      * @param type 类型 1：首页驱动 2：首页男生最爱 3：首页女生频道
      * 4：首页二次元 5：大家都在搜索 6：书库全站畅销
      * 7：书库完结精选 8：书库重磅新书 9：限免 10：书籍相关图书
+     * 11:限章免费
      * @param bookId
      * @return
      */
@@ -39,8 +42,15 @@ public interface IDriveBookService extends IBaseService<DriveBook,Long> {
      * @param type 类型 1：首页驱动 2：首页男生最爱 3：首页女生频道
      * 4：首页二次元 5：大家都在搜索 6：书库全站畅销
      * 7：书库完结精选 8：书库重磅新书 9：限免 10：书籍相关图书
+     * 11:限章免费
      * @param query
      * @return
      */
     public PageFinder<DriveBook> findPageWithCondition(Integer type, Query query);
+
+    /**
+     * 获取今日限免和限章免费图书
+     * @return
+     */
+    public List<Map<String,Object>> getTimeFreeBooks(String channel);
 }

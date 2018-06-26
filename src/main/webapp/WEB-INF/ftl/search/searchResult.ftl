@@ -2,56 +2,67 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>搜索书籍</title>
-    <link rel="stylesheet" href="/css/reset_5.css">
-    <link rel="stylesheet" href="/css/sreach.css">
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/common.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" type="text/css" href="/css/main.css"/>
+    <script src="/js/jquery.min.js" type="text/javascript"></script>
     <script src="/js/baidu-statis.js"></script>
+    <title>搜索</title>
 </head>
 <body>
-    <article class="pageLoad">
+<div class="content">
+    <div class="bookList">
+        <ul class="clearfix pageLoad">
 </#if>
 	<#if searchBooks??>
 		<#list searchBooks as book>
-            <section class="bookListBox" onclick="bookInfo(${book.bookId?c},'${book.title}')">
-                <img class="bookListImg" data-echo="${book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
-                <div class="bookList">
-                    <div class="bookName">${book.title}</div>
-                    <div class="bookInfo">
-                        <#if book.intro??>
-                            ${book.intro?replace("　","")?replace("　","")}
-						</#if>
-                    </div>
-                    <div class="authorBox">
-                        <div class="authorNmae">${book.authorPenname}</div>
-                        <div class="bookGenre">
-                            <div class="bookGenrePublic">${book.categorySecName}</div>
-                            <div class="bookGenrePublic bookGenrePublicStyle">${book.categoryThrName}</div>
+            <li <#if book_index == 0 && book.title == searchText && version?? && version gte 120>style="padding-bottom: 60px;" </#if>>
+                <div class="bookImg" onclick="bookInfo(${book.bookId?c},'${book.title}')">
+                    <img data-echo="${book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
+                </div>
+                <div class="bookCon" onclick="bookInfo(${book.bookId?c},'${book.title}')">
+                    <h3>${book.title}</h3>
+                    <p><#if book.intro??>${book.intro?replace("　","")?replace("　","")}</#if></p>
+                    <div class="bookInstr">
+                        <span>${book.authorPenname}</span>
+                        <div class="bookKey">
+                            <b>${book.categorySecName}</b>
+                            <b>${book.categoryThrName}</b>
                         </div>
                     </div>
                 </div>
-            </section>
-		</#list>
-    <#else>
-        <script type="application/javascript">
-            $("#autopbn").remove();
-            window.onscroll = null;
-        </script>
-	</#if>
+                <#if book_index == 0 && book.title == searchText && version?? && version gte 120>
+                    <div class="searchbtn">
+                        <input type="button" onclick="window.JSHandle.openRead(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="开始阅读" />
+                        <input type="button" onclick="window.JSHandle.openBookDir(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="目录" />
+                        <input type="button" onclick="window.JSHandle.addToShelf(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="加入书架" />
+                    </div>
+                </#if>
+            </li>
+        </#list>
+    </#if>
 <#if syn=='0'>
-    </article>
+    </ul>
+    </div>
+</div>
     <div class="bookLoad" id="autopbn" curpage="${page+1}" totalpage="100" rel="/search/search.go?page=${page+1}&searchText=${searchText}&syn=1" style="display:none;"></div>
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript" src="/js/autopage.js"></script>
 <script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
-	function bookInfo(bookId,title) {
-		var url = "/book/bookDetail.go?bookId="+bookId;
-		window.JSHandle.goToHtml(url,title,1,1);
-	}
+    function bookInfo(bookId,title) {
+        var version = <#if version??>${version?c}<#else>null</#if>;
+        if(version != null && version >= 120){
+            window.JSHandle.openBookIntroduction(bookId);
+        }else{
+            var url = "/book/bookDetail.go?bookId="+bookId;
+            window.JSHandle.goToHtml(url,title,1,1);
+        }
+    }
 </script>
 </#if>
 <script type="application/javascript">

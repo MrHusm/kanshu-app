@@ -35,6 +35,20 @@ public interface IBookService extends IBaseService<Book,Long> {
     Book selectOneBookCondition(Map<String,Object> condition);
 
     /**
+     * 根据作者id获取图书
+     * @param authorId
+     * @return
+     */
+    List<Map<String,Object>> getBooksByAuthorId(Long authorId);
+
+    /**
+     * 根据图书二级分类获取点击率高的图书
+     * @param categorySecId
+     * @return
+     */
+    List<Map<String,Object>> getHighClickBooksByCid(Long categorySecId);
+
+    /**
      * 查询新书
      * @return
      */

@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  */
 public class Constants {
     public static final String HOST_KANSHU = "http://read.chunnuan999.com/";
-    //public static final String HOST_KANSHU = "http://localhost:8080/";
+//    public static final String HOST_KANSHU = "http://120.25.125.138:8081/";
 
     public static final String CMS_USER_INFO_STORED_IN_SESSION = "userSessionInfo";
     public static final String CMS_ERROR_MESSAGE = "cms_error_message";

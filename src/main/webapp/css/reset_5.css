@@ -1,8 +1,8 @@
 /* 项目新添加的属性
 ---------------------------------------------------------- */
 	@font-face {
-		font-family: 'pingfang';
-		src: url("../fonts/PingFang Medium.ttf");
+		/*font-family: 'pingfang';
+		src: url("../fonts/PingFang Medium.ttf");*/
 	}
 
 	.newClear:after {
