@@ -92,7 +92,7 @@ public class UserUtils {
             }else if(code == 404){
                 message.put("msg","对象不存在");
             }else if(code == 413){
-                message.put("msg","验证失败(短信服务)");
+                message.put("msg","验证码错误");
             }else if(code == 414){
                 message.put("msg","参数错误");
             }else if(code == 500){
@@ -111,18 +111,18 @@ public class UserUtils {
      * @param request
      * @return
      */
-    public static String getAppUrl(HttpServletRequest request) {
-        String appUrl="channel="+request.getParameter("channel")+"&version="+request.getParameter("version")+"&deviceType="+request.getParameter("deviceType")
-                +"&deviceSerialNo="+request.getParameter("deviceSerialNo")+"&resolution="+request.getParameter("resolution")+"&clientOs="+request.getParameter("clientOs")
-                +"&macAddr="+request.getParameter("macAddr")+"&packname="+request.getParameter("packname")+"&model="+request.getParameter("model")+"&modelNo="
-                +request.getParameter("modelNo");
-        return appUrl;
-    }
+//    public static String getAppUrl(HttpServletRequest request) {
+//        String appUrl="channel="+request.getParameter("channel")+"&version="+request.getParameter("version")+"&deviceType="+request.getParameter("deviceType")
+//                +"&deviceSerialNo="+request.getParameter("deviceSerialNo")+"&resolution="+request.getParameter("resolution")+"&clientOs="+request.getParameter("clientOs")
+//                +"&macAddr="+request.getParameter("macAddr")+"&packname="+request.getParameter("packname")+"&model="+request.getParameter("model")+"&modelNo="
+//                +request.getParameter("modelNo");
+//        return appUrl;
+//    }
 
     public static void main(String[] args) {
-        String token = createToken("200");
+        String token = createToken("3");
         System.out.println(token);
-        System.out.println(getUserIdByToken("IQCFqchHf4WY1hr1wgMbr4G4exSt5fcx"));
+        System.out.println(getUserIdByToken("IQCFqchHf4ZFlP*5t*7gpTyKfO*OcDut"));
 
 
     }

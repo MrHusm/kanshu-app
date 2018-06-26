@@ -10,6 +10,7 @@
     <meta name="format-detection" content="telephone=no">
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
     <link rel="stylesheet" type="text/css" href="/css/swiper.min.css"/>
+    <script src="/js/baidu-statis.js"></script>
     <title>精选</title>
 </head>
 <body>
@@ -43,8 +44,8 @@
                         <h3>${map.data.book.title}</h3>
                         <p>
                             <#if map.data.book.intro??>
-                                        ${map.data.book.intro?replace("　","")?replace("　","")}
-                                    </#if>
+                                ${map.data.book.intro?replace("　","")?replace("　","")}
+                            </#if>
                         </p>
                         <div class="bookInstr">
                             <span>${map.data.book.authorPenname}</span>
@@ -62,20 +63,24 @@
                     <div class="swiper-container">
                         <div class="swiper-wrapper bannerImg">
                             <#list map.data.specialImgs as img>
-                                <div class="swiper-slide">
-                                    <#if img.type==1>
-                                    <#--跳转图书详情页-->
-                                        <img class="imgz" src="${img.imgUrl}" onclick="bookInfo(${img.target},${img.title})" alt="">
-                                    <#elseif img.type==2>
-                                    <#--跳转链接-->
-                                        <img class="imgz" src="${img.imgUrl}" onclick="window.JSHandle.goToHtml(${img.target},${img.title},1,0);" alt="">
-                                    <#elseif img.type==3>
+                                <#if img.type==1>
+                                    <div class="swiper-slide">
+                                        <#--跳转图书详情页-->
+                                        <img class="imgz" src="${img.imgUrl}" onclick="bookInfo('${img.target}','${img.title}')" alt="">
+                                    </div>
+                                <#elseif img.type==2>
+                                    <div class="swiper-slide">
+                                        <#--跳转链接-->
+                                        <img class="imgz" src="${img.imgUrl}" onclick="window.JSHandle.goToHtml('${img.target}','${img.title}',1,0);" alt="">
+                                    </div>
+                                <#elseif img.type==3>
                                     <#--跳转充值-->
-                                        <#if version?? && version gte 120>
+                                    <#if version?? && version gte 120>
+                                        <div class="swiper-slide">
                                             <img class="imgz" src="${img.imgUrl}" onclick="window.JSHandle.goRecharge(false)" alt="">
-                                        </#if>
+                                        </div>
                                     </#if>
-                                </div>
+                                </#if>
                             </#list>
                         </div>
                         <!-- 如果需要分页器 -->
@@ -96,24 +101,26 @@
                     </div>
                         <#assign type=2>
                     </#if>
-                    <div class="special">
-                        <h3>${map.data.name}</h3>
-                        <p>${map.data.content}</p>
-                        <#list map.data.specialImgs as img>
-                            <#if img.type==1>
+                    <#list map.data.specialImgs as img>
+                        <#if img.type==1>
                             <#--跳转图书详情页-->
-                                <img class="specialImg" src="${img.imgUrl}" onclick="bookInfo(${img.target},${img.title})" alt="">
-                            <#elseif img.type==2>
+                            <div class="special" onclick="bookInfo('${img.target}','${img.title}')">
+                        <#elseif img.type==2>
                             <#--跳转链接-->
-                                <img class="specialImg" src="${img.imgUrl}" onclick="window.JSHandle.goToHtml(${img.target},${img.title},1,0);" alt="">
-                            <#elseif img.type==3>
+                            <div class="special" onclick="window.JSHandle.goToHtml('${img.target}','${img.title}',1,0);">
+                        <#elseif img.type==3>
                             <#--跳转充值-->
-                                <#if version?? && version gte 120>
-                                    <img class="specialImg" src="${img.imgUrl}" onclick="window.JSHandle.goRecharge(false)" alt="">
-                                </#if>
+                            <#if version?? && version gte 120>
+                            <div class="special" src="${img.imgUrl}" onclick="window.JSHandle.goRecharge(false)" alt="">
                             </#if>
-                        </#list>
-                    </div>
+                        </#if>
+                        <#if img.type==1 || img.type==2 || (img.type==3 && version?? && version gte 120)>
+                            <h3>${map.data.name}</h3>
+                            <p>${map.data.content}</p>
+                            <img class="specialImg" src="${img.imgUrl}">
+                        </div>
+                        </#if>
+                    </#list>
                 <#elseif map.data.type == 3>
                     <#if map.type != type>
                         </ul>
@@ -124,13 +131,13 @@
                     <#list map.data.specialImgs as img>
                         <div class="adImg">
                             <#if img.type==1>
-                            <#--跳转图书详情页-->
-                                <img src="${img.imgUrl}" onclick="bookInfo(${img.target},${img.title})" alt="">
+                                <#--跳转图书详情页-->
+                                <img src="${img.imgUrl}" onclick="bookInfo('${img.target}','${img.title}')" alt="">
                             <#elseif img.type==2>
-                            <#--跳转链接-->
-                                <img src="${img.imgUrl}" onclick="window.JSHandle.goToHtml(${img.target},${img.title},1,0);" alt="">
+                                <#--跳转链接-->
+                                <img src="${img.imgUrl}" onclick="window.JSHandle.goToHtml('${img.target}','${img.title}',1,0);" alt="">
                             <#elseif img.type==3>
-                            <#--跳转充值-->
+                                <#--跳转充值-->
                                 <#if version?? && version gte 120>
                                     <img src="${img.imgUrl}" onclick="window.JSHandle.goRecharge(false)" alt="">
                                 </#if>
@@ -190,11 +197,15 @@
             },
             disableOnInteraction: false,
             autoplay:true,
+            allowTouchMove:false,
+            autoplay: {
+                delay: 2500,//2.5秒切换一次
+            }
         });
     })
 
     function bookInfo(bookId,title) {
-        var version = <#if version??>${version}<#else>null</#if>;
+        var version = <#if version??>${version?c}<#else>null</#if>;
         if(version != null && version >= 120){
             window.JSHandle.openBookIntroduction(bookId);
         }else{

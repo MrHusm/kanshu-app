@@ -39,7 +39,7 @@ public class VersionInfoServiceImpl extends BaseServiceImpl<VersionInfo, Long> i
         if(versionInfo == null){
             versionInfo = this.findUniqueByParams("channel",channel);
             if(versionInfo != null){
-                masterRedisTemplate.opsForValue().set(key, versionInfo, 6, TimeUnit.HOURS);
+                masterRedisTemplate.opsForValue().set(key, versionInfo, 6, TimeUnit.DAYS);
             }
         }
         return versionInfo;

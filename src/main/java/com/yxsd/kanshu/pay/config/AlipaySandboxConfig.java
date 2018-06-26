@@ -3,7 +3,7 @@ package com.yxsd.kanshu.pay.config;
 /**
  * Created by lenovo on 2017/8/5.
  */
-public class AlipayConfig {
+public class AlipaySandboxConfig {
     // 商户appid
     public static String APPID = "2016082600312026";
     // 私钥 pkcs8格式的

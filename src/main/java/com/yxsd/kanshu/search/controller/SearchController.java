@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -122,6 +122,28 @@ public class SearchController {
 	}
 
 	/**
+	 * 删除搜索索引
+	 * @param response
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("deleteIndex")
+	public void deleteIndex(HttpServletResponse response, HttpServletRequest request){
+		String bookIds = request.getParameter("bookIds");
+		if(StringUtils.isNotBlank(bookIds)) {
+			for(String bookId : bookIds.split(",")){
+				Book book = this.bookService.findUniqueByParams("copyrightBookId",bookId);
+				if(book != null){
+					Map<String,String> fieldMap = new HashMap<String,String>();
+					fieldMap.put(SearchContants.ID,String.valueOf(book.getBookId()));
+					IndexManager.getManager().deleteIndex(fieldMap);
+				}
+			}
+		}
+	}
+
+
+	/**
 	 * 搜索
 	 * @param response
 	 * @param request
@@ -149,13 +171,13 @@ public class SearchController {
 		try {
 			// 查询为空直接返回
 			if (StringUtils.isBlank(searchText)) {
-				response.sendRedirect("/search/searchIndex.go?type=1");
-				return null;
+				return "/search/search_no_result";
 			}
-			//if (isMessyCode(searchText)) {
-				searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
-			//}
-			searchText = "穿越";
+
+//			String searchTextCode = URLEncoder.encode(searchText,"UTF-8");
+//			model.addAttribute("searchTextCode",searchTextCode);
+//			searchText = URLDecoder.decode(searchText,"UTF-8");
+			searchText = new String(searchText.getBytes("ISO-8859-1"), "utf-8");
 			model.addAttribute("searchText",searchText);
 			logger.info("search被调用，条件为page:" + page + ",searchText:" + searchText);
 
@@ -198,25 +220,16 @@ public class SearchController {
 				return "/search/searchResult";
 			} else {
 				if("0".equals(syn)){
-					response.sendRedirect("/search/searchIndex.go?type=1");
-					return null;
+					return "/search/search_no_result";
 				}else{
-					model.addAttribute("searchBooks", null);
 					return "/search/searchResult";
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("search出错，条件为：" + searchText, e);
-			try {
-				response.sendRedirect("/search/searchIndex.go?type=1");
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			return "/search/search_no_result";
 		}
-		// 返回为空界面
-		return null;
-
 	}
 
 	public static boolean isMessyCode(String strName) {

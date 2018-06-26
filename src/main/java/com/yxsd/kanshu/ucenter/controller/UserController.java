@@ -655,7 +655,7 @@ public class UserController extends BaseController {
             User user = userService.getUserByUserId(Long.parseLong(userId));
             Integer maxVirtual = rechargeItemService.getMaxVirtual(1);
             if(maxVirtual != null && maxVirtual > 0){
-                sender.put("rechargeContent","充值最高返"+maxVirtual);
+                sender.put("rechargeContent","充值最高返"+ maxVirtual/100 + "元");
             }
             UserAccount userAccount = this.userAccountService.findUniqueByParams("userId",userId);
 
@@ -679,7 +679,22 @@ public class UserController extends BaseController {
                         sender.put("searchBook",searchWord.getSearchWords().split("\\|")[0]);
                     }
                 }
-                sender.put("searchHotWords", searchWord.getSearchHotWords());
+                if(StringUtils.isNotBlank(searchWord.getSearchHotWords())){
+                    List<Map<String,Object>> hotWord = new ArrayList<Map<String, Object>>();
+                    for(String word : searchWord.getSearchHotWords().split("\\|")){
+                        Map<String,Object> map = new HashMap<String, Object>();
+                        if(word.split("_").length == 1){
+                            map.put("type",1);
+                            map.put("hotWord",word.split("_")[0]);
+                        }else{
+                            map.put("type",2);
+                            map.put("hotWord",word.split("_")[0]);
+                            map.put("url",Constants.HOST_KANSHU + word.split("_")[1]);
+                        }
+                        hotWord.add(map);
+                    }
+                    sender.put("searchHotWords", hotWord);
+                }
             }
             UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
             if(userReceive != null){
@@ -700,6 +715,7 @@ public class UserController extends BaseController {
                 sender.put("telStatus",0);
                 sender.put("receiveStatus", 0);
             }
+           sender.put("adShow",1);
            sender.put("user",user);
            sender.put("userAccount",userAccount);
            sender.success(response);
@@ -853,7 +869,6 @@ public class UserController extends BaseController {
         String type = request.getParameter("type");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
 
-
         if(StringUtils.isBlank(token) || StringUtils.isBlank(type)){
             logger.error("UserController_findUserRechargeLog：token或type为空");
             return "error";
@@ -900,7 +915,7 @@ public class UserController extends BaseController {
                         for (Map<String,Object> map1 : result) {
                             if(map1.get("bookId").equals(map.get("bookId"))){
                                 map1.put("charge",Integer.parseInt(map1.get("charge").toString())+Integer.parseInt(map.get("charge").toString()));
-                                map1.put("createDate", map.get("createDate"));
+                                //map1.put("createDate", map.get("createDate"));
                                 flag=1;
                                 break;
                             }
@@ -1031,8 +1046,9 @@ public class UserController extends BaseController {
                 sender.put("receiveStatus",1);
             }else{
                 sender.put("receiveStatus",0);
-                //新手礼包天数3
+                //新手礼包天数1
                 sender.put("days",1);
+                sender.put("message","新用户限量礼包全站图书免费读（1天）");
             }
             sender.success(response);
         }catch (Exception e){
@@ -1156,7 +1172,12 @@ public class UserController extends BaseController {
                     UserVip userVip = this.userVipService.findUniqueByParams("userId",userId);
                     Calendar calendar = Calendar.getInstance();
                     if(userVip != null){
-                        calendar.setTime(userVip.getEndDate());
+                        Date now = new Date();
+                        if(now.getTime() > userVip.getEndDate().getTime()){
+                            calendar.setTime(now);
+                        }else{
+                            calendar.setTime(userVip.getEndDate());
+                        }
                         calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(days));
                         userVip.setEndDate(calendar.getTime());
                         userVip.setUpdateDate(new Date());
@@ -1176,7 +1197,7 @@ public class UserController extends BaseController {
                     }
                     userReceive.setVipStatus(1);
                     sender.put("type",1);
-                    sender.put("msg","已成功领取3天全站免费特权");
+                    sender.put("msg","已成功领取"+days+"天全站免费特权");
                     //清除用户缓存
                     masterRedisTemplate.delete(RedisKeyConstants.CACHE_USER_ID_KEY + userId);
                 }
@@ -1196,6 +1217,132 @@ public class UserController extends BaseController {
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
+    }
+
+
+    /**
+     * 获取用户充值总额信息
+     * @param response
+     * @param request
+     */
+    @RequestMapping("getUserTotalMoney")
+    public void getUserTotalMoney(HttpServletResponse response,HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        //渠道标识
+        String channel = request.getParameter("channel");
+        //1:通过userId查询  2：通过imei号查询
+        String type = request.getParameter("type");
+        String deviceSerialNo = request.getParameter("imei");
+        String userId = request.getParameter("userId");
+        String sign = request.getParameter("sign");
+        if(StringUtils.isBlank(channel) || StringUtils.isBlank(type) || StringUtils.isBlank(sign)){
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            if("1".equals(type)){
+                String signNow = MD5Utils.getInstance().cell32(userId + channel);
+                logger.info("signNow:"+signNow + ",sign:"+sign);
+                if(signNow.equals(sign)){
+                    User user = this.userService.getUserByUserId(Long.parseLong(userId));
+                    if(user != null){
+//                        Map<String,Object> map = this.userAccountLogService.getUserTotalMoney(userId,channel);
+//                        if(map != null){
+//                            sender.put("totalMoney",map.get("money"));
+//                        }else{
+//                            sender.put("totalMoney",0);
+//                        }
+                        //2018-06-25后的都属于新用户
+                        Calendar calendar=Calendar.getInstance();
+                        calendar.set(2018,5,25,0,0,0);
+                        List<UserAccountLog> userAccountLogs = this.userAccountLogService.findListByParams("userId",user.getUserId(),"findType",1);
+                        int totalMoneyPre = 0;
+                        int totalMoneyNext = 0;
+                        for(UserAccountLog userAccountLog : userAccountLogs){
+                            if((userAccountLog.getType() == 1 || userAccountLog.getType() == 2) &&
+                                    userAccountLog.getCreateDate().getTime() > calendar.getTime().getTime()){
+                                totalMoneyNext = totalMoneyNext + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
+                            }else if((userAccountLog.getType() == 1 || userAccountLog.getType() == 2) &&
+                                    userAccountLog.getCreateDate().getTime() <= calendar.getTime().getTime()){
+                                totalMoneyPre = totalMoneyPre + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
+                            }
+                        }
+                        //sender.put("totalMoneyPre",totalMoneyPre);
+                        sender.put("totalMoney",totalMoneyNext);
+//                        if(user.getCreateDate().getTime() > calendar.getTime().getTime()){
+//                            sender.put("isNew",1);
+//                        }else{
+//                            sender.put("isNew",0);
+//                        }
+                        sender.put("userId",user.getUserId());
+                        sender.put("name",user.getName());
+                    }else{
+                        sender.fail(10011,"用户不存在", response);
+                    }
+                }else{
+                    sender.fail(10010,"签名错误", response);
+                    return;
+                }
+            }else{
+                String signNow = MD5Utils.getInstance().cell32(deviceSerialNo + channel);
+                logger.info("signNow:"+signNow + ",sign:"+sign);
+                if(signNow.equals(sign)){
+                    List<User> users = userService.findListByParams("deviceSerialNo",deviceSerialNo);
+                    if(CollectionUtils.isEmpty(users)){
+                        users = userService.findListByParams("deviceSerialNo",deviceSerialNo.toLowerCase());
+                    }
+                    User user = null;
+                    if(CollectionUtils.isNotEmpty(users)){
+                        user = users.get(users.size() - 1);
+                    }
+                    if(user != null){
+//                        Map<String,Object> map = this.userAccountLogService.getUserTotalMoney(String.valueOf(user.getUserId()),channel);
+//                        if(map != null){
+//                            sender.put("totalMoney",map.get("money"));
+//                        }else{
+//                            sender.put("totalMoney",0);
+//                        }
+                        //2018-06-25后的都属于新用户
+                        Calendar calendar=Calendar.getInstance();
+                        calendar.set(2018,5,25,0,0,0);
+                        List<UserAccountLog> userAccountLogs = this.userAccountLogService.findListByParams("userId",user.getUserId(),"findType",1);
+                        int totalMoneyPre = 0;
+                        int totalMoneyNext = 0;
+                        for(UserAccountLog userAccountLog : userAccountLogs){
+                            if((userAccountLog.getType() == 1 || userAccountLog.getType() == 2) &&
+                                    userAccountLog.getCreateDate().getTime() > calendar.getTime().getTime()){
+                                totalMoneyNext = totalMoneyNext + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
+                            }else if((userAccountLog.getType() == 1 || userAccountLog.getType() == 2) &&
+                                    userAccountLog.getCreateDate().getTime() <= calendar.getTime().getTime()){
+                                totalMoneyPre = totalMoneyPre + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
+                            }
+                        }
+                        //sender.put("totalMoneyPre",totalMoneyPre);
+                        sender.put("totalMoney",totalMoneyNext);
+//                        if(user.getCreateDate().getTime() > calendar.getTime().getTime()){
+//                            sender.put("isNew",1);
+//                        }else{
+//                            sender.put("isNew",0);
+//                        }
+                        sender.put("userId",user.getUserId());
+                        sender.put("name",user.getName());
+                    }else{
+                        sender.fail(10011,"用户不存在", response);
+                    }
+                }else{
+                    sender.fail(10011,"签名错误", response);
+                    return;
+                }
+            }
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+
     }
 
 }

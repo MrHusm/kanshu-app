@@ -77,12 +77,12 @@ public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> impleme
                     }
                     if(list.size() > 0){
                         categories = list;
-                        listMasterRedisTemplate.opsForValue().set(key, categories, 1, TimeUnit.DAYS);
+                        listMasterRedisTemplate.opsForValue().set(key, categories, 7, TimeUnit.DAYS);
                     }else{
                         categories = null;
                     }
                 }else{
-                    listMasterRedisTemplate.opsForValue().set(key, categories, 1, TimeUnit.DAYS);
+                    listMasterRedisTemplate.opsForValue().set(key, categories, 7, TimeUnit.DAYS);
                 }
             }
         }

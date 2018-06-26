@@ -1,86 +1,27 @@
-手机号切换或登录
-http://120.25.125.138:8082/media/api.go?action=moblieLoginOrBind
+获取章节内容接口
+http://120.25.125.138:8081/book/getChapterContent.go?bookId=160&token=IQCFqchHf4YsfowPivHA14UsaPvaA8Ik&chapterId=2257&autoBuy=1
 需传参数：
-token：用户token（非必传）
-mobile：手机号（必传）
-verifyCode：验证码（必传）
-type：1（固定值，必传 1:切换登录 2：绑定）
+2、参数说明：
+token:用户token（必传）
+bookId：图书id（必传）
+chapterId：章节id（必传）
+autoBuy: 自动购买标识 1：自动购买 其他：非自动购买
+version：当前版本号（必传）
+
 
 返回参数说明
-一、
-status:1
-message:当前用户与该手机号用户相同
-二、当前用户和切换手机号的用户不同
-status:0
-token:123
-tourist 1游客  0非游客
-三、用户当前未登录
-status：0
-token：123
-四、
-status：-2
-message：账号不存在
-五、
-status:-1
-message:验证码错误
-
-
-手机号绑定
-http://120.25.125.138:8082/media/api.go?action=moblieLoginOrBind
-需传参数：
-token：用户token（非必传）
-mobile：手机号（必传）
-verifyCode：验证码（必传）
-type：2（固定值，必传）
-
-返回参数说明
-一、
-status:-3
-message:缺少token信息
-二、
-status:1
-message:当前用户已绑定该手机号
-三、
-status：-4
-message:手机号已被其他账号绑定，请更换手机号
-四、绑定成功
-status：0
-五、
-status:-1
-message:验证码错误
-
-
-----------------------------------------------------------------------------------------------------------------------------
-账号密码登录
-http://120.25.125.138:8082/media/api.go?action=loginByName
-需传参数：
-token：用户token（非必传）
-name：用户名（必传）
-password：密码（必传）
-
-----------------------------------------------------------------------------------------------------------------------------
-QQ登录或绑定
-http://120.25.125.138:8082/media/api.go?action=qqLoginOrBind
-需传参数：
-token：用户token（非必传）
-openID：QQ唯一ID（必传）
-json：QQ返回相关数据信息（必传）
-type：1（固定值，必传 1:切换登录 2：绑定）
-----------------------------------------------------------------------------------------------------------------------------
-微博登录或绑定
-http://120.25.125.138:8082/media/api.go?action=wbLoginOrBind
-需传参数：
-token：用户token（非必传）
-json：微博返回相关数据信息（必传）
-type：1（固定值，必传 1:切换登录 2：绑定）
-
-----------------------------------------------------------------------------------------------------------------------------
-微信登录或绑定
-http://120.25.125.138:8082/media/api.go?action=wxLoginOrBind
-需传参数：
-token：用户token（非必传）
-json：微博返回相关数据信息（必传）
-type：1（固定值，必传 1:切换登录 2：绑定）
+一、获取到章节内容
+code:1
+message:获取章节内容成功
+二、自动购买成功，返回章节内容
+code:0
+message:自动购买成功
+三、自动购买失败，账户余额不足（显示订单，点击确认购买拉起充值页）
+code：-1
+message:自动购买失败，账户余额不足
+四、当前章节为付费章节，且没有自动购买（显示订单，点击确认购买去购买）
+code：-2
+message：未自动购买
 
 
 

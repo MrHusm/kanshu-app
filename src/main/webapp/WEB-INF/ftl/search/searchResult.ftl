@@ -9,7 +9,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
     <link rel="stylesheet" type="text/css" href="/css/main.css"/>
-    <script src="/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/js/baidu-statis.js"></script>
     <title>搜索</title>
 </head>
 <body>
@@ -19,14 +20,13 @@
 </#if>
 	<#if searchBooks??>
 		<#list searchBooks as book>
-            <li onclick="bookInfo(${book.bookId?c},'${book.title}')" <#if book_index == 0 && book.title == searchText>style="padding-bottom: 60px;" </#if>>
-                <div class="bookImg">
+            <li <#if book_index == 0 && book.title == searchText && version?? && version gte 120>style="padding-bottom: 60px;" </#if>>
+                <div class="bookImg" onclick="bookInfo(${book.bookId?c},'${book.title}')">
                     <img data-echo="${book.coverUrl}" src="/img/default.jpg" onerror="javascript:this.src='/img/default.jpg';">
                 </div>
-                <div class="bookCon">
+                <div class="bookCon" onclick="bookInfo(${book.bookId?c},'${book.title}')">
                     <h3>${book.title}</h3>
-                    <p><#if book.intro??>${book.intro?replace("　","")?replace("　","")}</#if>
-                    </p>
+                    <p><#if book.intro??>${book.intro?replace("　","")?replace("　","")}</#if></p>
                     <div class="bookInstr">
                         <span>${book.authorPenname}</span>
                         <div class="bookKey">
@@ -35,10 +35,10 @@
                         </div>
                     </div>
                 </div>
-                <#if book_index == 0 && book.title == searchText>
+                <#if book_index == 0 && book.title == searchText && version?? && version gte 120>
                     <div class="searchbtn">
                         <input type="button" onclick="window.JSHandle.openRead(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="开始阅读" />
-                        <input type="button" onclick="window.JSHandle.openBookDir(${book.bookId?c},'${book.title}')" value="目录" />
+                        <input type="button" onclick="window.JSHandle.openBookDir(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="目录" />
                         <input type="button" onclick="window.JSHandle.addToShelf(${book.bookId?c},'${book.title}','${book.coverUrl}',${maxChapterIndex?c})" value="加入书架" />
                     </div>
                 </#if>
@@ -55,7 +55,7 @@
 <script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
     function bookInfo(bookId,title) {
-        var version = <#if version??>${version}<#else>null</#if>;
+        var version = <#if version??>${version?c}<#else>null</#if>;
         if(version != null && version >= 120){
             window.JSHandle.openBookIntroduction(bookId);
         }else{

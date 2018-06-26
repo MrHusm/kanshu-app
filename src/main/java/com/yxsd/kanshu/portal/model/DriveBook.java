@@ -21,6 +21,7 @@ public class DriveBook implements Serializable{
      * 类型 1：首页驱动 2：首页男生最爱 3：首页女生频道
      * 4：首页二次元 5：大家都在搜索 6：书库全站畅销
      * 7：书库完结精选 8：书库重磅新书 9：免费 10：书籍相关图书
+     * 11:限章免费
      */
     private Integer type;
 
@@ -38,6 +39,11 @@ public class DriveBook implements Serializable{
      * 1:手工配置 0：网站抓取
      */
     private Integer manType;
+
+    /**
+     * 限章免费图书章节数
+     */
+    private Integer num;
 
     /**
      * 创建时间
@@ -114,6 +120,14 @@ public class DriveBook implements Serializable{
 
     public void setManType(Integer manType) {
         this.manType = manType;
+    }
+
+    public Integer getNum() {
+        return num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
     }
 
     public Date getUpdateDate() {

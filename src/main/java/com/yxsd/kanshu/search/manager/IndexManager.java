@@ -235,8 +235,8 @@ public class IndexManager {
 		try {
 
 			// 操作内存的IndexWriter
-			IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
-			ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
+			//IndexWriterConfig iwcRam = new IndexWriterConfig(analyzer);
+			//ramIndexWriter = new IndexWriter(ramDirectory, iwcRam);
 
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			indexWriter = new IndexWriter(directory, config);
@@ -250,8 +250,8 @@ public class IndexManager {
 			indexWriter.deleteDocuments(terms);
 			indexWriter.commit();
 
-			ramIndexWriter.deleteDocuments(terms);
-			ramIndexWriter.commit();
+//			ramIndexWriter.deleteDocuments(terms);
+//			ramIndexWriter.commit();
 			return true;
 		} catch (Exception e) {
 			logger.error("删除索引失败", e);

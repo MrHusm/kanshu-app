@@ -1,29 +1,21 @@
-获取章节内容接口
-http://120.25.125.138:8081/book/getChapterContent.go?bookId=160&token=IQCFqchHf4YsfowPivHA14UsaPvaA8Ik&chapterId=2257&autoBuy=1
-需传参数：
-2、参数说明：
-token:用户token（必传）
-bookId：图书id（必传）
-chapterId：章节id（必传）
-autoBuy: 自动购买标识 1：自动购买 其他：非自动购买
-version：当前版本号（必传）
+1、打开充值页
+type:1
+NeedClosePage:充值完了是否需要关闭充值页  true：关闭 false：不关闭
 
+2、打开阅读器阅读
+type:2
+bookName:图书名称
+bookId:图书ID
+bookCover:图书封面地址
+chapterId:章节ID
 
-返回参数说明
-一、获取到章节内容
-code:1
-message:获取章节内容成功
-二、自动购买成功，返回章节内容
-code:0
-message:自动购买成功
-三、自动购买失败，账户余额不足（显示订单，点击确认购买拉起充值页）
-code：-1
-message:自动购买失败，账户余额不足
-四、当前章节为付费章节，且没有自动购买（显示订单，点击确认购买去购买）
-code：-2
-message：未自动购买
+3、打开图书简介页
+type:3
+bookId:图书ID
 
-
-
-
+4、打开h5链接
+type:4
+title:标题
+url:h5地址
+NeedLogin:是否需要登录 0：不需要 1：需要
 

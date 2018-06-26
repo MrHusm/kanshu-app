@@ -17,21 +17,23 @@
         var _isFull = <#if isFull??>${isFull}<#else>null</#if>;
 
         function userClick(obj,categoryId,childCategoryId){
+            var version = <#if version??>${version?c}<#else>''</#if>;
             $(".chooseList li").removeClass("active");
             $(obj).addClass("active");
-            var url = "/portal/categoryBooks.go?categoryId="+categoryId+"&childCategoryId="+(childCategoryId==null?'':childCategoryId)+"&isFull="+(_isFull==null?"":_isFull);
+            var url = "/portal/categoryBooks.go?version="+version+"&categoryId="+categoryId+"&childCategoryId="+(childCategoryId==null?'':childCategoryId)+"&isFull="+(_isFull==null?"":_isFull);
             window.location.href=url;
         }
 
         function userClick2(obj,isFull){
+            var version = <#if version??>${version?c}<#else>''</#if>;
             $(".chooseType span").removeClass("active");
             $(obj).addClass("active");
-            var url = "/portal/categoryBooks.go?categoryId="+_categoryId+"&childCategoryId="+(_childCategoryId==null?'':_childCategoryId)+"&isFull="+(isFull==null?"":isFull);
+            var url = "/portal/categoryBooks.go?version="+version+"&categoryId="+_categoryId+"&childCategoryId="+(_childCategoryId==null?'':_childCategoryId)+"&isFull="+(isFull==null?"":isFull);
             window.location.href=url;
         }
 
         function bookInfo(bookId,title) {
-            var version = <#if version??>${version}<#else>null</#if>;
+            var version = <#if version??>${version?c}<#else>null</#if>;
             if(version != null && version >= 120){
                 window.JSHandle.openBookIntroduction(bookId);
             }else{
@@ -117,9 +119,11 @@
         $('.topOpen').hide();
         var scrH = $(this).scrollTop();
         if(scrH >= topH) {
+            $('.topSuspen').css("border-bottom","1px solid #ddd");
             $(".topSuspen").css("top","0");
         } else {
             $(".topSuspen").css("top","-30px");
+            $('.topSuspen').css("border-bottom","");
         }
     });
 

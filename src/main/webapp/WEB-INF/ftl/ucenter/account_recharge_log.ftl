@@ -18,10 +18,13 @@
               <div>充值${userAccountLog.comment}元&nbsp;&nbsp;|&nbsp;&nbsp;${userAccountLog.unitMoney?c}钻<#if userAccountLog.unitVirtual gt 0>+${userAccountLog.unitVirtual?c}钻</#if></div>
           </#if>
           <#if userAccountLog.type==11>
-              <div>客服赠送${userAccountLog.unitMoney?c+userAccountLog.unitVirtual?c}钻</div>
+              <div>客服赠送${userAccountLog.unitVirtual?c}钻</div>
           </#if>
           <#if userAccountLog.type==12>
-              <div>签到赠送${userAccountLog.unitMoney?c+userAccountLog.unitVirtual?c}钻</div>
+              <div>签到赠送${userAccountLog.unitVirtual?c}钻</div>
+          </#if>
+          <#if userAccountLog.type==13>
+              <div>新手礼包${userAccountLog.unitVirtual?c}钻</div>
           </#if>
           <time class="rechargeTime">${userAccountLog.createDate?string("yyyy-MM-dd HH:mm:ss")}</time>
       </div>

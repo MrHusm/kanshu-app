@@ -27,11 +27,20 @@ public class RedisKeyConstants {
     //图书驱动具体图书key
     public final static String CACHE_DRIVE_BOOK_ONE_KEY = "drive_book_type_%s_bid_%s_status_%s";
 
+    //限时免费图书
+    public final static String CACHE_TIME_FREE_BOOK_KEY = "time_free_books";
+
     //章节+内容key
     public final static String CACHE_CHAPTER_TYPE_KEY = "chapter_content_cid_%s_type_%s";
 
     //图书信息key
     public final static String CACHE_BOOK_KEY = "book_id_";
+
+    //作者图书信息key
+    public final static String CACHE_BOOKS_AUTHOR_KEY = "books_author_";
+
+    //图书相关图书信息key
+    public final static String CACHE_BOOKS_HIGH_CLICK_CID_KEY = "books_high_click_cid_";
 
     //充值赠返最大金额key
     public final static String CACHE_RECHARGE_MAX_VIRTUAL_KEY = "recharge_max_virtual";
@@ -52,7 +61,6 @@ public class RedisKeyConstants {
     public final static String CACHE_SEARCH_WORD_KEY = "search_word";
 
     public final static String CACHE_SPECIAL_KEY="special_";
-
 
     //渠道图书默认计费点key
     public final static String CACHE_BOOK_CHANNEL_POINT_KEY = "book_channel_point";

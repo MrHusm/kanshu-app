@@ -52,7 +52,7 @@
 <script type="text/javascript" src="/js/echo.min.js"></script>
 <script>
     function bookInfo(bookId,title) {
-        var version = <#if version??>${version}<#else>null</#if>;
+        var version = <#if version??>${version?c}<#else>null</#if>;
         if(version != null && version >= 120){
             window.JSHandle.openBookIntroduction(bookId);
         }else{

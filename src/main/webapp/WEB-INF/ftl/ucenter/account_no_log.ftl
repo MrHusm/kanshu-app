@@ -12,9 +12,9 @@
     <img class="pageBoxImg" src="/img/icon/notIcon.png" alt="" />
     <div class="pageBoxTxt">
         <#if type='1'>
-            您没有充值记录
+            暂无充值记录
         <#elseif type = '2'>
-            您没有消费记录
+            暂无消费记录
         </#if>
     </div>
     <#--<div class="pageBoxBtn">-->

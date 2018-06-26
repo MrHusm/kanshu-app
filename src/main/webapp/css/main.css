@@ -31,12 +31,13 @@ table { border-collapse:collapse; }
 .bookList ul li .bookImg{ width: 85px; height: 112px; margin-left: 10px;}
 .bookImg img{ width: 100%; height: 100%;}
 .bookList ul li .bookCon{ -webkit-box-flex: 1; padding-left: 13px;}
+.bookList .hTitle{  padding:10px 0 0 10px; margin:10px 0 0 20px; background: url(../img/h_title.png) no-repeat left 14px; -webkit-background-size: 2px 12px;}
 .bookCon h3{padding-bottom: 10px;font-size: 16px;}
 .bookCon p{ display: -webkit-box; height:53px; line-height: 18px; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp: 3; -webkit-box-orient: vertical; color:#999; font-size: 13px; letter-spacing: 1px;}
-.bookInstr{ position: relative; left:0px; bottom:-10px; display: flex; flex-wrap: nowrap; justify-content:space-between; width: 100%;}
-.bookInstr span {display: block; -webkit-box-flex: 1; color: #999; overflow: hidden; text-overflow: ellipsis;white-space: nowrap;width: 28%;height: 20px;font-size: 14px;}
-.bookInstr .bookKey{ display: -webkit-box; padding-right: 10px;padding-top:4px}
-.bookKey b{ padding:1px 5px; border: 1px solid #999; -webkit-border-radius: 4px; color:#999; font-size: 12px;font-weight:normal}
+.bookInstr{ position: relative; left:0px; bottom:-12px; display: flex; flex-wrap: nowrap; justify-content:space-between; width: 100%;white-space:nowrap;text-overflow:ellipsis;}
+.bookInstr span {display: block; -webkit-box-flex: 1; color: #999; overflow: hidden; text-overflow: ellipsis;max-width: calc(100vw - 6rem - (176rem / 16));}
+.bookInstr .bookKey{ display: -webkit-box; padding-right: 10px;white-space:nowrap;text-overflow:ellipsis;}
+.bookKey b{ padding:1px 5px; border: 1px solid #999; -webkit-border-radius: 4px; color:#999; font-size: 12px;font-weight:normal;}
 .bookKey b:first-child{ border: 1px solid #82bce5; color:#82bce5;}
 .special{ padding: 20px; background-color: #fff; margin-bottom: 10px; margin-top: 10px;}
 .special h3{ padding-left: 10px; background: url(../img/h_title.png) no-repeat left center; -webkit-background-size: 2px 12px;font-size: 18px}
@@ -70,8 +71,8 @@ table { border-collapse:collapse; }
 .bookInstr .bookKey{ display: -webkit-box; padding-right: 20px;}
 .bookKey b{ padding: 3px 5px; border: 1px solid #ccc; -webkit-border-radius: 4px;}
 .bookKey b:first-child{ border: 1px solid #53c4ff;}*/
-.searchbtn{ display: -webkit-box; padding: 0 10px 10px 10px; position: absolute; bottom: 0; left:0; width: 100%;}
-.searchbtn input{ width: 32%; display: block; background-color: #f4f4f4; -webkit-border-radius: 4px; color: #53C4FF; border: none; padding: 5px 0;}
+.searchbtn{ display: -webkit-box; padding: 0 10px 10px 8px; position: absolute; bottom: 0; left:0; width: 96%;}
+.searchbtn input{ width: 32%; display: block; background-color: #f4f4f4; -webkit-border-radius: 4px; color: #53C4FF; border: none; padding: 5px 0;outline: none;}
 .searchbtn input:first-child{ margin-right: 2%; background-color: #53C4FF; color: #fff;}
 .searchbtn input:last-child{ margin-left: 2%;}
 
@@ -89,9 +90,34 @@ table { border-collapse:collapse; }
 .mamImg{ width: 64px; height: 50px;}
 .mamImg img{ width: 100%; height: 100%;}
 
-.topSuspen{ text-align: center; height: 30px; line-height: 30px; position: fixed; top:-30px; left: 0; width: 100%; background-color:#fff; border-bottom: 1px solid #ddd; transition: top .5s ease; -moztransition: top .5s ease;  -webkit-transition: top .5s ease; z-index:9999}
+.topSuspen{ text-align: center; height: 30px; line-height: 30px; position: fixed; top:-30px; left: 0; width: 100%; background-color:#fff; transition: top .5s ease; -moztransition: top .5s ease;  -webkit-transition: top .5s ease; z-index:9999}
 .topSuspen img{ width: 12px; height: 6px; padding-left: 10px;}
 .topSuspen span{ color:#82bce5}
 .topOpen{ position: fixed; top:0; left: 0; width: 100%; background-color:#fff; border-bottom: 1px solid #ddd; display: none; z-index:9999}
 
-.bookLoad{ text-align: center;}
+.bookLoad { color: #8c8c8c; text-align: center; height: 30px; line-height: 30px; margin: 10px 15px 0;  font-size: 16px;}
+.loadGif { height: 20px; vertical-align: middle; position: relative; top: -1px;}
+.loadTxt{ font-size: 12px;}
+@-webkit-keyframes rotation{
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(360deg);}
+}
+.bookLoad img{
+    -webkit-transform: rotate(360deg);
+    animation: rotation 1s linear infinite;
+    -moz-animation: rotation 1s linear infinite;
+    -webkit-animation: rotation 1s linear infinite;
+    -o-animation: rotation 1s linear infinite;
+}
+
+.otherBook{ background-color: #fff; margin-bottom: 10px;}
+.otherBook .hTitle{  padding:10px 0 0 10px; margin:10px 0 0 20px; background: url(../img/h_title.png) no-repeat left 14px; -webkit-background-size: 2px 12px;}
+.otherList{ padding: 15px; }
+.otherList li{ width: 30%; margin:0 5% 5% 0; float: left;}
+.otherList li:nth-child(3n){ margin-right: 0;}
+.otherList li:nth-child(3n) .coverImg{ float: right;}
+.otherList li:nth-child(3n+2) .coverImg{ position: relative; left: 50%; margin-left: -43px;}
+.coverImg{ width: 85px; height: 116px; padding-bottom: 30px;}
+.coverImg img{ width: 100%; height: 100%;}
+.coverImg p{ display:-webkit-box; height:14px; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp:1; -webkit-box-orient: vertical; color:#666; font-size: 12px; padding-top: 10px;}
+.readFinish{ text-align: center; padding: 50px 0; font-size: 18px; color: #333; background-color: #fff;}

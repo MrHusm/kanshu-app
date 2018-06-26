@@ -158,6 +158,7 @@ public class PortalController extends BaseController{
         }
         query.setPageSize(20);
         Book condition = new Book();
+        condition.setShelfStatus(1);
         condition.setCategorySecId(Long.parseLong(categoryId));
         condition.setCategoryThrId(StringUtils.isBlank(childCategoryId) ? null : Long.parseLong(childCategoryId));
         condition.setIsFull(StringUtils.isBlank(isFull) ? null : Integer.parseInt(isFull));
@@ -213,7 +214,8 @@ public class PortalController extends BaseController{
         }
         query.setPageSize(20);
         Book condition = new Book();
-        condition.setTag(tag+"%");
+        condition.setShelfStatus(1);
+        condition.setTag("%" + tag + "%");
         PageFinder<Book> pageFinder = this.bookService.findPageFinderWithExpandObjs(condition, query);
 
         model.addAttribute("pageFinder",pageFinder);
@@ -235,10 +237,13 @@ public class PortalController extends BaseController{
         String type = request.getParameter("type");
         String syn = request.getParameter("syn")==null?"0":request.getParameter("syn");
         String version = request.getParameter("version");
+        String channel = request.getParameter("channel");
         if(StringUtils.isNotBlank(version)){
             model.addAttribute("version",Integer.parseInt(version.replace(".","")));
         }
         model.addAttribute("syn",syn);
+        model.addAttribute("type",type);
+
         Query query = new Query();
         if(StringUtils.isNotBlank(page)){
             query.setPage(Integer.parseInt(page));
@@ -246,12 +251,21 @@ public class PortalController extends BaseController{
             query.setPage(1);
         }
         query.setPageSize(20);
-
         PageFinder<DriveBook> pageFinder = this.driveBookService.findPageWithCondition(Integer.parseInt(type), query);
 
-        model.addAttribute("pageFinder",pageFinder);
-        model.addAttribute("type",type);
-        return "/portal/rank_list";
-    }
+        if("0".equals(syn) && "9".equals(type)){
+            //免费页
+            List<Map<String,Object>> data = this.driveBookService.getTimeFreeBooks(channel);
+            if(CollectionUtils.isNotEmpty(data)){
+                model.addAttribute("data",data);
+            }
+        }
 
+        model.addAttribute("pageFinder",pageFinder);
+        if("9".equals(type)){
+            return "/portal/free_index";
+        }else{
+            return "/portal/rank_list";
+        }
+    }
 }
