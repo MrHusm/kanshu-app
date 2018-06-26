@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -666,10 +667,11 @@ public class UserController extends BaseController {
                     sender.put("versionStatus",1);
                 }
             }
-            BookExpand bookExpand = this.bookExpandService.getMaxClickBook();
-            if(bookExpand != null){
-                sender.put("searchBook",bookExpand.getBookName());
-            }
+            //BookExpand bookExpand = this.bookExpandService.getMaxClickBook();
+//            if(bookExpand != null){
+//                sender.put("searchBook",bookExpand.getBookName());
+//            }
+            sender.put("searchBook","都市透视狂医");
             UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
             if(userReceive != null){
                 sender.put("qqStatus", userReceive.getQqStatus() != null && userReceive.getQqStatus() == 1 ? 1 : 0);
@@ -994,6 +996,7 @@ public class UserController extends BaseController {
         ResultSender sender = JsonResultSender.getInstance();
         //入参
         String token = request.getParameter("token");
+        String channel = request.getParameter("channel");
         if(StringUtils.isBlank(token)){
             logger.error("UserController_getNewUserVipInfo：token为空");
             sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
@@ -1008,13 +1011,18 @@ public class UserController extends BaseController {
             return;
         }
         try{
-            UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
-            if(userReceive != null && userReceive.getVipStatus() == 1){
+            if("100018".equals(channel)){
+                //米赚渠道不显示新手礼包
                 sender.put("receiveStatus",1);
             }else{
-                sender.put("receiveStatus",0);
-                //新手礼包天数3
-                sender.put("days",3);
+                UserReceive userReceive = this.userReceiveService.findUniqueByParams("userId",userId);
+                if(userReceive != null && userReceive.getVipStatus() == 1){
+                    sender.put("receiveStatus",1);
+                }else{
+                    sender.put("receiveStatus",0);
+                    //新手礼包天数3
+                    sender.put("days",1);
+                }
             }
             sender.success(response);
         }catch (Exception e){
@@ -1178,6 +1186,131 @@ public class UserController extends BaseController {
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
+    }
+
+    /**
+     * 获取用户充值总额信息
+     * @param response
+     * @param request
+     */
+    @RequestMapping("getUserTotalMoney")
+    public void getUserTotalMoney(HttpServletResponse response,HttpServletRequest request){
+        ResultSender sender = JsonResultSender.getInstance();
+        //入参
+        //渠道标识
+        String channel = request.getParameter("channel");
+        //1:通过userId查询  2：通过imei号查询
+        String type = request.getParameter("type");
+        String deviceSerialNo = request.getParameter("imei");
+        String userId = request.getParameter("userId");
+        String sign = request.getParameter("sign");
+        if(StringUtils.isBlank(channel) || StringUtils.isBlank(type) || StringUtils.isBlank(sign)){
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10002.getErrorCode(),
+                    ErrorCodeEnum.ERROR_CODE_10002.getErrorMessage(), response);
+            return;
+        }
+        try{
+            if("1".equals(type)){
+                String signNow = MD5Utils.getInstance().cell32(userId + channel);
+                logger.info("signNow:"+signNow + ",sign:"+sign);
+                if(signNow.equals(sign)){
+                    User user = this.userService.getUserByUserId(Long.parseLong(userId));
+                    if(user != null){
+//                        Map<String,Object> map = this.userAccountLogService.getUserTotalMoney(userId,channel);
+//                        if(map != null){
+//                            sender.put("totalMoney",map.get("money"));
+//                        }else{
+//                            sender.put("totalMoney",0);
+//                        }
+                        //2018-06-04后的都属于新用户
+                        Calendar calendar=Calendar.getInstance();
+                        calendar.set(2018,5,4,0,0,0);
+                        List<UserAccountLog> userAccountLogs = this.userAccountLogService.findListByParams("userId",user.getUserId(),"findType",1);
+                        int totalMoneyPre = 0;
+                        int totalMoneyNext = 0;
+                        for(UserAccountLog userAccountLog : userAccountLogs){
+                            if((userAccountLog.getType() == 1 || userAccountLog.getType() == 2) &&
+                                    userAccountLog.getCreateDate().getTime() > calendar.getTime().getTime()){
+                                totalMoneyNext = totalMoneyNext + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
+                            }else if((userAccountLog.getType() == 1 || userAccountLog.getType() == 2) &&
+                                    userAccountLog.getCreateDate().getTime() <= calendar.getTime().getTime()){
+                                totalMoneyPre = totalMoneyPre + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
+                            }
+                        }
+                        sender.put("totalMoneyPre",totalMoneyPre);
+                        sender.put("totalMoneyNext",totalMoneyNext);
+                        if(user.getCreateDate().getTime() > calendar.getTime().getTime()){
+                            sender.put("isNew",1);
+                        }else{
+                            sender.put("isNew",0);
+                        }
+                        sender.put("userId",user.getUserId());
+                        sender.put("name",user.getName());
+                    }else{
+                        sender.fail(10011,"用户不存在", response);
+                    }
+                }else{
+                    sender.fail(10010,"签名错误", response);
+                    return;
+                }
+            }else{
+                String signNow = MD5Utils.getInstance().cell32(deviceSerialNo + channel);
+                logger.info("signNow:"+signNow + ",sign:"+sign);
+                if(signNow.equals(sign)){
+                    List<User> users = userService.findListByParams("deviceSerialNo",deviceSerialNo);
+                    if(CollectionUtils.isEmpty(users)){
+                        users = userService.findListByParams("deviceSerialNo",deviceSerialNo.toLowerCase());
+                    }
+                    User user = null;
+                    if(CollectionUtils.isNotEmpty(users)){
+                        user = users.get(users.size() - 1);
+                    }
+                    if(user != null){
+//                        Map<String,Object> map = this.userAccountLogService.getUserTotalMoney(String.valueOf(user.getUserId()),channel);
+//                        if(map != null){
+//                            sender.put("totalMoney",map.get("money"));
+//                        }else{
+//                            sender.put("totalMoney",0);
+//                        }
+                        //2018-06-04后的都属于新用户
+                        Calendar calendar=Calendar.getInstance();
+                        calendar.set(2018,5,4,0,0,0);
+                        List<UserAccountLog> userAccountLogs = this.userAccountLogService.findListByParams("userId",user.getUserId(),"findType",1);
+                        int totalMoneyPre = 0;
+                        int totalMoneyNext = 0;
+                        for(UserAccountLog userAccountLog : userAccountLogs){
+                            if((userAccountLog.getType() == 1 || userAccountLog.getType() == 2) &&
+                                    userAccountLog.getCreateDate().getTime() > calendar.getTime().getTime()){
+                                totalMoneyNext = totalMoneyNext + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
+                            }else if((userAccountLog.getType() == 1 || userAccountLog.getType() == 2) &&
+                                    userAccountLog.getCreateDate().getTime() <= calendar.getTime().getTime()){
+                                totalMoneyPre = totalMoneyPre + (StringUtils.isBlank(userAccountLog.getComment()) ? 0 : Integer.parseInt(userAccountLog.getComment()));
+                            }
+                        }
+                        sender.put("totalMoneyPre",totalMoneyPre);
+                        sender.put("totalMoneyNext",totalMoneyNext);
+                        if(user.getCreateDate().getTime() > calendar.getTime().getTime()){
+                            sender.put("isNew",1);
+                        }else{
+                            sender.put("isNew",0);
+                        }
+                        sender.put("userId",user.getUserId());
+                        sender.put("name",user.getName());
+                    }else{
+                        sender.fail(10011,"用户不存在", response);
+                    }
+                }else{
+                    sender.fail(10011,"签名错误", response);
+                    return;
+                }
+            }
+            sender.success(response);
+        }catch (Exception e){
+            logger.error("系统错误：" + request.getRequestURL() + "?" + request.getQueryString());
+            e.printStackTrace();
+            sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
+        }
+
     }
 
 }

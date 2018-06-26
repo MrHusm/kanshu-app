@@ -5,6 +5,7 @@ import com.yxsd.kanshu.base.utils.PageFinder;
 import com.yxsd.kanshu.base.utils.Query;
 import com.yxsd.kanshu.product.model.Book;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +33,12 @@ public interface IBookService extends IBaseService<Book,Long> {
      * @return
      */
     Book selectOneBookCondition(Map<String,Object> condition);
+
+    /**
+     * 查询新书
+     * @return
+     */
+    List<Book> selectNewBook();
 
     /**
      * 清除图书相关缓存

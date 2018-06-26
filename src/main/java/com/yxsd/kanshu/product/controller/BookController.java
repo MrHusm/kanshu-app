@@ -15,6 +15,7 @@ import com.yxsd.kanshu.product.model.Book;
 import com.yxsd.kanshu.product.model.BookExpand;
 import com.yxsd.kanshu.product.model.Chapter;
 import com.yxsd.kanshu.product.service.IBookExpandService;
+import com.yxsd.kanshu.product.service.IBookPointService;
 import com.yxsd.kanshu.product.service.IBookService;
 import com.yxsd.kanshu.product.service.IChapterService;
 import com.yxsd.kanshu.ucenter.model.*;
@@ -80,6 +81,20 @@ public class BookController extends BaseController {
 
     @Resource(name="userShelfService")
     IUserShelfService userShelfService;
+
+    @Resource(name="bookPointService")
+    private IBookPointService bookPointService;
+
+    /**
+     * 获取图书详情
+     * @param response
+     * @param request
+     */
+    @RequestMapping("clearCache")
+    public void bookDetail(HttpServletResponse response, HttpServletRequest request) {
+        String bookId = request.getParameter("bookId");
+        bookService.clearBookAllCache(Long.parseLong(bookId));
+    }
 
     /**
      * 获取图书详情
@@ -295,6 +310,7 @@ public class BookController extends BaseController {
         //入参
         String bookId = request.getParameter("bookId");
         String token = request.getParameter("token");
+        String channel = request.getParameter("channel");
 
         if(StringUtils.isBlank(bookId) || StringUtils.isBlank(token)){
             logger.error("BookController_getBookCatalog:bookId或token为空");
@@ -331,6 +347,8 @@ public class BookController extends BaseController {
                 }
             }
             List<Map<String,Object>> result = new ArrayList<Map<String, Object>>();
+            //图书计费点
+            Integer num = this.bookPointService.getBookPointNum(Long.parseLong(bookId),channel);
             for(int i = 0; i < chapters.size(); i++){
                 Chapter chapter = chapters.get(i);
                 Map<String,Object> chapterMap = new HashMap<String,Object>();
@@ -361,11 +379,21 @@ public class BookController extends BaseController {
                     chapterMap.put("lock",false);
                     continue;
                 }
-                if(chapter.getIsFree() == 0){
-                    //免费章节
-                    chapter.setLock(false);
-                    chapterMap.put("lock",false);
-                    continue;
+
+                if(num == null){
+                    if(chapter.getIsFree() == 0){
+                        //免费章节
+                        chapter.setLock(false);
+                        chapterMap.put("lock",false);
+                        continue;
+                    }
+                }else{
+                    if(i < num){
+                        //免费章节
+                        chapter.setLock(false);
+                        chapterMap.put("lock",false);
+                        continue;
+                    }
                 }
 
                 if(user.isVip()){
@@ -510,7 +538,8 @@ public class BookController extends BaseController {
         }
         try{
             Book book = this.bookService.getBookById(Long.parseLong(bookId));
-
+            //获取图书所有章节
+            List<Chapter> chapters = this.chapterService.getChaptersByBookId(Long.parseLong(bookId),Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
             Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId),1,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
 
             if(book.getIsFree() == 0){
@@ -527,10 +556,20 @@ public class BookController extends BaseController {
                 chapter.setLock(false);
             }
 
-            if(chapter.getIsFree() == 0){
-                //免费章节
-                chapter.setLock(false);
+            //图书计费点
+            Integer num = this.bookPointService.getBookPointNum(Long.parseLong(bookId),channel);
+            if(num == null){
+                if(chapter.getIsFree() == 0){
+                    //免费章节
+                    chapter.setLock(false);
+                }
+            }else{
+                if(getChapterIdx(chapters,chapter) < num){
+                    //免费章节
+                    chapter.setLock(false);
+                }
             }
+
             if(chapter.isLock()){
                 //获取限免图书
                 DriveBook driveBook = this.driveBookService.getDriveBookByCondition(9,Long.parseLong(bookId),1);
@@ -727,6 +766,7 @@ public class BookController extends BaseController {
         String chapterId = request.getParameter("chapterId");
         String token = request.getParameter("token");
         String bookId = request.getParameter("bookId");
+        String channel = request.getParameter("channel");
 
         if(StringUtils.isBlank(chapterId) || StringUtils.isBlank(bookId) || StringUtils.isBlank(token)){
             logger.error("BookController_toBuyBatchChapter:chapterId或token或bookId为空");
@@ -743,7 +783,7 @@ public class BookController extends BaseController {
         }
         try{
             Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId), 0,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
-            List<Chapter> notBuyChapters = getNotBuyChapters(chapter,Long.parseLong(userId));
+            List<Chapter> notBuyChapters = getNotBuyChapters(chapter,Long.parseLong(userId),channel);
             //计算批量购买价格
             int price10 = 0;
             int price50 = 0;
@@ -854,7 +894,7 @@ public class BookController extends BaseController {
         }
         try{
             Chapter chapter = this.chapterService.getChapterById(Long.parseLong(chapterId),0,Integer.parseInt(bookId) % Constants.CHAPTR_TABLE_NUM);
-            List<Chapter> notBuyChapters = this.getNotBuyChapters(chapter,Long.parseLong(userId));
+            List<Chapter> notBuyChapters = this.getNotBuyChapters(chapter,Long.parseLong(userId),channel);
             int size = 0;
             if("-1".equals(count) || Integer.parseInt(count) > notBuyChapters.size()){
                 size = notBuyChapters.size();
@@ -1058,7 +1098,7 @@ public class BookController extends BaseController {
             } else if (Constants.CONSUME_TYPE_S2 == Integer.parseInt(type)) {
                 //批量购买
                 Chapter chapter = this.chapterService.getChapterById(Long.parseLong(map.get("chapterId").toString()), 0, Integer.parseInt(map.get("bookId").toString()) % Constants.CHAPTR_TABLE_NUM);
-                List<Chapter> notBuyChapters = this.getNotBuyChapters(chapter, Long.parseLong(userId));
+                List<Chapter> notBuyChapters = this.getNotBuyChapters(chapter, Long.parseLong(userId),"100000");
                 int size = 0;
                 if ("-1".equals(map.get("count").toString())) {
                     size = notBuyChapters.size();
@@ -1138,9 +1178,12 @@ public class BookController extends BaseController {
      * @param userId
      * @return
      */
-    private List<Chapter> getNotBuyChapters(Chapter chapter,Long userId){
+    private List<Chapter> getNotBuyChapters(Chapter chapter,Long userId,String channel){
+        //获取图书所有章节
+        List<Chapter> chapters = this.chapterService.getChaptersByBookId(chapter.getBookId(),chapter.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+        int start = getChapterIdx(chapters,chapter);
         //获取该章后续所有章节
-        List<Chapter> chapters = this.chapterService.findListByParams("bookId",chapter.getBookId(),"startIdx",chapter.getIdx(),"num",chapter.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
+        //List<Chapter> chapters = this.chapterService.findListByParams("bookId",chapter.getBookId(),"startIdx",chapter.getIdx(),"num",chapter.getBookId().intValue() % Constants.CHAPTR_TABLE_NUM);
         //批量或整本购买的图书
         List<UserPayBook> userPayBooks = this.userPayBookService.findListByParams("userId",userId,"bookId",chapter.getBookId(),"type",1);
         //单章购买的图书
@@ -1151,15 +1194,24 @@ public class BookController extends BaseController {
                 userPayChapterIds.add(userPayChapter.getChapterId());
             }
         }
+        //图书计费点
+        Integer num = this.bookPointService.getBookPointNum(chapter.getBookId(),channel);
         //找出所有未购买的章节
         List<Chapter> notBuyChapters = new ArrayList<Chapter>();
-        for(int i = 0; i < chapters.size(); i++){
+        for(int i = start; i < chapters.size(); i++){
             Chapter c = chapters.get(i);
-            if(c.getIsFree() == 0){
-                continue;
-            }
             if(c.getPrice() <=0){
                 continue;
+            }
+
+            if(num == null){
+                if(c.getIsFree() == 0){
+                    continue;
+                }
+            }else{
+                if(i < num){
+                    continue;
+                }
             }
 
             if(userPayChapterIds.contains(c.getChapterId())){
@@ -1230,5 +1282,21 @@ public class BookController extends BaseController {
             e.printStackTrace();
             sender.fail(ErrorCodeEnum.ERROR_CODE_10008.getErrorCode(), ErrorCodeEnum.ERROR_CODE_10008.getErrorMessage(), response);
         }
+    }
+
+    /**
+     * 获取章节在章节列表中的位置
+     * @param chapters
+     * @param chapter
+     * @return
+     */
+    public Integer getChapterIdx(List<Chapter> chapters,Chapter chapter){
+        for (int i = 0; i < chapters.size(); i++){
+            Chapter c = chapters.get(i);
+            if(c.getChapterId().longValue() == chapter.getChapterId().longValue()){
+                return i;
+            }
+        }
+        return -1;
     }
 }

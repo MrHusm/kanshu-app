@@ -112,4 +112,11 @@
         <include refid="Base_Where" />
         order by create_date desc
     </select>
+
+    <select id="getUserTotalMoney" resultType="map" parameterType="map">
+        SELECT SUM(COMMENT) as money FROM user_account_log
+        WHERE (type =1 or type = 2)
+        AND channel = #{channel}
+        AND user_id = #{userId}
+    </select>
 </mapper>

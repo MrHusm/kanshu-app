@@ -50,5 +50,11 @@ public class RedisKeyConstants {
     
     public final static String CACHE_SPECIAL_KEY="special_";
 
+    //渠道图书默认计费点key
+    public final static String CACHE_BOOK_CHANNEL_POINT_KEY = "book_channel_point";
+
+    //图书计费点key
+    public final static String CACHE_BOOK_POINT_MAP_KEY = "book_point_map";
+
 
 }

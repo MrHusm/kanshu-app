@@ -288,6 +288,7 @@ public class YuewenJobController extends BaseController {
 							addChapterByBook(book.getBookId(), cbid);
 						}
 					}
+					IndexManager.getManager().createIndex(String.valueOf(book.getBookId()), SearchContants.TABLENAME, setIndexField(book));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1715,8 +1716,10 @@ public class YuewenJobController extends BaseController {
 //							continue;
 //						}
 						boolean hasChapterFlag = false;
+						Long beforeChapterId = null;
 						for(Chapter beforeChapter : beforeChapters){
 							if(beforeChapter.getCopyrightChapterId().longValue() == chapterInfoResp.getcCID().longValue()){
+								beforeChapterId = beforeChapter.getChapterId();
 								beforeChapters.remove(beforeChapter);
 								hasChapterFlag = true;
 								break;
@@ -1748,9 +1751,17 @@ public class YuewenJobController extends BaseController {
 //							}else{
 //								chapter.setChapterId(beforeChapter.getChapterId());
 //								chapterService.updateChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
-								//清除章节相关缓存
-								//clearChapterAllCache(chapter.getChapterId());
+							//清除章节相关缓存
+							//clearChapterAllCache(chapter.getChapterId());
 							//}
+//							if(!hasChapterFlag){
+//								chapterService.saveChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
+//							}else{
+//								chapter.setChapterId(beforeChapterId);
+//								chapterService.updateChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
+//								//清除章节相关缓存
+//								//clearChapterAllCache(chapter.getChapterId());
+//							}
 							pullChapterService.saveOrUpdatePullChapter(ConfigPropertieUtils.getString(YUEWEN_COPYRIGHT_CODE), cbid, chapterInfoResp.getcVID().toString(),
 									chapterInfoResp.getcCID().toString(), chapterPullStatus, chapterPullFailureCause);
 						}
@@ -1792,8 +1803,10 @@ public class YuewenJobController extends BaseController {
 //						continue;
 //					}
 					boolean hasChapterFlag = false;
+					Long beforeChapterId = null;
 					for(Chapter beforeChapter : beforeChapters){
 						if(beforeChapter.getCopyrightChapterId().longValue() == chapterInfoResp.getcCID().longValue()){
+							beforeChapterId = beforeChapter.getChapterId();
 							beforeChapters.remove(beforeChapter);
 							hasChapterFlag = true;
 							break;
@@ -1818,9 +1831,18 @@ public class YuewenJobController extends BaseController {
 //						}else{
 //							chapter.setChapterId(beforeChapter.getChapterId());
 //							chapterService.updateChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
-							//清除章节相关缓存
-							//chapterService.clearChapterAllCache(chapter.getChapterId());
+						//清除章节相关缓存
+						//chapterService.clearChapterAllCache(chapter.getChapterId());
 						//}
+
+//						if(!hasChapterFlag){
+//							chapterService.saveChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
+//						}else{
+//							chapter.setChapterId(beforeChapterId);
+//							chapterService.updateChapter(chapter,bookId.intValue() % Constants.CHAPTR_TABLE_NUM);
+//							//清除章节相关缓存
+//							//chapterService.clearChapterAllCache(chapter.getChapterId());
+//						}
 					}
 				}
 				chapterPage++;

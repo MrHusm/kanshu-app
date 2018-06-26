@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -112,6 +113,27 @@ public class SearchController {
 
 		return "/search/search";
 
+	}
+
+	/**
+	 * 删除搜索索引
+	 * @param response
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("deleteIndex")
+	public void deleteIndex(HttpServletResponse response, HttpServletRequest request){
+		String bookIds = request.getParameter("bookIds");
+		if(StringUtils.isNotBlank(bookIds)) {
+			for(String bookId : bookIds.split(",")){
+				Book book = this.bookService.findUniqueByParams("copyrightBookId",bookId);
+				if(book != null){
+					Map<String,String> fieldMap = new HashMap<String,String>();
+					fieldMap.put(SearchContants.ID,String.valueOf(book.getBookId()));
+					IndexManager.getManager().deleteIndex(fieldMap);
+				}
+			}
+		}
 	}
 
 	/**

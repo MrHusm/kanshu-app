@@ -8,6 +8,7 @@ import com.yxsd.kanshu.ucenter.model.UserAccountLog;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * Created by hushengmeng on 2017/7/4.
@@ -21,5 +22,10 @@ public class UserAccountLogServiceImpl extends BaseServiceImpl<UserAccountLog, L
     @Override
     public IBaseDao<UserAccountLog> getBaseDao() {
         return userAccountLogDao;
+    }
+
+    @Override
+    public Map<String, Object> getUserTotalMoney(String userId, String channel) {
+        return this.userAccountLogDao.getUserTotalMoney(userId, channel);
     }
 }

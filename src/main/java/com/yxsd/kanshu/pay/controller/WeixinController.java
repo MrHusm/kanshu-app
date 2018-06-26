@@ -95,6 +95,8 @@ public class WeixinController extends BaseController {
 		String productId = request.getParameter("productId");
 		//备注信息
 		String content = request.getParameter("param");
+		//包名
+		String packname = request.getParameter("packname");
 
 		if(StringUtils.isBlank(token) || StringUtils.isBlank(productId)){
 			logger.error("WeixinController_order：token或productId为空");
@@ -118,7 +120,11 @@ public class WeixinController extends BaseController {
 //			}
 			order.setBody("春意小说微信充值");
 			order.setTotal_fee(rechargeItem.getPrice().intValue() * 100);
-			order.setOut_trade_no(Long.toHexString(System.currentTimeMillis()));
+			if("com.chunnuan666.reader".equals(packname)){
+				order.setOut_trade_no(Long.toHexString(System.currentTimeMillis()) + "_kxssq");
+			}else{
+				order.setOut_trade_no(Long.toHexString(System.currentTimeMillis()));
+			}
 			order.setNonce_str(WXPayUtil.generateNonceStr());
 			order.setSpbill_create_ip(HttpUtils.getIp(request));
 			order.setTrade_type("APP");
@@ -127,20 +133,27 @@ public class WeixinController extends BaseController {
 
 			//封装下单参
 			HashMap<String, String> param = new HashMap<String, String>();
-			param.put("appid", WxPayConfig.APPID);
-			param.put("mch_id", WxPayConfig.MCH_ID);
+			if("com.chunnuan666.reader".equals(packname)){
+				param.put("appid", WxPayConfig.APPID_KXSSQ);
+				param.put("mch_id", WxPayConfig.MCH_ID_KXSSQ);
+			}else{
+				param.put("appid", WxPayConfig.APPID);
+				param.put("mch_id", WxPayConfig.MCH_ID);
+			}
 			param.put("nonce_str", order.getNonce_str());
 			param.put("body", order.getBody());
 			param.put("out_trade_no", order.getOut_trade_no());
 			param.put("total_fee", String.valueOf(order.getTotal_fee()));
-//			if(order.getUserId().intValue() == 5166){
-//				param.put("total_fee", "1");
-//			}
+			if(order.getUserId().intValue() == 526 || order.getUserId().intValue() == 5047){
+				param.put("total_fee", "1");
+			}
 			param.put("spbill_create_ip", order.getSpbill_create_ip());
 			param.put("notify_url", WxPayConfig.NOTIFY_URL);
 			param.put("trade_type", order.getTrade_type());
 
-			String sign = WXPayUtil.generateSignature(param, WxPayConfig.KEY, WXPayConstants.SignType.MD5);
+			//密钥
+			String wxKey = "com.chunnuan666.reader".equals(packname) ? WxPayConfig.KEY_KXSSQ : WxPayConfig.KEY;
+			String sign = WXPayUtil.generateSignature(param, wxKey, WXPayConstants.SignType.MD5);
 			param.put("sign", sign);
 			order.setSign(sign);
 			//保存微信订单
@@ -164,7 +177,12 @@ public class WeixinController extends BaseController {
 
 			StringEntity postEntity = new StringEntity(reqBody, "UTF-8");
 			httpPost.addHeader("Content-Type", "text/xml");
-			httpPost.addHeader("User-Agent", "wxpay sdk java v1.0 " + WxPayConfig.MCH_ID);  //很重要，用来检测 sdk 的使用情况，要不要加上商户信息？
+			if("com.chunnuan666.reader".equals(packname)){
+				httpPost.addHeader("User-Agent", "wxpay sdk java v1.0 " + WxPayConfig.MCH_ID_KXSSQ);  //很重要，用来检测 sdk 的使用情况，要不要加上商户信息？
+			}else{
+				httpPost.addHeader("User-Agent", "wxpay sdk java v1.0 " + WxPayConfig.MCH_ID);  //很重要，用来检测 sdk 的使用情况，要不要加上商户信息？
+			}
+
 			httpPost.setEntity(postEntity);
 
 			HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -181,7 +199,7 @@ public class WeixinController extends BaseController {
 				map.put("package","Sign=WXPay");
 				map.put("noncestr",WXPayUtil.generateNonceStr());
 				map.put("timestamp", String.valueOf(new Date().getTime() / 1000));
-				map.put("sign",WXPayUtil.generateSignature(map, WxPayConfig.KEY, WXPayConstants.SignType.MD5));
+				map.put("sign",WXPayUtil.generateSignature(map, wxKey, WXPayConstants.SignType.MD5));
 				sender.put("params",map);
 				sender.success(response);
 			}else{
@@ -218,7 +236,11 @@ public class WeixinController extends BaseController {
 			Map<String,String> params = WXPayUtil.xmlToMap(paramXml.toString());
 			if("SUCCESS".equals(params.get("return_code"))){
 				//验证签名
-				boolean verify_result = WXPayUtil.isSignatureValid(params, WxPayConfig.KEY, WXPayConstants.SignType.MD5);
+				//订单号
+				String outTradeNo = params.get("out_trade_no");
+				//密钥
+				String wxKey = outTradeNo.endsWith("_kxssq") ? WxPayConfig.KEY_KXSSQ : WxPayConfig.KEY;
+				boolean verify_result = WXPayUtil.isSignatureValid(params, wxKey, WXPayConstants.SignType.MD5);
 				if(verify_result){
 					logger.info("weixin_notifyUrl：验签成功");
 					//保存或修改response表

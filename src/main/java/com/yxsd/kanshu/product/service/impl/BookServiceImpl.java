@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +65,11 @@ public class BookServiceImpl extends BaseServiceImpl<Book, Long> implements IBoo
     @Override
     public Book selectOneBookCondition(Map<String,Object> condition){
         return getBaseDao().selectOne(getPrefix()+"selectOneBookCondition",condition);
+    }
+
+    @Override
+    public List<Book> selectNewBook() {
+        return getBaseDao().selectList(getPrefix()+"selectNewBook");
     }
 
     @Override

@@ -151,6 +151,7 @@ public class PortalController extends BaseController{
         }
         query.setPageSize(20);
         Book condition = new Book();
+        condition.setShelfStatus(1);
         condition.setCategorySecId(Long.parseLong(categoryId));
         condition.setCategoryThrId(StringUtils.isBlank(childCategoryId) ? null : Long.parseLong(childCategoryId));
         condition.setIsFull(StringUtils.isBlank(isFull) ? null : Integer.parseInt(isFull));
@@ -202,6 +203,7 @@ public class PortalController extends BaseController{
         }
         query.setPageSize(20);
         Book condition = new Book();
+        condition.setShelfStatus(1);
         condition.setTag("%"+tag+"%");
         PageFinder<Book> pageFinder = this.bookService.findPageFinderWithExpandObjs(condition, query);
 
